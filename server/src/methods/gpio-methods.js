@@ -1,43 +1,24 @@
-const { spawn, exec } = require('child_process')
+const { exec } = require('child_process')
 
 const getIndoorTempReading = async () => {
-  const runPythonScript = (scriptPath, args) => {
-    const pyProg = spawn('python', [scriptPath].concat(args))
-
-    let data = ''
-    pyProg.stdout.on('data', (stdout) => {
-      data += stdout.toString()
+  return new Promise((res, rej) => {
+    exec('cd src/dht22 && python3 humidity.py', (error, stdout, stderr) => {
+      if (error) {
+        console.log(`error: ${error.message}`);
+      }
+      if (stderr) {
+        console.log(`stderr: ${stderr}`);
+      }
+      else {
+        console.log(`stdout: ${stdout}`);
+        const temp = stdout.slice(stdout.indexOf("Temp:" + 5), stdout.indexOf('F'))
+        const humidity = stdout.slice(stdout.indexOf('Humidity:' + 9), stdout.indexOf('%'))
+        console.log({
+          temp, humidity
+        })
+      }
     })
-
-    pyProg.stderr.on('data', (stderr) => {
-      console.log('stderr: ', stderr)
-    })
-
-    pyProg.on('close', (code) => {
-      console.log('child process exited with code', code)
-      console.log(data)
-    })
-
-  }
-  console.log('checkpoint')
-  // runPythonScript('../dht22/humidity.py', [])
-
-  await exec('cd src/dht22 && python3 humidity.py', (error, stdout, stderr) => {
-    if (error) {
-      console.log(`error: ${error.message}`);
-    }
-    if (stderr) {
-      console.log(`stderr: ${stderr}`);
-    }
-    console.log(`stdout: ${stdout}`);
   })
-
-
-  console.log('finished')
-
-
-
-
 }
 
 module.exports = { getIndoorTempReading }
