@@ -29,9 +29,6 @@ const HomeState = {
 }
 
 app.get('/initialState', async (req, res) => {
-  console.log('cpcpcpc')
-
-  console.log('server ip: ', process.env.EXPO_PUBLIC_SERVER_URL)
 
   HomeState.tv = { ...HomeState.tv, ... await getTvState(HomeState.tv) }
 
