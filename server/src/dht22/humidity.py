@@ -15,4 +15,4 @@ try:
 except RuntimeError as err:
     print(err.args[0])
 
-# dht_device.exit()
+dht_device.exit()
