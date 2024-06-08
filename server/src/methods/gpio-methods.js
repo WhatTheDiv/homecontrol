@@ -41,7 +41,7 @@ const getIndoorTempReading = async () => {
   }
   try {
     const childProcess = await exec('cd src/dht22 && python3 humidity.py', (error, stdout, stderr) => {
-      console.log('checkpoint')
+      console.log('checkpoint', stdout)
       if (error) throw new Error('There was an error in exec: ' + error)
       if (stderr) throw new Error('stderr: ' + stderr)
       if (stdout.indexOf('Temp:') === -1) throw new Error("Sensor failed: " + stdout)
