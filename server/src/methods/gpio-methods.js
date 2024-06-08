@@ -16,6 +16,7 @@ const getIndoorTempReading = async () => {
         // console.log({
         //   temp, humidity
         // })
+        return
       }
     })
   })
