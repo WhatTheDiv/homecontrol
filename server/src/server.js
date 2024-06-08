@@ -36,10 +36,6 @@ app.get('/initialState', async (req, res) => {
   HomeState.temp.indoor_temp = indoorState.temp
   HomeState.temp.indoor_humidity = indoorState.humidity
 
-  console.log('cp1')
-  await getIndoorTempReading()
-  console.log('cp2')
-
   res.status(200).send({ ...HomeState })
 })
 
