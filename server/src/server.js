@@ -33,7 +33,7 @@ app.get('/initialState', async (req, res) => {
   HomeState.tv = { ...HomeState.tv, ... await getTvState(HomeState.tv) }
 
   console.log('cp1')
-  getIndoorTempReading()
+  await getIndoorTempReading()
   console.log('cp2')
 
   res.status(200).send({ ...HomeState })
