@@ -1,6 +1,6 @@
-const { spawn } = require('child_process')
+const { spawn, exec } = require('child_process')
 
-const getIndoorTempReading = () => {
+const getIndoorTempReading = async () => {
   const runPythonScript = (scriptPath, args) => {
     const pyProg = spawn('python', [scriptPath].concat(args))
 
@@ -20,7 +20,11 @@ const getIndoorTempReading = () => {
 
   }
   console.log('checkpoint')
-  runPythonScript('../dht22/humidity.py', [])
+  // runPythonScript('../dht22/humidity.py', [])
+
+  await exec('cd .. && cd dht22 && source env/bin/activate && python3 humidity.py')
+
+  console.log('finished')
 
 
 
