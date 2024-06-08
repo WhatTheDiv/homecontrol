@@ -16,9 +16,16 @@ const getIndoorTempReading = async () => {
     console.log({
       temp, humidity
     })
+    return {
+      temp, humidity
+    }
 
   } catch (e) {
     console.log('failed to contact sensor')
+    return {
+      temp: 99,
+      humidity: 99
+    }
   }
 
   // controller.abort()

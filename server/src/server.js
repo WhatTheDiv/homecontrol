@@ -17,7 +17,8 @@ const HomeState = {
     blue: 119
   },
   temp: {
-    indoor_temp: 99
+    indoor_temp: 99,
+    indoor_humidity: 99
   },
   tv: {
     power: false,
@@ -31,6 +32,9 @@ const HomeState = {
 app.get('/initialState', async (req, res) => {
 
   HomeState.tv = { ...HomeState.tv, ... await getTvState(HomeState.tv) }
+  const indoorState = await getIndoorTempReading()
+  HomeState.temp.indoor_temp = indoorState.temp
+  HomeState.temp.indoor_humidity = indoorState.humidity
 
   console.log('cp1')
   await getIndoorTempReading()
