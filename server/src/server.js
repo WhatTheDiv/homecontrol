@@ -39,6 +39,10 @@ app.get('/initialState', async (req, res) => {
   res.status(200).send({ ...HomeState })
 })
 
+app.get('/test', async (req, res) => {
+  res.status(200).send({ message: 'successfully hit server' })
+})
+
 app.post('/toggleLightsActive', (req, res) => {
   const { mode, newState, action } = req.body
 
