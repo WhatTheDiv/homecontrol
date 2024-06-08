@@ -8,7 +8,7 @@ const getIndoorTempReading = async () => {
     const { stdout, stderr } = await exec('cd src/dht22 && python3 humidity.py', { signal })
 
     console.log('stdout: ', stdout)
-    console.log('stderr: ', stderr)
+    if (stderr) console.log('stderr: ', stderr)
 
   } catch (e) {
     console.log('failed to contact sensor')
