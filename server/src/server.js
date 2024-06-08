@@ -3,7 +3,7 @@ const cors = require('cors')
 const app = express()
 const port = 3000
 const { handleButtonPress, getTvState, test } = require('./methods/tv-methods.js')
-const { getIndoorTempReading } = require('./methods/gpio-methods.js')
+// const { getIndoorTempReading } = require('./methods/gpio-methods.js')
 
 app.use(cors())
 app.use(express.json())
