@@ -14,6 +14,8 @@ const getIndoorTempReading = async () => {
     console.log('failed to contact sensor')
   }
 
+  controller.abort()
+
 
 
 
