@@ -32,9 +32,9 @@ const HomeState = {
 app.get('/initialState', async (req, res) => {
 
   HomeState.tv = { ...HomeState.tv, ... await getTvState(HomeState.tv) }
-  // const indoorState = await getIndoorTempReading()
-  // HomeState.temp.indoor_temp = indoorState.temp
-  // HomeState.temp.indoor_humidity = indoorState.humidity
+  const indoorState = await getIndoorTempReading()
+  HomeState.temp.indoor_temp = indoorState.temp
+  HomeState.temp.indoor_humidity = indoorState.humidity
 
   res.status(200).send({ ...HomeState })
 })
