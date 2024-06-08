@@ -34,65 +34,114 @@
 // }
 const { exec } = require('child_process')
 
+// const getIndoorTempReading = async () => {
+//   const returnObj = {
+//     temp: 99,
+//     humidity: 99
+//   }
+//   try {
+//     const childProcess = await exec('cd src/dht22 && python3 humidity.py', (error, stdout, stderr) => {
+//       console.log('checkpoint', stdout)
+//       if (error) throw new Error('There was an error in exec: ' + error)
+//       if (stderr) throw new Error('stderr: ' + stderr)
+//       if (stdout.indexOf('Temp:') === -1) throw new Error("Sensor failed: " + stdout)
+
+//       const temp = Number(stdout.slice(stdout.indexOf("Temp:") + 5, stdout.indexOf('F')))
+//       const humidity = Number(stdout.slice(stdout.indexOf('Humidity:') + 9, stdout.indexOf('%')))
+
+//       console.log('modifying returnObj')
+//       returnObj.temp = temp
+//       returnObj.humidity = humidity
+
+//     })
+
+//     /*
+//     , (error, stdout, stderr) => {
+
+//       if (error) throw new Error('There was an error in exec: '+error)
+//       if (stderr) throw new Error('stderr: ' + stderr)
+//       if (stdout.indexOf('Temp:') === -1) throw new Error("Sensor failed: " + stdout)
+
+//       const temp = Number(stdout.slice(stdout.indexOf("Temp:") + 5, stdout.indexOf('F')))
+//       const humidity = Number(stdout.slice(stdout.indexOf('Humidity:') + 9, stdout.indexOf('%')))
+
+//       returnObj.temp = temp
+//       returnObj.humidity = humidity
+
+//     }
+//      */
+
+//     childProcess.on('error', (error) => {
+//       console.log('process: error', error)
+//     })
+//     childProcess.on('stdout', (stdout) => {
+//       console.log('process: data', stdout)
+//     })
+//     childProcess.on('close', (code) => {
+//       console.log('process: close', code)
+//     })
+//     childProcess.on('exit', (code) => {
+//       console.log('process: exit', code)
+//     })
+
+
+
+//   } catch (e) {
+//     console.log('Failed to contact sensor')
+//   }
+
+//   console.log('returning returnObj: ', returnObj)
+//   return returnObj
+
+// }
+
 const getIndoorTempReading = async () => {
-  const returnObj = {
-    temp: 99,
-    humidity: 99
-  }
-  try {
-    const childProcess = await exec('cd src/dht22 && python3 humidity.py', (error, stdout, stderr) => {
-      console.log('checkpoint', stdout)
-      if (error) throw new Error('There was an error in exec: ' + error)
-      if (stderr) throw new Error('stderr: ' + stderr)
-      if (stdout.indexOf('Temp:') === -1) throw new Error("Sensor failed: " + stdout)
-
-      const temp = Number(stdout.slice(stdout.indexOf("Temp:") + 5, stdout.indexOf('F')))
-      const humidity = Number(stdout.slice(stdout.indexOf('Humidity:') + 9, stdout.indexOf('%')))
-
-      console.log('modifying returnObj')
-      returnObj.temp = temp
-      returnObj.humidity = humidity
-
-    })
-
-    /*
-    , (error, stdout, stderr) => {
-
-      if (error) throw new Error('There was an error in exec: '+error)
-      if (stderr) throw new Error('stderr: ' + stderr)
-      if (stdout.indexOf('Temp:') === -1) throw new Error("Sensor failed: " + stdout)
-
-      const temp = Number(stdout.slice(stdout.indexOf("Temp:") + 5, stdout.indexOf('F')))
-      const humidity = Number(stdout.slice(stdout.indexOf('Humidity:') + 9, stdout.indexOf('%')))
-
-      returnObj.temp = temp
-      returnObj.humidity = humidity
-
+  return await new Promise(async (res, rej) => {
+    let returned = false
+    const returnObj = {
+      temp: 99,
+      humidity: 99
     }
-     */
 
-    childProcess.on('error', (error) => {
-      console.log('process: error', error)
-    })
-    childProcess.on('stdout', (stdout) => {
-      console.log('process: data', stdout)
-    })
-    childProcess.on('close', (code) => {
-      console.log('process: close', code)
-    })
-    childProcess.on('exit', (code) => {
-      console.log('process: exit', code)
-    })
+    try {
+      const childProcess = await exec('cd src/dht22 && python3 humidity.py', (error, stdout, stderr) => {
+        console.log('checkpoint', stdout)
+        if (error) throw new Error('There was an error in exec: ' + error)
+        if (stderr) throw new Error('stderr: ' + stderr)
+        if (stdout.indexOf('Temp:') === -1) throw new Error("Sensor failed: " + stdout)
 
+        const temp = Number(stdout.slice(stdout.indexOf("Temp:") + 5, stdout.indexOf('F')))
+        const humidity = Number(stdout.slice(stdout.indexOf('Humidity:') + 9, stdout.indexOf('%')))
 
+        console.log('modifying returnObj')
+        returnObj.temp = temp
+        returnObj.humidity = humidity
 
-  } catch (e) {
-    console.log('Failed to contact sensor')
-  }
+      })
 
-  console.log('returning returnObj: ', returnObj)
-  return returnObj
-
+      childProcess.on('error', (error) => {
+        console.log('process: error', error)
+        throw new Error('Error code from child process: ' + error)
+      })
+      childProcess.on('stdout', (stdout) => {
+        console.log('process: data', stdout)
+      })
+      childProcess.on('close', (code) => {
+        console.log('process: close', code)
+        if (returned) return
+        returned = true
+        res(returnObj)
+      })
+      childProcess.on('exit', (code) => {
+        console.log('process: exit', code)
+      })
+    } catch (e) {
+      console.log('Failed to contact sensor')
+      if (returned) return
+      returned = true
+      res(returnObj)
+    }
+  })
 }
 
 module.exports = { getIndoorTempReading }
