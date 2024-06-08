@@ -16,7 +16,7 @@ const getIndoorTempReading = async () => {
         const temp = Number(stdout.slice(stdout.indexOf("Temp:") + 5, stdout.indexOf('F')))
         const humidity = Number(stdout.slice(stdout.indexOf('Humidity:') + 9, stdout.indexOf('%')))
 
-        console.log('modifying returnObj', { temp, humidity })
+        console.log('Got temp and humidity', { temp, humidity })
         returnObj.temp = temp
         returnObj.humidity = humidity
 
