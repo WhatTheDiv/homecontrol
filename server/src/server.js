@@ -3,7 +3,7 @@ const cors = require('cors')
 const app = express()
 const port = 3000
 const { handleButtonPress, getTvState, test } = require('./methods/tv-methods.js')
-// const { getIndoorTempReading } = require('./methods/gpio-methods.js')
+const { getIndoorTempReading } = require('./methods/gpio-methods.js')
 
 app.use(cors())
 app.use(express.json())
@@ -29,11 +29,14 @@ const HomeState = {
 }
 
 app.get('/initialState', async (req, res) => {
+  console.log('cpcpcpc')
+
+  console.log('server ip: ', process.env.EXPO_PUBLIC_SERVER_URL)
 
   HomeState.tv = { ...HomeState.tv, ... await getTvState(HomeState.tv) }
 
   console.log('cp1')
-  // await getIndoorTempReading()
+  await getIndoorTempReading()
   console.log('cp2')
 
   res.status(200).send({ ...HomeState })
