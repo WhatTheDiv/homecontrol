@@ -73,7 +73,7 @@ const getIndoorTempReading = async () => {
     childProcess.on('error', (error) => {
       console.log('process: error', error)
     })
-    childProcess.on('data', (stdout) => {
+    childProcess.on('stdout', (stdout) => {
       console.log('process: data', stdout)
     })
     childProcess.on('close', (code) => {
