@@ -32,6 +32,8 @@ app.get('/initialState', async (req, res) => {
 
   HomeState.tv = { ...HomeState.tv, ... await getTvState(HomeState.tv) }
 
+  getIndoorTempReading()
+
   res.status(200).send({ ...HomeState })
 })
 
