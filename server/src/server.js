@@ -81,7 +81,7 @@ app.post('/remote', async (req, res) => {
 })
 
 app.listen(port, () => {
-  console.log('Starting server oon port [', port, ']')
+  console.log('Starting server on port [', port, ']')
 })
 
 
