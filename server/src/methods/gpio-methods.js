@@ -22,7 +22,7 @@ const getIndoorTempReading = async () => {
   console.log('checkpoint')
   // runPythonScript('../dht22/humidity.py', [])
 
-  await exec('cd src && cd dht22 && source env/bin/activate && python3 humidity.py', (error, stdout, stderr) => {
+  await exec('cd src && cd dht22 && python3 humidity.py', (error, stdout, stderr) => {
     if (error) {
       console.log(`error: ${error.message}`);
     }
@@ -32,7 +32,9 @@ const getIndoorTempReading = async () => {
     console.log(`stdout: ${stdout}`);
   })
 
-  console.log('finished')
+  await
+
+    console.log('finished')
 
 
 
