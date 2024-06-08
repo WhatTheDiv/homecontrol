@@ -9,6 +9,8 @@ const getIndoorTempReading = async () => {
 
     console.log('stdout: ', stdout)
     if (stderr) throw new Error('stderr: ' + stderr)
+    if (stdout.indexOf('Temp:') === -1)
+      throw new Error("Sensor fail: " + stdout)
 
     const temp = Number(stdout.slice(stdout.indexOf("Temp:") + 5, stdout.indexOf('F')))
     const humidity = Number(stdout.slice(stdout.indexOf('Humidity:') + 9, stdout.indexOf('%')))
