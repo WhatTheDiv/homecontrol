@@ -18,9 +18,9 @@ const getIndoorTempReading = () => {
       console.log(data)
     })
 
-    runPythonScript('../dht22/humidity.py', [])
   }
   console.log('checkpoint')
+  runPythonScript('../dht22/humidity.py', [])
 
 
 
