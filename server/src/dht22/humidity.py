@@ -11,7 +11,8 @@ try:
     humidity = dht_device.humidity
 
     print("Temp:{:.1f}F  -  Humidity:{}%".format(temperature_f, humidity))
-    dht_device.exit()
 
 except RuntimeError as err:
     print(err.args[0])
+
+dht_device.exit()
