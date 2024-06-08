@@ -11,11 +11,11 @@ const getIndoorTempReading = async () => {
       }
       else {
         console.log(`stdout: ${stdout}`);
-        const temp = stdout.slice(stdout.indexOf("Temp:" + 5), stdout.indexOf('F'))
-        const humidity = stdout.slice(stdout.indexOf('Humidity:' + 9), stdout.indexOf('%'))
-        console.log({
-          temp, humidity
-        })
+        // const temp = stdout.slice(stdout.indexOf("Temp:" + 5), stdout.indexOf('F'))
+        // const humidity = stdout.slice(stdout.indexOf('Humidity:' + 9), stdout.indexOf('%'))
+        // console.log({
+        //   temp, humidity
+        // })
       }
     })
   })
