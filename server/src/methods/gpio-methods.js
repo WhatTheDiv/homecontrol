@@ -5,9 +5,11 @@ const getIndoorTempReading = async () => {
     exec('cd src/dht22 && python3 humidity.py', (error, stdout, stderr) => {
       if (error) {
         console.log(`error: ${error.message}`);
+        res({ temp: 99, humidity: 99 })
       }
       if (stderr) {
         console.log(`stderr: ${stderr}`);
+        res({ temp: 99, humidity: 99 })
       }
       else {
         console.log(`stdout: ${stdout}`);
