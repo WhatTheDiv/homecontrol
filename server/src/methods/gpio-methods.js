@@ -1,5 +1,7 @@
 const { spawn } = require('child_process')
 
-export function getIndoorTempReading() {
+const getIndoorTempReading = () => {
   console.log('checkpoint')
 }
+
+module.exports = { getIndoorTempReading }
