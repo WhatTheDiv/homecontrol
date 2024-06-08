@@ -10,7 +10,7 @@ try:
 
     humidity = dht_device.humidity
 
-    print("Temp:{:.1f} C / {:.1f} F    Humidity: {}%".format(temperature_c, temperature_f, humidity))
-    
+    print("Temp:{:.1f} F    Humidity: {}%".format(temperature_f, humidity))
+
 except RuntimeError as err:
     print(err.args[0])
