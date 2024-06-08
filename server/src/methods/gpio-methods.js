@@ -4,6 +4,10 @@ const controller = new AbortController()
 const { signal } = controller
 
 const getIndoorTempReading = async () => {
+  const returnObj = {
+    temp: 99,
+    humidity: 99
+  }
   try {
     const { stdout, stderr } = await exec('cd src/dht22 && python3 humidity.py', { signal })
 
@@ -15,20 +19,17 @@ const getIndoorTempReading = async () => {
     const temp = Number(stdout.slice(stdout.indexOf("Temp:") + 5, stdout.indexOf('F')))
     const humidity = Number(stdout.slice(stdout.indexOf('Humidity:') + 9, stdout.indexOf('%')))
 
-    console.log({
-      temp, humidity
-    })
-    return {
-      temp, humidity
-    }
+    returnObj.temp = temp
+    returnObj.humidity = humidity
+
+    controller.abort()
+    console.log('controller aborted')
 
   } catch (e) {
     console.log('failed to contact sensor')
-    return {
-      temp: 99,
-      humidity: 99
-    }
   }
+
+  return returnObj
 
 }
 
