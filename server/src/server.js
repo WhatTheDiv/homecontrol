@@ -40,7 +40,8 @@ app.get('/initialState', async (req, res) => {
 })
 
 app.get('/test', async (req, res) => {
-  res.status(200).send({ message: 'successfully hit server' })
+  console.log('hitting tester')
+  res.status(200).send({ success: true })
 })
 
 app.post('/toggleLightsActive', (req, res) => {
