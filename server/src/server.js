@@ -90,7 +90,7 @@ app.post('/remote', async (req, res) => {
 })
 
 app.listen(port, () => {
-  console.log('Starting server on port [', port, ']')
+  console.log('Starting server on port [', port, '], dev: ' + process.env.NODE_ENV_DEV)
 })
 
 
