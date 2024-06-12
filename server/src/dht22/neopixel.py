@@ -15,8 +15,8 @@ LED_DMA = 10          # DMA channel to use for generating signal (try 10)
 LED_BRIGHTNESS = 255  # Set to 0 for darkest and 255 for brightest
 LED_INVERT = False    # True to invert the signal (when using NPN transistor level shift)
 LED_CHANNEL = 0
-LED_STRIP = ws.SK6812_STRIP_RGBW
-# LED_STRIP = ws.SK6812W_STRIP
+# LED_STRIP = ws.SK6812_STRIP_RGBW
+LED_STRIP = ws.SK6812W_STRIP
 
 
 # Define functions which animate LEDs in various ways.
