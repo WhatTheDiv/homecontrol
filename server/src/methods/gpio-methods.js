@@ -53,4 +53,50 @@ const getIndoorTempReading = async () => {
   })
 }
 
-module.exports = { getIndoorTempReading }
+const testLeds = async () => {
+  return await new Promise(async (res, rej) => {
+
+    let returned = false
+
+
+    try {
+      const childProcess = await exec('cd src/dht22 && python3 neopixel.py', (error, stdout, stderr) => {
+        if (error) {
+          console.error("testLED's, error before child process:", error)
+          throw new Error("testLED's, error before child process:" + error)
+        }
+        if (stderr) {
+          console.error("testLED's, child process spawned error:", stderr)
+          throw new Error("testLED's, child process spawned error:" + stderr)
+        }
+
+        console.log("Got stdout in testLED's: ", stdout);
+        returned = true
+        res(true)
+
+      })
+
+      childProcess.on('error', (error) => {
+        console.error("testLED's, error before child process #2:", error)
+        throw new Error("testLED's, error before child process #2:" + error)
+      })
+      childProcess.on('close', (code) => {
+        console.log('Closing process with code: ', code)
+        if (returned) return
+        returned = true
+        res(true)
+      })
+
+    } catch (e) {
+      console.log('Failed while running neopixel.py')
+      if (returned) return
+      returned = true
+      res(false)
+    }
+
+
+
+  })
+}
+
+module.exports = { getIndoorTempReading, testLeds }
