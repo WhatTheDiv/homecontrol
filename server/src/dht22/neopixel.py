@@ -33,20 +33,21 @@ if __name__ == '__main__':
     # Create PixelStrip object with appropriate configuration.
     strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL, LED_STRIP)
     # Intialize the library (must be called once before other functions).
-    strip.begin()
-
     print('Press Ctrl-C to quit.')
-    while True:
-        # Color wipe animations.
-        colorWipe(strip, Color(255, 0, 0), 0)  # Red wipe
-        time.sleep(2)
-        colorWipe(strip, Color(0, 255, 0), 0)  # Blue wipe
-        time.sleep(2)
-        colorWipe(strip, Color(0, 0, 255), 0)  # Green wipe
-        time.sleep(2)
-        colorWipe(strip, Color(0, 0, 0, 255), 0)  # White wipe
-        time.sleep(2)
-        colorWipe(strip, Color(255, 255, 255), 0)  # Composite White wipe
-        time.sleep(2)
-        colorWipe(strip, Color(255, 255, 255, 255), 0)  # Composite White + White LED wipe
-        time.sleep(2)
+    strip.begin()
+    colorWipe(strip, Color(255, 0, 0), 0)  # Red wipe
+
+    # while True:
+    #     # Color wipe animations.
+    #     colorWipe(strip, Color(255, 0, 0), 0)  # Red wipe
+    #     time.sleep(2)
+    #     colorWipe(strip, Color(0, 255, 0), 0)  # Blue wipe
+    #     time.sleep(2)
+    #     colorWipe(strip, Color(0, 0, 255), 0)  # Green wipe
+    #     time.sleep(2)
+    #     colorWipe(strip, Color(0, 0, 0, 255), 0)  # White wipe
+    #     time.sleep(2)
+    #     colorWipe(strip, Color(255, 255, 255), 0)  # Composite White wipe
+    #     time.sleep(2)
+    #     colorWipe(strip, Color(255, 255, 255, 255), 0)  # Composite White + White LED wipe
+    #     time.sleep(2)
