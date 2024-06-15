@@ -83,6 +83,7 @@ app.post('/remote', async (req, res) => {
 
   res.status(200).send({
     success: response.success,
+    error: response.errorMessage,
     setting: response?.setting === undefined ? false : response.setting,
     power: HomeState.tv.power,
     input: HomeState.tv.input
