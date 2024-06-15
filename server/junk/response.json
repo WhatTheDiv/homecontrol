@@ -17,10 +17,10 @@
         <ui-resolution>1080p</ui-resolution>
         <tuner-type>ATSC</tuner-type>
         <supports-ethernet>true</supports-ethernet>
-        <wifi-mac>10:b2:32:0d:9c:a0</wifi-mac>
+        <wifi-mac>10:b2: 32: 0d: 9c:a0</wifi-mac>
         <wifi-driver>realtek</wifi-driver>
         <has-wifi-5G-support>true</has-wifi-5G-support>
-        <ethernet-mac>e4:3b:c9:76:1c:f7</ethernet-mac>
+        <ethernet-mac>e4: 3b:c9: 76: 1c:f7</ethernet-mac>
         <network-type>ethernet</network-type>
         <friendly-device-name>Hisense•Roku TV - X019009G3UWV</friendly-device-name>
         <friendly-model-name>Hisense•Roku TV</friendly-model-name>

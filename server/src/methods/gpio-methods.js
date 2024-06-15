@@ -5,8 +5,8 @@ const getIndoorTempReading = async () => {
   return await new Promise(async (res, rej) => {
     let returned = false
     const returnObj = {
-      temp: 99,
-      humidity: 99
+      temp: 100,
+      humidity: 100
     }
 
     try {
@@ -21,7 +21,7 @@ const getIndoorTempReading = async () => {
         }
         if (stdout.indexOf('Temp:') === -1) {
           console.error('Bad temperature response from server: ', stdout)
-          throw new Error("Sensor failed: " + stdout)
+          res(returnObj)
         }
 
         const temp = Number(stdout.slice(stdout.indexOf("Temp:") + 5, stdout.indexOf('F')))
