@@ -18,7 +18,8 @@ const HomeState = {
   },
   temp: {
     indoor_temp: 99,
-    indoor_humidity: 99
+    indoor_humidity: 99,
+    showTwoDay: true
   },
   tv: {
     power: false,
