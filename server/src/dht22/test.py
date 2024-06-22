@@ -24,7 +24,8 @@ import time
 import gpiod
 from gpiod.line import Direction, Value
 
-LINE = 19
+RELAY_1 = 19
+RELAY_2 = 20
 
 print(' ')
 print(' Start ... ')
@@ -34,22 +35,25 @@ with gpiod.request_lines(
     "/dev/gpiochip4",
     consumer="blink-example",
     config={
-        LINE: gpiod.LineSettings(
-            direction=Direction.OUTPUT, output_value=Value.ACTIVE
+        RELAY_1: gpiod.LineSettings(
+            direction=Direction.OUTPUT
+        ),
+        RELAY_2: gpiod.LineSettings(
+            direction=Direction.OUTPUT
         )
     },
 ) as request:
     try:
-      request.set_value(LINE, Value.INACTIVE)
+      request.set_value(RELAY_1, Value.INACTIVE)
       print('active, sleeping')
       time.sleep(1)
-      request.set_value(LINE, Value.ACTIVE)
+      request.set_value(RELAY_1, Value.ACTIVE)
       print('inactive, sleeping')
       time.sleep(1)
-      request.set_value(LINE, Value.INACTIVE)
+      request.set_value(RELAY_1, Value.INACTIVE)
       print('active, sleeping')
       time.sleep(1)
-      request.set_value(LINE, Value.ACTIVE)
+      request.set_value(RELAY_1, Value.ACTIVE)
       print('inactive, sleeping')
       time.sleep(1)
     except:
