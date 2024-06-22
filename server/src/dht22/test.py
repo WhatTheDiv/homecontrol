@@ -8,12 +8,16 @@ relay_line = chip.get_line(RELAY_1)
 
 relay_line.request(consumer="RELAY_TEST", type=gpiod.LINE_REQ_DIR_OUT)
 
+print(' ')
+print(' Start ... ')
+print( ' ')
 try:
   relay_line.set_value(1)
   time.sleep(1)
   relay_line.set_value(0)
   time.sleep(1)
 finally: 
+  print('End of script')
   relay_line.release()
 
 # import time
