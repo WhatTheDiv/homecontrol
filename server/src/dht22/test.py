@@ -35,7 +35,7 @@ with gpiod.request_lines(
     consumer="blink-example",
     config={
         LINE: gpiod.LineSettings(
-            direction=Direction.OUTPUT
+            direction=Direction.OUTPUT, output_value=Value.ACTIVE
         )
     },
 ) as request:
