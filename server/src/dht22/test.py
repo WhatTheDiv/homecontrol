@@ -21,6 +21,7 @@
 #   relay_line.release()
 
 import time
+import gpiod
 from gpiod.line import Direction, Value
 
 LINE = 19
