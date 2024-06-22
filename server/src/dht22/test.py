@@ -16,3 +16,6 @@ with gpiod.Chip("/dev/gpiochip4") as chip:
     print("---------- Start ---------- ")
     print(" ")
     print(f"{info.name} [{info.label}] ({info.num_lines} lines)")
+
+    print(" ")
+    print("----------- End ----------- ")
