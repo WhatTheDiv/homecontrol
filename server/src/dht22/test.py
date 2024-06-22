@@ -26,6 +26,8 @@ from gpiod.line import Direction, Value
 
 RELAY_1 = 19
 RELAY_2 = 20
+sleepTime1 = .25
+sleepTime2 = .5
 
 print(' ')
 print(' Start ... ')
@@ -45,17 +47,21 @@ with gpiod.request_lines(
 ) as request:
     try:
       request.set_value(RELAY_1, Value.INACTIVE)
-      print('active, sleeping')
-      time.sleep(1)
+      time.sleep(sleepTime1)
+      request.set_value(RELAY_2, Value.INACTIVE)
+      time.sleep(sleepTime2)
+
       request.set_value(RELAY_1, Value.ACTIVE)
-      print('inactive, sleeping')
-      time.sleep(1)
+      time.sleep(sleepTime1)
+      request.set_value(RELAY_2, Value.ACTIVE)
+      time.sleep(sleepTime2)
+      
       request.set_value(RELAY_1, Value.INACTIVE)
-      print('active, sleeping')
-      time.sleep(1)
-      request.set_value(RELAY_1, Value.ACTIVE)
-      print('inactive, sleeping')
-      time.sleep(1)
+      time.sleep(sleepTime1)
+      request.set_value(RELAY_2, Value.INACTIVE)
+      time.sleep(sleepTime2)
+
+
     except:
       print('Error handled')
       request.release()
