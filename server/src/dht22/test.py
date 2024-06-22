@@ -1,8 +1,15 @@
-import RPi.GPIO as GPIO 
+# import gpiod
+# import time
 
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(19, GPIO.OUT)
+# RELAY_1 = 19
 
-print ("Setting up GPIO 19 as output")
+# chip = gpiod.Chip('gpiochip4')
+# relay_line = chip.get_line(RELAY_1)
 
-GPIO.cleanup()
+# relay_line.request(consumer="RELAY", type=gpiod.LINE_REQ_DIR_OUT)
+
+import gpiod
+
+with gpiod.Chip("/dev/gpiochip4") as chip:
+    info = chip.get_info()
+    print(f"{info.name} [{info.label}] ({info.num_lines} lines)")
