@@ -3,7 +3,7 @@ import time
 
 RELAY_1 = 19
 
-chip = gpiod.Chip('gpiochip4')
+chip = gpiod.Chip('/dev/gpiochip4')
 relay_line = chip.get_line(RELAY_1)
 
 relay_line.request(consumer="RELAY_TEST", type=gpiod.LINE_REQ_DIR_OUT)
