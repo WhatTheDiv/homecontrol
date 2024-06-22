@@ -48,10 +48,10 @@ with gpiod.request_lines(
       time.sleep(1)
     except:
       print('Error handled')
-      relay_line.release()
+      request.release()
     finally: 
       print('End of script')
-      relay_line.release()
+      request.release()
 
 
 
