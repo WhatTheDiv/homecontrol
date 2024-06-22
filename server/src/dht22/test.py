@@ -40,10 +40,16 @@ with gpiod.request_lines(
     },
 ) as request:
     try:
-      request.set_value(LINE, Value.ACTIVE)
+      request.set_value(LINE, Value.INACTIVE)
       print('active, sleeping')
       time.sleep(1)
+      request.set_value(LINE, Value.ACTIVE)
+      print('inactive, sleeping')
+      time.sleep(1)
       request.set_value(LINE, Value.INACTIVE)
+      print('active, sleeping')
+      time.sleep(1)
+      request.set_value(LINE, Value.ACTIVE)
       print('inactive, sleeping')
       time.sleep(1)
     except:
