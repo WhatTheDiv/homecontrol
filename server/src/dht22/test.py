@@ -26,6 +26,10 @@ from gpiod.line import Direction, Value
 
 LINE = 19
 
+print(' ')
+print(' Start ... ')
+print( ' ')
+
 with gpiod.request_lines(
     "/dev/gpiochip4",
     consumer="blink-example",
@@ -35,11 +39,14 @@ with gpiod.request_lines(
         )
     },
 ) as request:
-    while True:
-        request.set_value(LINE, Value.ACTIVE)
-        time.sleep(1)
-        request.set_value(LINE, Value.INACTIVE)
-        time.sleep(1)
+    try:
+      request.set_value(LINE, Value.ACTIVE)
+      time.sleep(1)
+      request.set_value(LINE, Value.INACTIVE)
+      time.sleep(1)
+    finally: 
+      print('End of script')
+      relay_line.release()
 
 
 
