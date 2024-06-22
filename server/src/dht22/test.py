@@ -41,8 +41,10 @@ with gpiod.request_lines(
 ) as request:
     try:
       request.set_value(LINE, Value.ACTIVE)
+      print('active, sleeping')
       time.sleep(1)
       request.set_value(LINE, Value.INACTIVE)
+      print('inactive, sleeping')
       time.sleep(1)
     except:
       print('Error handled')
