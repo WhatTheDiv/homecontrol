@@ -5,8 +5,8 @@ const getIndoorTempReading = async () => {
   return await new Promise(async (res, rej) => {
     let returned = false
     const returnObj = {
-      temp: 100,
-      humidity: 100
+      temp: 999,
+      humidity: 999
     }
 
     try {
