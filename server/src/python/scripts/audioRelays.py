@@ -1,7 +1,6 @@
-from gpiozero.pins.native import NativeFactory
-from gpiozero import Device, LED
 
-Device.pin_factory = NativeFactory()
+from gpiozero import LED
+import time
 
 led = LED(20)
 
