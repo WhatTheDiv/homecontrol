@@ -1,8 +1,9 @@
-from gpiozero import LED
-import board
-import time
+from gpiozero.pins.native import NativeFactory
+from gpiozero import Device, LED
 
-led = LED(board.D20)
+Device.pin_factory = NativeFactory()
+
+led = LED(20)
 
 print("Starting script")
 try:
