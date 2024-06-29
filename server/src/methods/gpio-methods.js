@@ -10,7 +10,7 @@ const getIndoorTempReading = async () => {
     }
 
     try {
-      const childProcess = await exec('cd src/python && python3 humidity.py', (error, stdout, stderr) => {
+      const childProcess = await exec('cd src/python && env/bin/python3 scripts/humidity.py', (error, stdout, stderr) => {
         if (error) {
           console.error('Error in process, server temp reading: ', stderr)
           throw new Error("Error in process, server temp reading: " + error)
@@ -60,7 +60,7 @@ const testLeds = async () => {
 
 
     try {
-      const childProcess = await exec('cd src/dht22 && python3 neopixel.py', (error, stdout, stderr) => {
+      const childProcess = await exec('cd src/python && env/bin/python3 neopixel.py', (error, stdout, stderr) => {
         if (error) {
           console.error("testLED's, error before child process:", error)
           throw new Error("testLED's, error before child process:" + error)
