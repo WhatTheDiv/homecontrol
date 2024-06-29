@@ -1,7 +1,8 @@
 from gpiozero import LED
+import board
 import time
 
-led = LED(20)
+led = LED(board.D20)
 
 print("Starting script")
 try:
