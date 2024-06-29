@@ -13,6 +13,6 @@ try:
     print("Temp:{:.1f}F  -  Humidity:{}%".format(temperature_f, humidity))
 
 except RuntimeError as err:
-    print(err.args[0])
+    print("RuntimeError:" + err.args[0])
 
 dht_device.exit()

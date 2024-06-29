@@ -11,6 +11,9 @@ const getIndoorTempReading = async () => {
 
     try {
       const childProcess = await exec('cd src/python && env/bin/python3 scripts/humidity.py', (error, stdout, stderr) => {
+
+        console.log({ error, stderr, stdout })
+
         if (error) {
           console.error('Error in process, server temp reading: ', stderr)
           throw new Error("Error in process, server temp reading: " + error)
