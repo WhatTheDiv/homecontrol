@@ -1,9 +1,8 @@
 import time
 import adafruit_dht
 import board
-dir(board)
 
-dht_device = adafruit_dht.DHT22(D18)
+dht_device = adafruit_dht.DHT22(board.GPIO18)
 
 try:
     temperature_c = dht_device.temperature
