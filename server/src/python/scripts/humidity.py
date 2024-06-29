@@ -1,6 +1,7 @@
 import time
 import adafruit_dht
-from board import D18
+import board
+print( dir(board) )
 
 dht_device = adafruit_dht.DHT22(D18)
 
