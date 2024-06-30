@@ -12,18 +12,18 @@ print(" ")
 print("-------   Starting Script   -------")
 print(" ")
 
-zone = sys.argv[1]
-state = sys.argv[2]
-
-zone_one_L = LED(pin=18, initial_value=False)
-zone_one_R = LED(pin=19, initial_value=False)
-
-zone_two_L = LED(pin=20, initial_value=False)
-zone_two_R = LED(pin=21, initial_value=False)
-
 try:
     if len(sys.argv <= 1):
         raise Exception(" Not given zone and state")
+
+    zone = sys.argv[1]
+    state = sys.argv[2]
+
+    zone_one_L = LED(pin=18, initial_value=False)
+    zone_one_R = LED(pin=19, initial_value=False)
+
+    zone_two_L = LED(pin=20, initial_value=False)
+    zone_two_R = LED(pin=21, initial_value=False)
 
     time.sleep(.25)
 
