@@ -8,7 +8,7 @@ relay_two = LED(20)
 
 zone = sys.argv[1]
 
-print("Toggling relay, Zone ", zone)
+print("Toggling relay, Zone", zone)
 try:
 
     relay_one.on()
