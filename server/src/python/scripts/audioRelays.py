@@ -45,7 +45,7 @@ if len(sys.argv) <= 2:
       raise Exception(" Not given zone and state")
 
 zone = int(sys.argv[1])
-state = bool(sys.argv[2])
+state = sys.argv[2]
 
 zone_one_L = LED(pin=18)
 zone_one_R = LED(pin=19)
