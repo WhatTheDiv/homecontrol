@@ -28,6 +28,8 @@ def turnZoneOn(zone, set_active):
       elif set_active == False:
           zone_two_L.off()
           zone_two_R.off()
+  else: 
+      print("out of bounds")
 
   return set_active
 
@@ -54,8 +56,8 @@ zone_two_R = LED(pin=21)
 try: 
     time.sleep(1)
 
-    print("Toggling relay, Zone", zone, "- Active:",state)
-    print("NewState Active?",turnZoneOn(zone, state))
+    print("Toggling relay, Zone", zone, "- Requesting new active state:",state)
+    print("New active state now?",turnZoneOn(zone, state))
     time.sleep(2)
     
   
