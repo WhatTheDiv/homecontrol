@@ -2,15 +2,33 @@
 from gpiozero import LED
 import time
 
-led = LED(20)
+relay_one = LED(19, true, false)
+relay_two = LED(20, true, false)
 
-print("Starting script")
+print("Starting script " + sys.argv[1])
 try:
 
-    led.on()
+    relay_one.on()
+    time.sleep(.5)
+    relay_two.on()
+
     time.sleep(2)
-    led.off() 
+
+    relay_one.off()
+    time.sleep(.5)
+    relay_two.off()
+
     time.sleep(2)
+
+    relay_one.on()
+    time.sleep(.5)
+    relay_two.on()
+
+    time.sleep(2)
+
+    relay_one.off()
+    time.sleep(.5)
+    relay_two.off()
     
   
 except RuntimeError as err:
