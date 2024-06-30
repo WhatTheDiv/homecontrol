@@ -6,8 +6,10 @@ import sys
 def turnZoneOn(zone, set_active):
   if zone == 1:
       currState = zone_one_L.is_lit
+      print("Zone 1 currently", currState)
       if currState == set_active:
-          return
+          print(" new state matches current, doing nothing ")
+          return currState
       elif set_active == True:
           zone_one_L.on()
           zone_one_R.on()
@@ -16,7 +18,9 @@ def turnZoneOn(zone, set_active):
           zone_one_R.off()
   elif zone == 2:
       currState = zone_two_L.is_lit
+      print("Zone 2 currently", currState)
       if currState == set_active:
+          print(" new state matches current, doing nothing ")
           return
       elif set_active == True:
           zone_two_L.on()
@@ -50,8 +54,8 @@ zone_two_R = LED(pin=21)
 try: 
     time.sleep(1)
 
-    print("Toggling relay, Zone", zone, "-",state)
-    print("NewState, is active?",turnZoneOn(zone, state))
+    print("Toggling relay, Zone", zone, "- Active:",state)
+    print("NewState Active?",turnZoneOn(zone, state))
     time.sleep(2)
     
   
