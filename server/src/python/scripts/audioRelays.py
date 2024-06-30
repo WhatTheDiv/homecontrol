@@ -13,7 +13,10 @@ print("-------   Starting Script   -------")
 print(" ")
 
 try:
-    if len(sys.argv) <= 1:
+    n = len(sys.argv)
+    print("arguments: ",n)
+    
+    if n <= 1:
         raise Exception(" Not given zone and state")
 
     zone = sys.argv[1]
