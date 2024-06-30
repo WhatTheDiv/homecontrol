@@ -129,7 +129,6 @@ const initGPIO = async (Daemon) => {
       process.on('close', (code) => {
         console.log(`child process exited with code ${code}`);
       });
-      await timeoutFunc(250)
     }
   } catch (e) {
     console.error('Error in daemon: ', e)
