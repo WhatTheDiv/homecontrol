@@ -115,8 +115,8 @@ const initGPIO = async (Daemon) => {
     Daemon.process = process
     Daemon.active = true
 
+    console.log('beginning of while loop')
     while (Daemon.active) {
-      console.log('beginning of while loop')
 
       process.stdout.on('data', (data) => {
         throw new Error(`stdout: ${data}`);
