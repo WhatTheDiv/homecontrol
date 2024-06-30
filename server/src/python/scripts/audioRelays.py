@@ -8,6 +8,7 @@ relay_two = LED(20)
 
 zone = sys.argv[1]
 
+print(" ")
 print("           Start ... ")
 print(" ")
 print("Toggling relay, Zone", zone)
