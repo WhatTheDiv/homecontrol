@@ -9,7 +9,8 @@ relay_two = LED(20)
 zone = sys.argv[1]
 
 print(" ")
-print("           Start ... ")
+print("-------   Starting Script   -------")
+
 print(" ")
 print("Toggling relay, Zone", zone)
 try:
@@ -47,3 +48,4 @@ except RuntimeError as err:
 finally:
     print(" ")
     print("-------   Script complete    -------")
+    print(" ")
