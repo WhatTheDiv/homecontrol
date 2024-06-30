@@ -11,17 +11,7 @@ zone = sys.argv[1]
 print("Toggling relay, Zone", zone)
 try:
 
-    relay_one.on()
-    time.sleep(.5)
-    relay_two.on()
-
-    time.sleep(2)
-
-    relay_one.off()
-    time.sleep(.5)
-    relay_two.off()
-
-    time.sleep(2)
+    time.sleep(1)
 
     relay_one.on()
     time.sleep(.5)
@@ -32,6 +22,20 @@ try:
     relay_one.off()
     time.sleep(.5)
     relay_two.off()
+
+    time.sleep(2)
+
+    relay_one.on()
+    time.sleep(.5)
+    relay_two.on()
+
+    time.sleep(2)
+
+    relay_one.off()
+    time.sleep(.5)
+    relay_two.off()
+    
+    time.sleep(1)
     
   
 except RuntimeError as err:
