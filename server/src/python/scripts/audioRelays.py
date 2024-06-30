@@ -7,12 +7,13 @@ relay_one = LED(19)
 relay_two = LED(20)
 
 zone = sys.argv[1]
+state = sys.argv[2]
 
 print(" ")
 print("-------   Starting Script   -------")
 
 print(" ")
-print("Toggling relay, Zone", zone)
+print("Toggling relay, Zone", zone, "-",state)
 try:
 
     time.sleep(1)
