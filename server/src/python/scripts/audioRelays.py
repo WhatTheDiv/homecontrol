@@ -25,7 +25,7 @@ zone_two_L = LED(pin=20, initial_value=True)
 zone_two_R = LED(pin=21, initial_value=True)
 
 try: 
-    time.sleep(.25)
+    time.sleep(1)
 
     print("Toggling relay, Zone", zone, "-",state)
     turnZoneOn(zone, state)
