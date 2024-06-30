@@ -52,7 +52,7 @@ try:
 
     print("Toggling relay, Zone", zone, "-",state)
     print("NewState, is active?",turnZoneOn(zone, state))
-    
+    time.sleep(2)
     
   
 except RuntimeError as err:
