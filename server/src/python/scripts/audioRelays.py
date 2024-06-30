@@ -8,6 +8,8 @@ relay_two = LED(20)
 
 zone = sys.argv[1]
 
+print("           Start ... ")
+print(" ")
 print("Toggling relay, Zone", zone)
 try:
 
@@ -34,7 +36,7 @@ try:
     relay_one.off()
     time.sleep(.5)
     relay_two.off()
-    
+
     time.sleep(1)
     
   
@@ -42,4 +44,5 @@ except RuntimeError as err:
     print("RuntimeError in - audioRelays.py - :" + err.args[0])
 
 finally:
+    print(" ")
     print("-------   Script complete    -------")
