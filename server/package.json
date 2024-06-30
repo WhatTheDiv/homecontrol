@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "git pull && nodemon src/server.js",
+    "start": "nodemon src/server.js dev",
+    "live": "nodemon src/server.js live",
     "env": "source src/python/.venv/bin/activate "
   },
   "author": "",
