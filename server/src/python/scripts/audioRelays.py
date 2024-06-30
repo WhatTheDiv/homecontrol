@@ -19,7 +19,7 @@ def turnZoneOn(zone, set_active):
   elif zone == 2:
       currState = zone_two_L.is_lit
       print("Zone 2 currently", currState)
-      if currState == set_active:
+      if str(currState) == str(set_active):
           print(" new state matches current, doing nothing ")
           return
       elif set_active == True:
