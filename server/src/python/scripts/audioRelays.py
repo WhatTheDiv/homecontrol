@@ -22,9 +22,9 @@ zone_two_L = LED(pin=20, initial_value=False)
 zone_two_R = LED(pin=21, initial_value=False)
 
 try:
-    if len(sys.argv <= 1)
+    if len(sys.argv <= 1):
         raise Exception(" Not given zone and state")
-        
+
     time.sleep(.25)
 
     print("Toggling relay, Zone", zone, "-",state)
