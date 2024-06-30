@@ -2,6 +2,7 @@
 from gpiozero import LED
 import time
 import sys
+from signal import pause
 
 def turnZoneOn(zone, set_active):
   if zone == 1:
@@ -58,7 +59,7 @@ try:
 
     print("Toggling relay, Zone", zone, "- Requesting new active state:",state)
     print("New active state now?",turnZoneOn(zone, state))
-    time.sleep(2)
+    pause()
     
   
 except RuntimeError as err:
