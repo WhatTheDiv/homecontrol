@@ -4,7 +4,11 @@ import time
 import sys
 
 def turnZoneOn(zone, newState):
-  currState = zone_one_L.is_lit
+  if zone == 1:
+    currState = zone_one_L.is_lit
+  else if zone == 2:
+    currState = zone_two_L.is_lit
+
   print("Zone ",zone,"currently lit? ",currState)
   
 
@@ -28,7 +32,8 @@ try:
     time.sleep(1)
 
     print("Toggling relay, Zone", zone, "-",state)
-    turnZoneOn(zone, state)
+    turnZoneOn(1, state)
+    turnZoneOn(2, state)
     
     
   
