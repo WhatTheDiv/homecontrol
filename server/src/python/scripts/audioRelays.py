@@ -16,7 +16,7 @@ try:
     n = len(sys.argv)
     print("arguments: ",n," - ", sys.argv)
 
-    if n <= 1:
+    if n <= 2:
         raise Exception(" Not given zone and state")
 
     zone = sys.argv[1]
