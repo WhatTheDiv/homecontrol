@@ -6,7 +6,7 @@ import sys
 def turnZoneOn(zone, newState):
   if zone == 1:
     currState = zone_one_L.is_lit
-  else if zone == 2:
+  elif zone == 2:
     currState = zone_two_L.is_lit
 
   print("Zone ",zone,"currently lit? ",currState)
