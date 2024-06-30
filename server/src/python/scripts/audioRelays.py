@@ -6,7 +6,9 @@ import sys
 relay_one = LED(19)
 relay_two = LED(20)
 
-print("Starting script ", sys.argv[1])
+zone = sys.argv[1]
+
+print("Toggling relay, Zone ", zone)
 try:
 
     relay_one.on()
