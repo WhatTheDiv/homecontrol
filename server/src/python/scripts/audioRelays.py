@@ -3,11 +3,30 @@ from gpiozero import LED
 import time
 import sys
 
-def turnZoneOn(zone, newState):
+def turnZoneOn(zone, set_active):
   if zone == 1:
-    currState = zone_one_L.is_lit
+      currState = zone_one_L.is_lit
+      if currState == set_active:
+          return
+      elif set_active == True:
+          zone_one_L.on()
+          zone_one_R.on()
+      elif set_active == False:
+          zone_one_L.off()
+          zone_one_R.off()
   elif zone == 2:
-    currState = zone_two_L.is_lit
+      currState = zone_two_L.is_lit
+      if currState == set_active:
+          return
+      elif set_active == True:
+          zone_two_L.on()
+          zone_two_R.on()
+      elif set_active == False:
+          zone_two_L.off()
+          zone_two_R.off()
+
+  return set_active
+
 
   print("Zone ",zone,"currently lit? ",currState)
   
@@ -32,8 +51,7 @@ try:
     time.sleep(1)
 
     print("Toggling relay, Zone", zone, "-",state)
-    turnZoneOn(1, state)
-    turnZoneOn(2, state)
+    print("NewState, is active?",turnZoneOn(zone, state))
     
     
   
