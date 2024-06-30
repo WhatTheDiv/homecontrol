@@ -29,7 +29,7 @@ def turnZoneOn(zone, set_active):
           zone_two_L.off()
           zone_two_R.off()
   else: 
-      print("out of bounds")
+      print("out of bounds", zone)
 
   return set_active
 
