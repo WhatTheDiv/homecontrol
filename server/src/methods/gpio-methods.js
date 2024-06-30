@@ -103,20 +103,19 @@ const testLeds = async () => {
 }
 
 const initGPIO = async (Daemon) => {
-  const { spawn } = require('child_process')
-  const timeoutFunc = async (wait) => {
-    return await new Promise(res => {
-      setTimeout(() => res(true), wait)
-    })
-  }
+  return new Promise((res, rej) => {
+    const { spawn } = require('child_process')
+    const timeoutFunc = async (wait) => {
+      return await new Promise(res => {
+        setTimeout(() => res(true), wait)
+      })
+    }
 
-  try {
-    const process = spawn('cd src/python && env/bin/python3 scripts/audioRelays.py ')
-    Daemon.process = process
-    Daemon.active = true
+    try {
+      const process = spawn('cd src/python && env/bin/python3 scripts/audioRelays.py 1 False')
+      Daemon.process = process
+      Daemon.active = true
 
-    console.log('beginning of while loop')
-    while (Daemon.active) {
 
       process.stdout.on('data', (data) => {
         throw new Error(`stdout: ${data}`);
@@ -129,13 +128,14 @@ const initGPIO = async (Daemon) => {
       process.on('close', (code) => {
         console.log(`child process exited with code ${code}`);
       });
+
+    } catch (e) {
+      console.error('Error in daemon: ', e)
+      Daemon.active = false
+      console.log('Exiting Daemon')
+      res(false)
     }
-  } catch (e) {
-    console.error('Error in daemon: ', e)
-    Daemon.active = false
-    return
-  }
-  console.log('Exiting Daemon')
+  })
 
 }
 
