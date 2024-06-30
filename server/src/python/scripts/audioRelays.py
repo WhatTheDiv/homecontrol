@@ -1,6 +1,7 @@
 
 from gpiozero import LED
 import time
+import sys
 
 relay_one = LED(19)
 relay_two = LED(20)
