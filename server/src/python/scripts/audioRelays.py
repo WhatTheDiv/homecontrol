@@ -38,11 +38,11 @@ def turnZoneOn(zone, set_active):
   
 
 print(" ")
-print("-------   Starting Script   -------", )
+print("-------   Starting Script   -------", sys.argv[2])
 print(" ")
 
 if len(sys.argv) <= 2:
-      raise Exception(" Not given zone and state", sys.argv[2])
+      raise Exception(" Not given zone and state")
 
 zone = int(sys.argv[1])
 state = bool(sys.argv[2])
