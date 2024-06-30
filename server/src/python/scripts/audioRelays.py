@@ -14,8 +14,8 @@ print(" ")
 
 try:
     n = len(sys.argv)
-    print("arguments: ",n)
-    
+    print("arguments: ",n," - ", sys.argv)
+
     if n <= 1:
         raise Exception(" Not given zone and state")
 
