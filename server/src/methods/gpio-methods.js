@@ -102,4 +102,42 @@ const testLeds = async () => {
   })
 }
 
-module.exports = { getIndoorTempReading, testLeds }
+const initGPIO = async (Daemon) => {
+  const { spawn } = require('child_process')
+  const timeoutFunc = async (wait) => {
+    return await new Promise(res => {
+      setTimeout(() => res(true), wait)
+    })
+  }
+
+  try {
+    const process = spawn('cd src/python && env/bin/python3 scripts/audioRelays.py ')
+    Daemon.process = process
+    Daemon.active = true
+
+    while (Daemon.active) {
+      console.log('beginning of while loop')
+
+      process.stdout.on('data', (data) => {
+        throw new Error(`stdout: ${data}`);
+      });
+
+      process.stderr.on('data', (data) => {
+        throw new Error(`stderr: ${data}`);
+      });
+
+      process.on('close', (code) => {
+        console.log(`child process exited with code ${code}`);
+      });
+      await timeoutFunc(250)
+    }
+  } catch (e) {
+    console.error('Error in daemon: ', e)
+    Daemon.active = false
+    return
+  }
+  console.log('Exiting Daemon')
+
+}
+
+module.exports = { getIndoorTempReading, testLeds, initGPIO }

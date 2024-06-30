@@ -3,7 +3,7 @@ const cors = require('cors')
 const app = express()
 const port = process.argv[2] === 'live' ? 3000 : 3001
 const { handleButtonPress, getTvState, test } = require('./methods/tv-methods.js')
-const { getIndoorTempReading } = require('./methods/gpio-methods.js')
+const { getIndoorTempReading, initGPIO } = require('./methods/gpio-methods.js')
 
 app.use(cors())
 app.use(express.json())
@@ -30,8 +30,12 @@ const HomeState = {
   }
 }
 
-app.get('/initialState', async (req, res) => {
+const Daemon = {
+  active: false,
+  // process: async () => {}
+}
 
+app.get('/initialState', async (req, res) => {
   HomeState.tv = { ...HomeState.tv, ... await getTvState(HomeState.tv) }
   const indoorState = await getIndoorTempReading()
   HomeState.temp.indoor_temp = indoorState.temp
@@ -92,34 +96,7 @@ app.post('/remote', async (req, res) => {
 })
 
 app.listen(port, () => {
+  initGPIO(Daemon)
   console.log('Starting server on port [', port, '] ')
 })
-
-
-const testReq = async () => {
-  return await new Promise(async (res, rej) => {
-    try {
-      const url = `${HomeState.tv.tvURL}/keydown/power`
-      const options = {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        method: 'POST'
-      }
-
-      const result = await fetch(url, options)
-      // const r = await result.json()
-      console.log(result.status, ', ', result.body)
-
-
-      res(false)
-
-
-
-    } catch (e) {
-      console.log('error: ', e.message)
-      res(false)
-    }
-  })
-}
 
