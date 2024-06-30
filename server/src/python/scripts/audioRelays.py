@@ -2,8 +2,8 @@
 from gpiozero import LED
 import time
 
-relay_one = LED(19, true, false)
-relay_two = LED(20, true, false)
+relay_one = LED(19, True, False)
+relay_two = LED(20, True, False)
 
 print("Starting script " + sys.argv[1])
 try:
