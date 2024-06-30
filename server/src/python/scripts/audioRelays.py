@@ -41,11 +41,11 @@ if len(sys.argv) <= 2:
 zone = sys.argv[1]
 state = sys.argv[2]
 
-zone_one_L = LED(pin=18, initial_value=False)
-zone_one_R = LED(pin=19, initial_value=False)
+zone_one_L = LED(pin=18)
+zone_one_R = LED(pin=19)
 
-zone_two_L = LED(pin=20, initial_value=True)
-zone_two_R = LED(pin=21, initial_value=True)
+zone_two_L = LED(pin=20)
+zone_two_R = LED(pin=21)
 
 try: 
     time.sleep(1)
