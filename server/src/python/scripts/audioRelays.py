@@ -63,7 +63,7 @@ try:
     print("New active state now?", turnZoneOn(zone, state), flush=True)
     
     for line in sys.stdin:
-        print('readline 1:',line.rstrip(), flush=True)
+        print('readline 1:'+line.rstrip(), flush=True)
         
     time.sleep(5)
     print('5 ... ', flush=True)
