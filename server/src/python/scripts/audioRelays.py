@@ -59,21 +59,21 @@ zone_two_R = LED(pin=21)
 
 try: 
 
-    time.sleep(1)
+    time.sleep(3)
 
     print("Toggling relay, Zone", zone, "- Requesting new active state:",state)
     print("New active state now?", turnZoneOn(zone, state, zone_one_L, zone_one_R, zone_two_L,zone_two_R), flush=True)
     
     print('cp',flush=True)
     time.sleep(1)
-    print('start',flush=True)
 
 
     while True:
       try:
+        print('start',flush=True)
         for line in sys.stdin:
           print('has line', flush=True)
-          print('readline 1:'+line.rstrip(), flush=True)
+          print(f'readline 1:{line}', flush=True)
       except:
           print('No new text', flush=True)
           time.sleep(1)
