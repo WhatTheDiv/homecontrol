@@ -59,16 +59,16 @@ try:
     time.sleep(1)
 
     print("Toggling relay, Zone", zone, "- Requesting new active state:",state)
-    print("New active state now?", turnZoneOn(zone, state))
+    print("New active state now?", turnZoneOn(zone, state), flush=True)
     time.sleep(10)
-    print('Checking in ... ')
+    print('Checking in ... ', flush=True)
     pause()
     
   
 except RuntimeError as err:
-    print("RuntimeError in - audioRelays.py - :" + err.args[0])
+    print("RuntimeError in - audioRelays.py - :" + err.args[0], flush=True)
 
 finally:
     print(" ")
     print("-------   Script complete    -------")
-    print(" ")
+    print(" ", flush=True)
