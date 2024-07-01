@@ -5,7 +5,7 @@ import sys
 import select
 from signal import pause
 
-def turnZoneOn(zone, set_active):
+def turnZoneOn(zone, set_active, z1L, z1R, z2L, z2R):
   if zone == 1:
       currState = zone_one_L.is_lit
       print("Zone 1 currently", currState)
@@ -13,11 +13,12 @@ def turnZoneOn(zone, set_active):
           print(" new state matches current, doing nothing ")
           return currState
       elif set_active == True:
-          zone_one_L.on()
-          zone_one_R.on()
+          print(f'setting zone 1 to {set_active}')
+          z1L.on()
+          z1R.on()
       elif set_active == False:
-          zone_one_L.off()
-          zone_one_R.off()
+          z1L.off()
+          z1R.off()
   elif zone == 2:
       currState = zone_two_L.is_lit
       print("Zone 2 currently", currState)
@@ -25,11 +26,11 @@ def turnZoneOn(zone, set_active):
           print(" new state matches current, doing nothing ")
           return
       elif set_active == True:
-          zone_two_L.on()
-          zone_two_R.on()
+          z2L.on()
+          z2R.on()
       elif set_active == False:
-          zone_two_L.off()
-          zone_two_R.off()
+          z2L.off()
+          z2R.off()
   else: 
       print("out of bounds", zone)
 
@@ -60,7 +61,7 @@ try:
     time.sleep(1)
 
     print("Toggling relay, Zone", zone, "- Requesting new active state:",state)
-    print("New active state now?", turnZoneOn(zone, state), flush=True)
+    print("New active state now?", turnZoneOn(zone, state, zone_one_L, zone_one_R, zone_two_L,zone_two_R), flush=True)
     
     for line in sys.stdin:
         print('readline 1:'+line.rstrip(), flush=True)
