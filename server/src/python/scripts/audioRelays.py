@@ -59,7 +59,6 @@ try:
 
     print("Toggling relay, Zone", zone, "- Requesting new active state:",state)
     print("New active state now?",turnZoneOn(zone, state))
-    pause()
     
   
 except RuntimeError as err:
