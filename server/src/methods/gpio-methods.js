@@ -112,7 +112,6 @@ const initGPIO = async (Daemon) => {
 
     // const process = spawn('cd src/python && env/bin/python3 scripts/audioRelays.py', ['2', 'True'], { detached: true })
     const process = spawn('ls', [])
-    console.log(' spawned fork')
 
     Daemon.process = process
     Daemon.active = true
@@ -139,7 +138,7 @@ const initGPIO = async (Daemon) => {
     })
 
     process.stdin.on('data', data => {
-      console.log('--- stdin data: ', JSON.parse(data))
+      console.log('--- stdin data: ', data.toString())
     })
 
     process.stderr.on('data', e => {
