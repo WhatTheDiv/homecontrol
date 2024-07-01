@@ -131,6 +131,10 @@ const initGPIO = async (Daemon) => {
       console.log(`child process exited with code ${code}`);
     });
 
+    process.on('exit', (data) => {
+      console.log('exiting proecess ... ')
+    })
+
   } catch (e) {
     console.error('Error in child process: ', e)
     Daemon.active = false
