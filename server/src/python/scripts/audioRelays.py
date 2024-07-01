@@ -55,10 +55,13 @@ zone_two_L = LED(pin=20)
 zone_two_R = LED(pin=21)
 
 try: 
-    time.sleep(1)
+    while True:
 
-    print("Toggling relay, Zone", zone, "- Requesting new active state:",state)
-    print("New active state now?", turnZoneOn(zone, state))
+        time.sleep(1)
+
+        print("Toggling relay, Zone", zone, "- Requesting new active state:",state)
+        print("New active state now?", turnZoneOn(zone, state))
+        time.sleep(1)
     
   
 except RuntimeError as err:
