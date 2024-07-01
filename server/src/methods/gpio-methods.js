@@ -109,15 +109,18 @@ const initGPIO = async (Daemon) => {
   // })
   try {
     const { spawn } = require('child_process')
+    console.log('spawning ... ')
     const process = spawn('cd src/python && env/bin/python3 scripts/audioRelays.py 1 False', {
       detached: true
     })
+    console.log(' spawned, unreferencing ... ')
     // Daemon.process = process
 
     process.unref()
 
     Daemon.active = true
 
+    console.log(' unrefed ... ')
 
     process.stdout.on('data', (data) => {
       throw new Error(`stdout: ${data}`);
