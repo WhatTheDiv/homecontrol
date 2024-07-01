@@ -61,15 +61,12 @@ try:
 
     print("Toggling relay, Zone", zone, "- Requesting new active state:",state)
     print("New active state now?", turnZoneOn(zone, state), flush=True)
-    time.sleep(10)
-    print('Checking in ... ', flush=True)
-    
     
     while True:
-        if select.select([sys.stdin, ], [], [], 0.0)[0]:
-            for line in sys.stdin:
+        if(len(sys.stdin.readline()) > 0:
                 print('got stdin: ', line.strip() , flush=True)
         else: 
+            print('No new text', flush=True)
             time.sleep(1)
     
   
