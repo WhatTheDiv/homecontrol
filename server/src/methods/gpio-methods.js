@@ -103,39 +103,39 @@ const testLeds = async () => {
 }
 
 const initGPIO = async (Daemon) => {
-  return new Promise((res, rej) => {
-
-    try {
-      const { spawn } = require('child_process')
-      const process = spawn('cd src/python && env/bin/python3 scripts/audioRelays.py 1 False', {
-        detached: true
-      })
-      Daemon.process = process
-
-      process.unref()
-
-      Daemon.active = true
+  // return new Promise((res, rej) => {
 
 
-      process.stdout.on('data', (data) => {
-        throw new Error(`stdout: ${data}`);
-      });
+  // })
+  try {
+    const { spawn } = require('child_process')
+    const process = spawn('cd src/python && env/bin/python3 scripts/audioRelays.py 1 False', {
+      detached: true
+    })
+    Daemon.process = process
 
-      process.stderr.on('data', (data) => {
-        throw new Error(`stderr: ${data}`);
-      });
+    process.unref()
 
-      process.on('close', (code) => {
-        console.log(`child process exited with code ${code}`);
-      });
+    Daemon.active = true
 
-    } catch (e) {
-      console.error('Error in daemon: ', e)
-      Daemon.active = false
-      console.log('Exiting Daemon')
-      res(false)
-    }
-  })
+
+    process.stdout.on('data', (data) => {
+      throw new Error(`stdout: ${data}`);
+    });
+
+    process.stderr.on('data', (data) => {
+      throw new Error(`stderr: ${data}`);
+    });
+
+    process.on('close', (code) => {
+      console.log(`child process exited with code ${code}`);
+    });
+
+  } catch (e) {
+    console.error('Error in child process: ', e)
+    Daemon.active = false
+    console.log('Exiting Daemon')
+  }
 
 }
 
