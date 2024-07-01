@@ -108,27 +108,25 @@ const initGPIO = async (Daemon) => {
 
   // })
   try {
-    const { spawn } = require('child_process')
-    console.log('spawning ... ')
-    const process = spawn('python3 scripts/audioRelays.py', ['2', 'True'], {
-      detached: true
-    })
-    console.log(' spawned, unreferencing ... ')
-    // Daemon.process = process
+    const { fork } = require('child_process')
+    const controller = new AbortController()
+    const { signal } = controller
 
-    process.unref()
+
+    console.log('spawning fork ... ')
+    const process = fork('python3 scripts/audioRelays.py', ['2', 'True'], { signal })
+    console.log(' spawned fork')
+    Daemon.process = process
 
     Daemon.active = true
 
-    console.log(' unrefed ... ')
-
-    process.stdout.on('data', (data) => {
+    process.on('data', (data) => {
       console.log(`stdout: ${data}`);
     });
 
-    process.stderr.on('data', (data) => {
+    process.on('error', (e) => {
       // throw new Error(`stderr: ${data}`);
-      console.log(' error in process: ', data)
+      console.log(' error in process: ', e)
     });
 
     process.on('close', (code) => {
@@ -136,7 +134,7 @@ const initGPIO = async (Daemon) => {
     });
 
     process.on('exit', (data) => {
-      console.log('exiting proecess ... ')
+      console.log('exiting proecess ... ', data)
     })
 
   } catch (e) {
