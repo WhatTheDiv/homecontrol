@@ -116,10 +116,10 @@ const initGPIO = async (Daemon) => {
     Daemon.process = process
     Daemon.active = true
 
-    // setTimeout(() => {
-    //   console.log('node sending message')
-
-    // }, 5000)
+    setTimeout(() => {
+      console.log('node sending message')
+      process.stdin.write('hello from node')
+    }, 3000)
 
     process.on('disconnect', (data) => {
       console.log(`--- disconnected: ${data}`);
@@ -150,8 +150,6 @@ const initGPIO = async (Daemon) => {
     process.stderr.on('data', e => {
       console.log('--- stderr: ', e.toString())
     })
-
-    process.stdin.write('hello from node')
 
   } catch (e) {
     console.error('Error in child process: ', e)
