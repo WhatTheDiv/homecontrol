@@ -110,7 +110,7 @@ const initGPIO = async (Daemon) => {
   try {
     const { spawn } = require('child_process')
     console.log('spawning ... ')
-    const process = spawn('cd src/python && env/bin/python3 scripts/audioRelays.py 1 False', {
+    const process = spawn('cd src/python && env/bin/python3 scripts/audioRelays.py 1 False', ['2', 'True'], {
       detached: true
     })
     console.log(' spawned, unreferencing ... ')
