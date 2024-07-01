@@ -143,7 +143,7 @@ const initGPIO = async (Daemon) => {
     })
 
     process.stderr.on('data', e => {
-      console.log('--- stderr: ', e)
+      console.log('--- stderr: ', e.toString())
     })
 
   } catch (e) {
