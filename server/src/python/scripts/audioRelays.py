@@ -26,10 +26,10 @@ def turnZoneOn(zone, set_active, z1L, z1R, z2L, z2R):
       if str(currState) == str(set_active):
           print(" new state matches current, doing nothing ")
           return
-      elif set_active == True:
+      elif set_active == 'True':
           z2L.on()
           z2R.on()
-      elif set_active == False:
+      elif set_active == 'False':
           z2L.off()
           z2R.off()
   else: 
