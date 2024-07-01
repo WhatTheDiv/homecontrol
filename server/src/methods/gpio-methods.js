@@ -123,7 +123,7 @@ const initGPIO = async (Daemon) => {
     console.log(' unrefed ... ')
 
     process.stdout.on('data', (data) => {
-      throw new Error(`stdout: ${data}`);
+      console.log(`stdout: ${data}`);
     });
 
     process.stderr.on('data', (data) => {
