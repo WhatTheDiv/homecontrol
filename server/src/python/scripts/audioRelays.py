@@ -68,7 +68,8 @@ try:
         if len(sys.stdin) > 0:
             for line in sys.stdin:
                 print('got stdin: ', sys.stdin, flush=True)
-        elif time.sleep(1)
+        elif: 
+            time.sleep(1)
     
   
 except RuntimeError as err:
