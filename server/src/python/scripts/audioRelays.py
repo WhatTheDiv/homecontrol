@@ -65,6 +65,16 @@ try:
     print("New active state now?", turnZoneOn(zone, state, zone_one_L, zone_one_R, zone_two_L,zone_two_R), flush=True)
     
     print('cp',flush=True)
+
+    while True:
+      try:
+        for line in sys.stdin:
+          print('has line', flush=True)
+          print('readline 1:'+line.rstrip(), flush=True)
+      except:
+          print('No new text', flush=True)
+          time.sleep(1)
+
     print(f'cp {sys.stdin.read()}',flush=True)
 
     for line in sys.stdin:
@@ -84,8 +94,7 @@ try:
         if(len(sys.stdin.readline()) > 0):
                 print('got stdin: ', line.strip() , flush=True)
         else: 
-            print('No new text', flush=True)
-            time.sleep(1)
+            
     
   
 except RuntimeError as err:
