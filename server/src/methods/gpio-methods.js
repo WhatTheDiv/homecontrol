@@ -116,6 +116,11 @@ const initGPIO = async (Daemon) => {
     Daemon.process = process
     Daemon.active = true
 
+    setTimeout(() => {
+      console.log('node sending message')
+      process.stdin.write(JSON.stringify('Hello from node'))
+    }, 20000)
+
     process.on('disconnect', (data) => {
       console.log(`--- disconnected: ${data}`);
     });

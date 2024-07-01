@@ -62,7 +62,13 @@ try:
     print("New active state now?", turnZoneOn(zone, state), flush=True)
     time.sleep(10)
     print('Checking in ... ', flush=True)
-    pause()
+    
+    
+    while True:
+        if len(sys.stdin) > 0:
+            for line in sys.stdin:
+                print('got stdin: ', sys.stdin, flush=True)
+        elif time.sleep(1)
     
   
 except RuntimeError as err:
