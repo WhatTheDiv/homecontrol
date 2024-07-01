@@ -75,25 +75,25 @@ try:
           print('No new text', flush=True)
           time.sleep(1)
 
-    print(f'cp {sys.stdin.read()}',flush=True)
+    # print(f'cp {sys.stdin.read()}',flush=True)
 
-    for line in sys.stdin:
-        print('has line', flush=True)
-        print('readline 1:'+line.rstrip(), flush=True)
+    # for line in sys.stdin:
+    #     print('has line', flush=True)
+    #     print('readline 1:'+line.rstrip(), flush=True)
         
     
-    print('5 ... ', flush=True)
-    time.sleep(5)
+    # print('5 ... ', flush=True)
+    # time.sleep(5)
 
-    for line in sys.stdin:
-        print('readline 2:',sys.stdin.readline(), flush=True)
+    # for line in sys.stdin:
+    #     print('readline 2:',sys.stdin.readline(), flush=True)
 
 
-    while True:
+    # while True:
 
-        if(len(sys.stdin.readline()) > 0):
-                print('got stdin: ', line.strip() , flush=True)
-        else: 
+    #     if(len(sys.stdin.readline()) > 0):
+    #             print('got stdin: ', line.strip() , flush=True)
+    #     else: 
             
     
   
