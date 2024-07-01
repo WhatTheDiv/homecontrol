@@ -68,12 +68,13 @@ try:
     time.sleep(1)
 
 
+    print('start',flush=True)
     while True:
       try:
-        print('start',flush=True)
         for line in sys.stdin:
           print('has line', flush=True)
           print(f'readline 1:{line}', flush=True)
+          time.sleep(1)
       except:
           print('No new text', flush=True)
           time.sleep(1)
