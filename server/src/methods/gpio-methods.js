@@ -105,14 +105,11 @@ const testLeds = async () => {
 const initGPIO = async (Daemon) => {
   return new Promise((res, rej) => {
     const { spawn } = require('child_process')
-    const timeoutFunc = async (wait) => {
-      return await new Promise(res => {
-        setTimeout(() => res(true), wait)
-      })
-    }
 
     try {
-      const process = spawn('cd src/python && env/bin/python3 scripts/audioRelays.py 1 False')
+      const process = spawn('cd src/python && env/bin/python3 scripts/audioRelays.py 1 False', {
+        detached: true
+      })
       Daemon.process = process
       Daemon.active = true
 
