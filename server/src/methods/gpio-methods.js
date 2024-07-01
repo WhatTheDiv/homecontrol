@@ -112,7 +112,7 @@ const initGPIO = async (Daemon) => {
     const process = spawn('cd src/python && env/bin/python3 scripts/audioRelays.py 1 False', {
       detached: true
     })
-    Daemon.process = process
+    // Daemon.process = process
 
     process.unref()
 
