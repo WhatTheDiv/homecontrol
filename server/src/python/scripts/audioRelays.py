@@ -64,6 +64,7 @@ try:
     
     print('readline 1:',sys.stdin.readline(), flush=True)
     time.sleep(5)
+    print('5 ... ', flush=True)
     print('readline 2:',sys.stdin.readline(), flush=True)
     while True:
 
