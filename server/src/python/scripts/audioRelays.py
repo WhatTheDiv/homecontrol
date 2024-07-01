@@ -72,7 +72,7 @@ try:
           text = ''
           for line in sys.stdin:
               text += line
-          if text != ''
+          if text != '':
               print(f'Finished reading - "{text}"', flush=True)
           time.sleep(1)
       except:
