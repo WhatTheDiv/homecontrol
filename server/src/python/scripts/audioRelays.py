@@ -71,11 +71,12 @@ try:
     print('start',flush=True)
     while True:
       try:
+          text = ''
           for line in sys.stdin:
-              print('has line', flush=True)
-              print(f'{sys.stdin}', flush=True)
-              print(f'readline 1:{line}', flush=True)
-          print('Finished reading')
+              text += line
+          print('Finished reading ...')
+          print(f'Text: {text}', flush=True)
+          time.sleep(1)
       except:
           print('No new text', flush=True)
           time.sleep(1)
