@@ -127,7 +127,8 @@ const initGPIO = async (Daemon) => {
     });
 
     process.stderr.on('data', (data) => {
-      throw new Error(`stderr: ${data}`);
+      // throw new Error(`stderr: ${data}`);
+      console.log(' error in process: ', data)
     });
 
     process.on('close', (code) => {
