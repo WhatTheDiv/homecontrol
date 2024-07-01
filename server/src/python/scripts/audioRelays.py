@@ -2,6 +2,7 @@
 from gpiozero import LED
 import time
 import sys
+import select
 from signal import pause
 
 def turnZoneOn(zone, set_active):
@@ -65,9 +66,9 @@ try:
     
     
     while True:
-        if len(sys.stdin) > 0:
+        if select.select([sys.stdin, ], [], [], 0.0)[0]:
             for line in sys.stdin:
-                print('got stdin: ', sys.stdin, flush=True)
+                print('got stdin: ', line.strip() , flush=True)
         else: 
             time.sleep(1)
     
