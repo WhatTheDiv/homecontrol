@@ -59,8 +59,6 @@ zone_two_R = LED(pin=21)
 
 try: 
 
-    time.sleep(5)
-
     print("Toggling relay, Zone", zone, "- Requesting new active state:",state)
     print("New active state now?", turnZoneOn(zone, state, zone_one_L, zone_one_R, zone_two_L,zone_two_R), flush=True)
     
@@ -74,11 +72,11 @@ try:
           text = ''
           for line in sys.stdin:
               text += line
-          print('Finished reading ...')
-          print(f'Text: {text}', flush=True)
+          if text != ''
+              print(f'Finished reading - "{text}"', flush=True)
           time.sleep(1)
       except:
-          print('No new text', flush=True)
+          print('Errored out in loop', flush=True)
           time.sleep(1)
           pass
       
