@@ -33,10 +33,10 @@ def turnZoneOn(zone, set_active):
   else: 
       print("out of bounds", zone)
 
+  print(f"Zone {zone} currently lit? {currState}")
   return set_active
 
 
-  print("Zone ",zone,"currently lit? ",currState)
   
 
 print(" ")
@@ -65,8 +65,9 @@ try:
     for line in sys.stdin:
         print('readline 1:'+line.rstrip(), flush=True)
         
-    time.sleep(5)
+    
     print('5 ... ', flush=True)
+    time.sleep(5)
 
     for line in sys.stdin:
         print('readline 2:',sys.stdin.readline(), flush=True)
