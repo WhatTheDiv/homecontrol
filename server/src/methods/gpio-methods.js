@@ -111,7 +111,7 @@ const initGPIO = async (Daemon) => {
     const { spawn } = require('child_process')
 
     // const process = spawn('cd src/python && env/bin/python3 scripts/audioRelays.py', ['2', 'True'], { detached: true })
-    const process = spawn('sudo src/python/scripts/audioRelays.py', [])
+    const process = spawn('sudo src/python/env/bin/python3', [])
 
     Daemon.process = process
     Daemon.active = true
