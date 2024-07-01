@@ -111,7 +111,7 @@ const initGPIO = async (Daemon) => {
     const { spawn } = require('child_process')
 
     // const process = spawn('cd src/python && env/bin/python3 scripts/audioRelays.py', ['2', 'True'], { detached: true })
-    const process = spawn('src/python/env/bin/python3 ./src/python/scripts/audioRelays.py', ['2', 'True'], { detached: true })
+    const process = spawn('ls', [])
     console.log(' spawned fork')
 
     Daemon.process = process
