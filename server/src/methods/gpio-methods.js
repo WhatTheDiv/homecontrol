@@ -138,7 +138,9 @@ const initGPIO = async (Daemon) => {
     })
 
     process.stdin.on('data', data => {
-      console.log('--- stdin data: ', data.toString())
+      const d = data.toString()
+      const jsonData = eval(`(${d})`)
+      console.log('--- stdin data: ', jsonData)
     })
 
     process.stderr.on('data', e => {
