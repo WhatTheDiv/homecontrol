@@ -65,6 +65,9 @@ try:
     print("New active state now?", turnZoneOn(zone, state, zone_one_L, zone_one_R, zone_two_L,zone_two_R), flush=True)
     
     print('cp',flush=True)
+    time.sleep(1)
+    print('start',flush=True)
+
 
     while True:
       try:
