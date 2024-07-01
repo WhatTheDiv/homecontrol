@@ -104,9 +104,9 @@ const testLeds = async () => {
 
 const initGPIO = async (Daemon) => {
   return new Promise((res, rej) => {
-    const { spawn } = require('child_process')
 
     try {
+      const { spawn } = require('child_process')
       const process = spawn('cd src/python && env/bin/python3 scripts/audioRelays.py 1 False', {
         detached: true
       })
