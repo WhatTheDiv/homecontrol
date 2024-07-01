@@ -108,33 +108,41 @@ const initGPIO = async (Daemon) => {
 
   // })
   try {
-    const { fork } = require('child_process')
-    const controller = new AbortController()
-    const { signal } = controller
+    const { spawn } = require('child_process')
 
-
-    console.log('spawning fork ... ')
-    const process = fork('cd src/python && env/bin/python3 ./scripts/audioRelays.py', ['2', 'True'], { signal })
+    const process = spawn('cd src/python && env/bin/python3 scripts/audioRelays.py', ['2', 'True'], { detached: true })
     console.log(' spawned fork')
-    Daemon.process = process
 
+    Daemon.process = process
     Daemon.active = true
 
-    process.on('data', (data) => {
-      console.log(`stdout: ${data}`);
+    process.on('disconnect', (data) => {
+      console.log(`--- disconnected: ${data}`);
     });
 
     process.on('error', (e) => {
       // throw new Error(`stderr: ${data}`);
-      console.log(' error in process: ', e)
+      console.log('--- errored: ', e)
     });
 
     process.on('close', (code) => {
-      console.log(`child process exited with code ${code}`);
+      console.log(`--- closed: code ${code}`);
     });
 
-    process.on('exit', (data) => {
-      console.log('exiting proecess ... ', data)
+    process.on('message', (data) => {
+      console.log(`--- messaged: ${data}`);
+    });
+
+    process.stdout.on('data', data => {
+      console.log('--- stdout data: ', data)
+    })
+
+    process.stdin.on('data', data => {
+      console.log('--- stdin data: ', data)
+    })
+
+    process.stderr.on('data', e => {
+      console.log('--- stderr: ', e)
     })
 
   } catch (e) {
