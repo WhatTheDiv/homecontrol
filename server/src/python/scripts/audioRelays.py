@@ -68,7 +68,7 @@ try:
         if len(sys.stdin) > 0:
             for line in sys.stdin:
                 print('got stdin: ', sys.stdin, flush=True)
-        elif: 
+        else: 
             time.sleep(1)
     
   
