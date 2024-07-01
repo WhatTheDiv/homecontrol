@@ -114,7 +114,7 @@ const initGPIO = async (Daemon) => {
 
 
     console.log('spawning fork ... ')
-    const process = fork('python3 scripts/audioRelays.py', ['2', 'True'], { signal })
+    const process = fork('src/python/env/bin/python3 src/python/scripts/audioRelays.py', ['2', 'True'], { signal })
     console.log(' spawned fork')
     Daemon.process = process
 
