@@ -111,6 +111,9 @@ const initGPIO = async (Daemon) => {
         detached: true
       })
       Daemon.process = process
+
+      process.unref()
+
       Daemon.active = true
 
 
