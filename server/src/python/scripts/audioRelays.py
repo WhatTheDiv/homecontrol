@@ -63,7 +63,7 @@ try:
     print("New active state now?", turnZoneOn(zone, state), flush=True)
     
     while True:
-        if(len(sys.stdin.readline()) > 0:
+        if(len(sys.stdin.readline()) > 0):
                 print('got stdin: ', line.strip() , flush=True)
         else: 
             print('No new text', flush=True)
