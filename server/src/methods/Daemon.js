@@ -120,6 +120,7 @@ class DaemonClass {
 
       setTimeout(() => {
         if (item === undefined) res(false)
+        else if ((item.slice(item.indexOf('-') + 1)).toLowerCase() === 'false') res(false)
         else res(true)
       }, duration);
 

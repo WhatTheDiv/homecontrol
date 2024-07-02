@@ -65,7 +65,7 @@ try:
             # print(f'* zone:{zone}',flush=True)
             # print(f'* state:{state}',flush=True)
             passed = toggleZone(int(zone), int(state))
-            return f"{count}:Success:{passed}"
+            return f"{count}:Success-{passed}"
               
         
         
@@ -87,9 +87,7 @@ try:
         elif bool(inp.strip()) == False:
             break
         else:
-            output = process_input(inp)
-            print(f'{output}',flush=True)
-            # TODO pull out command and set relays. print success command
+            print(f'{process_input(inp)}',flush=True)
 
 
       

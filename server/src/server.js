@@ -66,7 +66,7 @@ app.post('/toggleAudioZones', async (req, res) => {
   const count = Daemon.count
   const { newCount, command, err, message } = Daemon.getCommand({ name: 'audio', zone, state: newState ? 1 : 0, count })
 
-  if (err) return res.status(502).send({ message: 'Deamon returned fail: ' + message, success: false })
+  if (err) return res.status(502).send({ message: 'Deamon failed at send: ' + message, success: false })
 
   Daemon.count = newCount
   Daemon.process.stdin.write(command)
@@ -80,7 +80,7 @@ app.post('/toggleAudioZones', async (req, res) => {
 
   if (p.success) return res.status(200).send({ success: true }).end()
 
-  res.status(502).send({ message: 'Response from daemon not received', success: false }).end()
+  res.status(502).send({ message: 'Daemon failed at receive', success: false }).end()
 
 })
 
