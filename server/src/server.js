@@ -80,7 +80,10 @@ app.post('/toggleAudioZones', async (req, res) => {
   }
 
   if (p.success) return res.status(200).send({ success: true })
-  else res.status(502).send({ message: 'Response from daemon not received', success: false })
+
+  console.log('not found')
+
+  res.status(502).send({ message: 'Response from daemon not received', success: false })
 
 
 
