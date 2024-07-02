@@ -109,30 +109,39 @@ const initGPIO = async (Daemon) => {
   // })
   try {
     const { spawn } = require('child_process')
+    const controller = new AbortController()
 
     // const process = spawn('cd src/python && env/bin/python3 scripts/audioRelays.py', ['2', 'True'], { detached: true })
-    const process = spawn('python3 ./scripts/audioRelays.py', ['2', 'True'], { cwd: './src/python', shell: true })
+    const process = spawn('python3 ./scripts/audioRelays.py', ['2', 'True'], { cwd: './src/python', shell: true, signal: controller.signal })
 
     Daemon.process = process
     Daemon.active = true
 
     setTimeout(() => {
       console.log('node sending message')
-      process.stdin.write('hello from node \n')
+      process.stdin.write('hello from node!')
       process.stdin.end()
-    }, 2000)
+
+      setTimeout(() => {
+        process.stdin.write('hello again from node!')
+        process.stdin.end()
+      }, 3000);
+    }, 3000)
 
     process.on('disconnect', (data) => {
       console.log(`--- disconnected: ${data}`);
+      controller.abort()
     });
 
     process.on('error', (e) => {
       // throw new Error(`stderr: ${data}`);
       console.log('--- errored: ', e)
+      controller.abort()
     });
 
     process.on('close', (code) => {
       console.log(`--- closed: code ${code}`);
+      controller.abort()
     });
 
     process.on('message', (data) => {
@@ -150,6 +159,7 @@ const initGPIO = async (Daemon) => {
 
     process.stderr.on('data', e => {
       console.log('--- stderr: ', e.toString())
+      controller.abort()
     })
 
   } catch (e) {
