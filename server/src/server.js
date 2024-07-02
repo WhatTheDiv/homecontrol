@@ -79,11 +79,11 @@ app.post('/toggleAudioZones', async (req, res) => {
     p.success = await Daemon.check({ outputs: Daemon.outputs, count: newCount, duration: 250 })
   }
 
-  if (p.success) return res.status(200).send({ success: true })
+  if (p.success) return res.status(200).send({ success: true }).end()
 
   console.log('not found')
 
-  res.status(502).send({ message: 'Response from daemon not received', success: false })
+  res.status(502).send({ message: 'Response from daemon not received', success: false }).end()
 
 
 
