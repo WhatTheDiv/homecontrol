@@ -3,7 +3,8 @@ const cors = require('cors')
 const app = express()
 const port = process.argv[2] === 'live' ? 3000 : 3001
 const { handleButtonPress, getTvState, test } = require('./methods/tv-methods.js')
-const { getIndoorTempReading, initGPIO } = require('./methods/gpio-methods.js')
+const { getIndoorTempReading } = require('./methods/gpio-methods.js')
+const { DaemonClass } = require('./methods/Daemon')
 
 app.use(cors())
 app.use(express.json())
@@ -30,10 +31,7 @@ const HomeState = {
   }
 }
 
-const Daemon = {
-  active: false,
-  // process: async () => {}
-}
+const Daemon = new DaemonClass()
 
 app.get('/initialState', async (req, res) => {
   HomeState.tv = { ...HomeState.tv, ... await getTvState(HomeState.tv) }
@@ -49,12 +47,56 @@ app.get('/test', async (req, res) => {
   res.status(200).send({ success: true })
 })
 
+
+
 app.post('/toggleLightsActive', (req, res) => {
   const { mode, newState, action } = req.body
 
   console.log(action, ': ', { mode, newState })
 
   res.status(200).end()
+})
+
+app.post('/toggleAudioZones', async (req, res) => {
+  const { zone, newState } = req.body
+
+  if (!Daemon.active || !Daemon.process)
+    return res.status(502).send({ message: 'Deamon inactive', success: false })
+
+  const { newCount, command, err, message } = Daemon.getCommand({ name: 'audio', zone, state: newState ? 1 : 0, count: Daemon.count })
+
+  if (err) return res.status(502).send({ message: 'Deamon returned fail: ' + message, success: false })
+
+  Daemon.count = newCount
+  Daemon.process.stdin.write(command)
+
+  let pass = false
+
+  setTimeout(() => {
+    if (!pass) return res.status(502).send({ message: 'Response from daemon not received', success: false })
+  }, Daemon.checkTimeout_seconds);
+
+  while (!pass) {
+    pass = await Daemon.check({ outputs: Daemon.outputs, count: newCount, duration: 250 })
+  }
+
+  return res.status(200).send({ success: true })
+
+
+
+
+
+
+
+
+  // const { success, message, state } = await Daemon.({ zone, newState, Daemon, count:Daemon.inc(Daemon.count) })
+  // if (success === false)
+  //   res.status(502).send({ message })
+  // else 
+  //   res.status(200).send({ state })
+
+
+
 })
 
 app.post('/setColor', (req, res) => {
@@ -96,7 +138,7 @@ app.post('/remote', async (req, res) => {
 })
 
 app.listen(port, () => {
-  initGPIO(Daemon)
+  Daemon.init.bind(Daemon)()
   console.log('Starting server on port [', port, '] ')
 })
 
