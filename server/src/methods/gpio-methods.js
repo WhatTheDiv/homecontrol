@@ -130,7 +130,7 @@ const initGPIO = async (Daemon) => {
         setTimeout(() => {
           console.log('node sending again')
           process.stdin.write('That is all! \n')
-          process.stdin.write('q\n')
+          // process.stdin.write('q\n')
 
         }, 2000);
       }, 3000);
