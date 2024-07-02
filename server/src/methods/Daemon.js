@@ -6,7 +6,7 @@ class DaemonClass {
     this.count = 1
     this.maxCount = 10
     this.checkTimeout_seconds = 2
-    this.log = false
+    this.log = true
   }
 
   processOutput = (data) => {
