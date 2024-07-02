@@ -62,7 +62,7 @@ try:
 
     while True:
         result = chewInput( sys.stdin.readline() )
-        print(f'result:{false}', flush=True)
+        print(f'result:{result}', flush=True)
         if ( result == False):
             print('breaking ... ',flush=True)
             break
