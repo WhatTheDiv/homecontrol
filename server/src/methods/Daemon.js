@@ -6,12 +6,15 @@ class DaemonClass {
     this.count = 1
     this.maxCount = 10
     this.checkTimeout_seconds = 2
+    this.log = true
   }
 
   processOutput = (data) => {
     const _d = data.toString()
-    if ('*' === _d.slice(0, 1))
+    if ('*' === _d.slice(0, 1)) {
+      this.log && console.log('(From Daemon)', _d)
       return
+    }
 
     const d = _d.indexOf('\n') >= 0 ? _d.slice(0, _d.indexOf('\n')) : _d
 
