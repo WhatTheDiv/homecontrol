@@ -42,7 +42,7 @@ def chewInput(inp):
     
     if inp == 'q':
       print('quitting-',flush=True)
-      return True
+      return False
     else:
       print(f'Got input -{inp}',flush=True)
       return True
@@ -50,7 +50,7 @@ def chewInput(inp):
   
 
 print(" ")
-print("-------   Starting Script   -------", sys.argv[2])
+print("-------   Starting Script   -------")
 print(" ", flush=True)
 
 try: 
