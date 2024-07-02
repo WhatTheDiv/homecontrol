@@ -77,7 +77,9 @@ app.post('/toggleAudioZones', async (req, res) => {
 
   while (!p.success || !p.failed) {
     p.success = await Daemon.check({ outputs: Daemon.outputs, count: newCount, duration: 250 })
+    console.log('end of while: ', p)
   }
+  console.log('cp')
 
   if (p.success) return res.status(200).send({ success: true }).end()
 
