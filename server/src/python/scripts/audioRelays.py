@@ -34,7 +34,7 @@ try:
             curr_state = z_2_L.is_lit
             # print(f"* Zone 2 currently {curr_state}", flush=True)
             if curr_state == bool(set_state):
-                print("* New state matches current, do nothing")
+                # print("* New state matches current, do nothing")
                 return True
             elif bool(set_state):
                 # print("* Setting zone 2 to active")
