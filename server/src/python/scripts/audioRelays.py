@@ -47,11 +47,12 @@ def process_input(input):
         state_index = input.find('-') + 1
         zone = input[zone_index:zone_index + 1]
         state = input[state_index:]
+        print(f'* zone:{zone}',flush=True)
+        print(f'* state:{state}',flush=True)
     
     print(f'* count:{count}',flush=True)
     print(f'* command:{command}',flush=True)
-    print(f'* zone:{zone}',flush=True)
-    print(f'* state:{state}',flush=True)
+    
 
   
 
