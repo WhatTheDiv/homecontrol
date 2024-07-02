@@ -5,7 +5,7 @@ class DaemonClass {
     this.outputs = []
     this.count = 0
     this.maxCount = 10
-    this.checkTimeout_seconds = 6
+    this.checkTimeout_seconds = 2
   }
 
   init = async () => {
@@ -105,9 +105,16 @@ class DaemonClass {
 
       console.log('checking outputs: ', outputs)
 
-      for (const output of outputs)
-        if (Number(output.slice(0, output.indexOf(':'))) === count)
+      for (const output of outputs) {
+        const c = output.slice(0, output.indexOf(':'))
+        console.log('c:', c)
+        if (Number(c) === count) {
+          console.log('found')
           res(true)
+
+        }
+      }
+
     })
   }
 }
