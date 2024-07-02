@@ -87,7 +87,7 @@ try:
         elif bool(inp.strip()) == False:
             break
         else:
-            print(f'{inp}',flush=True)
+            print(f'* {inp}',flush=True)
             process_input(inp)
             # TODO pull out command and set relays. print success command
 
