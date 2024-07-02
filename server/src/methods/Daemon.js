@@ -17,6 +17,8 @@ class DaemonClass {
     if ('*' === _d.slice(0, 1)) {
       return
     }
+    else
+      console.log('pushing input to outputs: ')
 
     const d = _d.indexOf('\n') >= 0 ? _d.slice(0, _d.indexOf('\n')) : _d
 
