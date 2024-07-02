@@ -61,7 +61,7 @@ try:
     z_2_R = LED(pin=21, initial_value=True)
 
     while True:
-        if chewInput( sys.stdin.readline() ) == False:
+        if (chewInput( sys.stdin.readline() ) == False):
             print('breaking ... ',flush=True)
             break
         time.sleep(1)
