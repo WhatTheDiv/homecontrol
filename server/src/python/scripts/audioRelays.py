@@ -14,7 +14,7 @@ try:
     z_2_R = LED(pin=21, initial_value=True)
 
     def toggleZone(zone, set_state):
-        if zone === 1:
+        if zone == 1:
             cur_state = z_1_L.is_lit
             print(f"* Zone 1 currently{curr_state}", flush=True)
             if curr_state == bool(set_state):
@@ -30,7 +30,7 @@ try:
                 z_1_L.off()
                 z_1_r.off()
                 return True
-        elif zone === 2:
+        elif zone == 2:
             cur_state = z_2_L.is_lit
             print(f"* Zone 2 currently{curr_state}", flush=True)
             if curr_state == bool(set_state):
