@@ -46,7 +46,7 @@ try:
                 z_2_L.off()
                 z_2_r.off()
                 return True
-        else
+        else:
             return False
 
 
@@ -65,7 +65,7 @@ try:
             print(f'* zone:{zone}',flush=True)
             print(f'* state:{state}',flush=True)
             passed = toggleZone(int(zone), int(state))
-            print(f"{count}:Success:{passed}")
+            print(f"{count}:Success:{passed}", flush=True)
               
         
         
