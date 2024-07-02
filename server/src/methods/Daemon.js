@@ -101,17 +101,13 @@ class DaemonClass {
   check = async ({ outputs, count, duration }) => {
     return await new Promise((res) => {
 
-      setTimeout(() => res(false), duration);
+      setTimeout(() => {
+        if (item === undefined) res(false)
+        else res(true)
+      }, duration);
 
       console.log('checking outputs: ', outputs)
-
-      for (const output of outputs) {
-        const c = output.slice(0, output.indexOf(':'))
-        if (Number(c) === count) {
-          // TODO Parse command, Verify command is success
-          res(true)
-        }
-      }
+      const item = outputs.find((output) => Number(output.slice(0, output.indexOf(':'))) === count)
 
     })
   }
