@@ -62,6 +62,7 @@ try:
 
     while True:
         if chewInput( sys.stdin.readline() ) == False:
+            print('breaking ... ',flush=True)
             break
         time.sleep(1)
       
