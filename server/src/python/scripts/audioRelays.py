@@ -69,6 +69,7 @@ try:
     print('start',flush=True)
     while True:
       try:
+          print('trying',flush=True)
           text = ''
           for line in sys.stdin:
               text += line
@@ -76,6 +77,7 @@ try:
               print(f'Finished reading - "{text}"', flush=True)
           else:
               print('...', flush=True)
+          print('sleeping',flush=True)
           time.sleep(1)
       except:
           print('Errored out in loop', flush=True)
