@@ -16,7 +16,7 @@ try:
     def toggleZone(zone, set_state):
         if zone == 1:
             curr_state = z_1_L.is_lit
-            print(f"* Zone 1 currently{curr_state}", flush=True)
+            print(f"* Zone 1 currently {curr_state}", flush=True)
             if curr_state == bool(set_state):
                 print("* New state matches current, do nothing")
                 return True
@@ -32,7 +32,7 @@ try:
                 return True
         elif zone == 2:
             curr_state = z_2_L.is_lit
-            print(f"* Zone 2 currently{curr_state}", flush=True)
+            print(f"* Zone 2 currently {curr_state}", flush=True)
             if curr_state == bool(set_state):
                 print("* New state matches current, do nothing")
                 return True
