@@ -41,7 +41,7 @@ def turnZoneOn(zone, set_active, z1L, z1R, z2L, z2R):
 
   
 
-print(" ")
+print("* ")
 print("-------   Starting AudioRelays.py   -------")
 print(" ", flush=True)
 
@@ -57,12 +57,12 @@ try:
         inp = sys.stdin.readline()
 
         if inp.strip() == 'q':
-            print('quitting-',flush=True)
+            print('* quitting-',flush=True)
             break
         elif bool(inp.strip()) == False:
             break
         else:
-            print(f'Got input -{inp}',flush=True)
+            print(f'{inp}',flush=True)
 
 
       
