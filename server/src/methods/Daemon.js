@@ -77,8 +77,8 @@ class DaemonClass {
   }
 
   inc = (count) => {
-    if (count > this.maxCount) return 0
-    else if (count <= this.maxCount) return count += 1
+    if (count >= this.maxCount) return 0
+    else if (count < this.maxCount) return count += 1
   }
 
   getCommand = ({ name, zone = -1, state = 0, count }) => {
