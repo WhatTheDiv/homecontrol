@@ -77,7 +77,7 @@ class DaemonClass {
   }
 
   inc = (count) => {
-    if (count >= this.maxCount) return 0
+    if (count >= this.maxCount) return 1
     else if (count < this.maxCount) return count += 1
   }
 
