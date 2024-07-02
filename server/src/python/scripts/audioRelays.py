@@ -74,6 +74,8 @@ try:
               text += line
           if text != '':
               print(f'Finished reading - "{text}"', flush=True)
+          else:
+              print('...', flush=True)
           time.sleep(1)
       except:
           print('Errored out in loop', flush=True)
