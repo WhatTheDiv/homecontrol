@@ -38,10 +38,10 @@ def turnZoneOn(zone, set_active, z1L, z1R, z2L, z2R):
   print(f"Zone {zone} currently lit? {currState}")
   return set_active
 
-def chewInput(input):
-    print(f'Got input -{input}',flush=True)
+def chewInput(inp):
+    print(f'Got input -{inp}',flush=True)
 
-    switch input {
+    switch inp {
     case 'q':
       print('quitting',flush=True)
       return False
