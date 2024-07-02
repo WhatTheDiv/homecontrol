@@ -71,37 +71,16 @@ app.post('/toggleAudioZones', async (req, res) => {
   Daemon.count = newCount
   Daemon.process.stdin.write(command)
 
-  let pass = false
-  let p = { success: false, failed: false }
+  const p = { success: false, failed: false }
 
   setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
 
-  while (!p.success && !p.failed) {
+  while (!p.success && !p.failed)
     p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250 })
-    console.log('end of while: ', p)
-  }
-  console.log('cp')
 
   if (p.success) return res.status(200).send({ success: true }).end()
 
-  console.log('not found')
-
   res.status(502).send({ message: 'Response from daemon not received', success: false }).end()
-
-
-
-
-
-
-
-
-  // const { success, message, state } = await Daemon.({ zone, newState, Daemon, count:Daemon.inc(Daemon.count) })
-  // if (success === false)
-  //   res.status(502).send({ message })
-  // else 
-  //   res.status(200).send({ state })
-
-
 
 })
 

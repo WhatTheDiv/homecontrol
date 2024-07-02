@@ -63,6 +63,7 @@ try:
             break
         else:
             print(f'{inp}',flush=True)
+            # TODO pull out command and set relays. print success command
 
 
       
