@@ -38,19 +38,11 @@ def turnZoneOn(zone, set_active, z1L, z1R, z2L, z2R):
   print(f"Zone {zone} currently lit? {currState}")
   return set_active
 
-def chewInput(inp):
-    
-    if inp.strip() == 'q':
-      print('quitting-',flush=True)
-      return False
-    else:
-      print(f'Got input -{inp}',flush=True)
-      return True
 
   
 
 print(" ")
-print("-------   Starting Script   -------")
+print("-------   Starting AudioRelays.py   -------")
 print(" ", flush=True)
 
 try: 
@@ -67,6 +59,21 @@ try:
             print('breaking ... ',flush=True)
             break
         time.sleep(1)
+
+
+
+    while True:
+        inp = sys.stdin.readline()
+
+        if inp.strip() == 'q':
+            print('quitting-',flush=True)
+            break
+        elif bool(inp.strip() == False)
+            break
+        else:
+            print(f'Got input -{inp}',flush=True)
+
+
       
 except RuntimeError as err:
     print("RuntimeError in - audioRelays.py - :" + err.args[0], flush=True)

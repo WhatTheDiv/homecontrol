@@ -132,10 +132,6 @@ const initGPIO = async (Daemon) => {
           process.stdin.write('That is all! \n')
           process.stdin.write('q\n')
 
-          setTimeout(() => {
-            console.log('quitting from node ... ')
-            process.stdin.end()
-          }, 4000);
         }, 2000);
       }, 3000);
     }, 3000)
