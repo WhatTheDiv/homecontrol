@@ -69,9 +69,14 @@ try:
 
     print('start',flush=True)
     while True:
-     line = sys.stdin.readline()
-     print(f'reading line ... {line}', flush=True)
-     time.sleep(1)
+        line = ''
+        line += sys.stdin.readline()
+        if line != '':
+            print(f'reading line ... {line}', flush=True)
+            sys.stdout.flush()
+        else:
+            print('...')
+        time.sleep(1)
       
 
     # print(f'cp {sys.stdin.read()}',flush=True)
