@@ -59,7 +59,7 @@ try:
 
     z_2_L = LED(pin=20, initial_value=True)
     z_2_R = LED(pin=21, initial_value=True)
-    cont
+
     while True:
         if chewInput( sys.stdin.readline() ) == False:
             break
