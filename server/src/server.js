@@ -63,7 +63,8 @@ app.post('/toggleAudioZones', async (req, res) => {
   if (!Daemon.active || !Daemon.process)
     return res.status(502).send({ message: 'Deamon inactive', success: false })
 
-  const { newCount, command, err, message } = Daemon.getCommand({ name: 'audio', zone, state: newState ? 1 : 0, count: Daemon.count })
+  const count = Daemon.count
+  const { newCount, command, err, message } = Daemon.getCommand({ name: 'audio', zone, state: newState ? 1 : 0, count })
 
   if (err) return res.status(502).send({ message: 'Deamon returned fail: ' + message, success: false })
 
@@ -76,7 +77,7 @@ app.post('/toggleAudioZones', async (req, res) => {
   setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
 
   while (!p.success || !p.failed) {
-    p.success = await Daemon.check({ outputs: Daemon.outputs, count: newCount, duration: 250 })
+    p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250 })
     console.log('end of while: ', p)
   }
   console.log('cp')

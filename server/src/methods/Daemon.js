@@ -107,7 +107,7 @@ class DaemonClass {
 
       for (const output of outputs) {
         const c = output.slice(0, output.indexOf(':'))
-        console.log('c:', c)
+        console.log('c:', c, ' - count:', count)
         if (Number(c) === count) {
           console.log('found')
           res(true)
