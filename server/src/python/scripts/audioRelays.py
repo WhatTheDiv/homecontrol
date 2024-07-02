@@ -51,7 +51,7 @@ try:
 
 
     def process_input(input):
-        count = input[:1]
+        count = input[:input.find(':')]
         command_index = input.find(':') + 1
         command = input[command_index:command_index + 1]
         print(f'* count:{count}',flush=True)
