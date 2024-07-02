@@ -41,7 +41,7 @@ def turnZoneOn(zone, set_active, z1L, z1R, z2L, z2R):
 def chewInput(inp):
     
     if inp == 'q':
-      print('quitting',flush=True)
+      print('quitting-',flush=True)
       return False
     else:
       print(f'Got input -{inp}',flush=True)
