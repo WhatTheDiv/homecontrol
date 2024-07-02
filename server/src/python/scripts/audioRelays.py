@@ -39,6 +39,7 @@ def turnZoneOn(zone, set_active, z1L, z1R, z2L, z2R):
   return set_active
 
 
+
   
 
 print(" ")
@@ -68,20 +69,8 @@ try:
 
     print('start',flush=True)
     while True:
-      try:
-          print('trying',flush=True)
-          text = ''
-          for line in sys.stdin:
-              text += line
-          if text != '':
-              print(f'Finished reading - "{text}"', flush=True)
-          else:
-              print('...', flush=True)
-          print('sleeping',flush=True)
-          time.sleep(1)
-      except:
-          print('Errored out in loop', flush=True)
-          time.sleep(1)
+     line = sys.stdin.readline()
+     print(f'reading line ... {line}', flush=True)
       
 
     # print(f'cp {sys.stdin.read()}',flush=True)
