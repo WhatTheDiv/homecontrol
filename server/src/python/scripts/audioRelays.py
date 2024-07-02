@@ -80,7 +80,6 @@ try:
       except:
           print('Errored out in loop', flush=True)
           time.sleep(1)
-          pass
       
 
     # print(f'cp {sys.stdin.read()}',flush=True)
