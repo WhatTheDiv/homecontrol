@@ -61,7 +61,7 @@ try:
         if inp.strip() == 'q':
             print('quitting-',flush=True)
             break
-        elif bool(inp.strip() == False):
+        elif bool(inp.strip()) == False:
             break
         else:
             print(f'Got input -{inp}',flush=True)
