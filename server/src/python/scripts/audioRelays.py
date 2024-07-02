@@ -71,6 +71,7 @@ try:
     while True:
      line = sys.stdin.readline()
      print(f'reading line ... {line}', flush=True)
+     time.sleep(1)
       
 
     # print(f'cp {sys.stdin.read()}',flush=True)
