@@ -38,6 +38,20 @@ def turnZoneOn(zone, set_active, z1L, z1R, z2L, z2R):
   print(f"Zone {zone} currently lit? {currState}")
   return set_active
 
+def process_input(input):
+    count = input[:1]
+    command = input.find(':') + 1
+    
+    if command == 'a':
+        zone_index = input.find('z') + 1
+        state_index = input.find('-') + 1
+        zone = input[zone_index:zone_index + 1]
+        state = input[state_index:]
+    
+    print(f'* count:{count}',flush=True)
+    print(f'* command:{command}',flush=True)
+    print(f'* zone:{zone}',flush=True)
+    print(f'* state:{state}',flush=True)
 
   
 
@@ -51,6 +65,7 @@ try:
 
     z_2_L = LED(pin=20, initial_value=True)
     z_2_R = LED(pin=21, initial_value=True)
+    print(f'* type:{z_2_R}',flush=True)
     
 
     while True:
@@ -63,6 +78,7 @@ try:
             break
         else:
             print(f'{inp}',flush=True)
+            process_input(inp)
             # TODO pull out command and set relays. print success command
 
 

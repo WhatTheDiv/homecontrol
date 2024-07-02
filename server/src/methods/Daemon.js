@@ -18,12 +18,8 @@ class DaemonClass {
     console.log('(From Daemon)', d)
     this.outputs.push(d)
 
-    console.log('outputs.length: ', this.outputs.length)
-
-    if (this.outputs.length > this.maxCount) {
+    if (this.outputs.length > this.maxCount)
       this.outputs.splice(0, 1)
-      console.log('outputs spliced: ', this.outputs)
-    }
   }
 
   init = async () => {
