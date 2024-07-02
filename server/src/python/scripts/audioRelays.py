@@ -40,7 +40,8 @@ def turnZoneOn(zone, set_active, z1L, z1R, z2L, z2R):
 
 def process_input(input):
     count = input[:1]
-    command = input.find(':') + 1
+    command_index = input.find(':') + 1
+    command = input[command_index:command_index + 1]
     
     if command == 'a':
         zone_index = input.find('z') + 1
