@@ -52,8 +52,6 @@ try:
     z_2_L = LED(pin=20, initial_value=True)
     z_2_R = LED(pin=21, initial_value=True)
     
-    z_1_R.on()
-    z_2_L.off()
 
     while True:
         inp = sys.stdin.readline()
