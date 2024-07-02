@@ -124,8 +124,19 @@ const initGPIO = async (Daemon) => {
 
       setTimeout(() => {
         console.log('node sending again')
-        process.stdin.write('hello again from node!')
-        process.stdin.end()
+        process.stdin.write('hello again from node! \n')
+
+
+        setTimeout(() => {
+          console.log('node sending again')
+          process.stdin.write('That is all! \n')
+          process.stdin.write('q\n')
+
+          setTimeout(() => {
+            console.log('quitting .. ')
+            process.stdin.end()
+          }, 1000);
+        }, 2000);
       }, 3000);
     }, 3000)
 
@@ -151,7 +162,7 @@ const initGPIO = async (Daemon) => {
 
     process.stdout.on('data', data => {
       const d = data.toString()
-      console.log('--- stdout data: ', d)
+      console.log('*', d)
     })
 
     process.stdin.on('data', data => {

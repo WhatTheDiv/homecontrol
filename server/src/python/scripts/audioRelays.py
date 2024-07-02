@@ -38,73 +38,39 @@ def turnZoneOn(zone, set_active, z1L, z1R, z2L, z2R):
   print(f"Zone {zone} currently lit? {currState}")
   return set_active
 
-
+def chewInput(input):
+    print(f'Got input -{input}',flush=True)
+    switch input {
+      case 'q':
+        print('quitting',flush=True)
+        return False
+      default:
+        return True
+    }
+    
 
   
 
 print(" ")
 print("-------   Starting Script   -------", sys.argv[2])
-print(" ")
-
-if len(sys.argv) <= 2:
-      raise Exception(" Not given zone and state")
-
-zone = int(sys.argv[1])
-state = sys.argv[2]
-
-zone_one_L = LED(pin=18)
-zone_one_R = LED(pin=19)
-
-zone_two_L = LED(pin=20)
-zone_two_R = LED(pin=21)
+print(" ", flush=True)
 
 try: 
+    z_1_L = LED(pin=18, initial_value=True)
+    z_1_R = LED(pin=19, initial_value=True)
 
-    print("Toggling relay, Zone", zone, "- Requesting new active state:",state)
-    print("New active state now?", turnZoneOn(zone, state, zone_one_L, zone_one_R, zone_two_L,zone_two_R), flush=True)
-    
-    print('cp',flush=True)
-    time.sleep(1)
-
-
-    print('start',flush=True)
-    count = 0
+    z_2_L = LED(pin=20, initial_value=True)
+    z_2_R = LED(pin=21, initial_value=True)
+    cont
     while True:
-        text = ''
-        text += sys.stdin.readline()
-        if text != '':
-            print(f'reading text ... {text}', flush=True)
-        else:
-            print('...')
+        if chewInput( sys.stdin.readline() ) == False:
+            break
         time.sleep(1)
       
-
-    # print(f'cp {sys.stdin.read()}',flush=True)
-
-    # for line in sys.stdin:
-    #     print('has line', flush=True)
-    #     print('readline 1:'+line.rstrip(), flush=True)
-        
-    
-    # print('5 ... ', flush=True)
-    # time.sleep(5)
-
-    # for line in sys.stdin:
-    #     print('readline 2:',sys.stdin.readline(), flush=True)
-
-
-    # while True:
-
-    #     if(len(sys.stdin.readline()) > 0):
-    #             print('got stdin: ', line.strip() , flush=True)
-    #     else: 
-            
-    
-  
 except RuntimeError as err:
     print("RuntimeError in - audioRelays.py - :" + err.args[0], flush=True)
 
 finally:
     print(" ")
-    print("-------   Script complete    -------")
+    print("-------   Script Terminated    -------")
     print(" ", flush=True)
