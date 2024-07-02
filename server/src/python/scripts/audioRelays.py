@@ -68,12 +68,13 @@ try:
 
 
     print('start',flush=True)
+    count = 0
     while True:
-        line = ''
-        line += sys.stdin.readline()
-        if line != '':
-            print(f'reading line ... {line}', flush=True)
-            sys.stdout.flush()
+        text = ''
+        text += sys.stdin[count]
+        if text != '':
+            count++
+            print(f'reading text ... {text}', flush=True)
         else:
             print('...')
         time.sleep(1)
