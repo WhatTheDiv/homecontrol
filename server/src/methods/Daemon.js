@@ -21,9 +21,8 @@ class DaemonClass {
     console.log('outputs.length: ', this.outputs.length)
 
     if (this.outputs.length > this.maxCount) {
-      const rm = this.outputs.splice(0, 1)
+      this.outputs.splice(0, 1)
       console.log('outputs spliced: ', this.outputs)
-      console.log('removed: ', rm)
     }
   }
 
