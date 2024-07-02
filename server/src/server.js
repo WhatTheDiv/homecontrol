@@ -76,7 +76,7 @@ app.post('/toggleAudioZones', async (req, res) => {
 
   setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
 
-  while (!p.success || !p.failed) {
+  while (!p.success && !p.failed) {
     p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250 })
     console.log('end of while: ', p)
   }
