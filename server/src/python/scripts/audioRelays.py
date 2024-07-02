@@ -42,7 +42,7 @@ def chewInput(inp):
     
     if inp == 'q':
       print('quitting-',flush=True)
-      return False
+      return True
     else:
       print(f'Got input -{inp}',flush=True)
       return True
