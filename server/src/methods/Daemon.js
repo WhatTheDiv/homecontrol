@@ -3,7 +3,7 @@ class DaemonClass {
     this.active = false
     this.process = null
     this.outputs = []
-    this.count = 0
+    this.count = 1
     this.maxCount = 10
     this.checkTimeout_seconds = 2
   }
