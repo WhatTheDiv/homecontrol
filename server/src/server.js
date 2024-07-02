@@ -71,17 +71,16 @@ app.post('/toggleAudioZones', async (req, res) => {
   Daemon.process.stdin.write(command)
 
   let pass = false
+  let p = { success: false, failed: false }
 
-  setTimeout(() => {
-    console.log('-------- timeout reached')
-    if (!pass) return res.status(502).send({ message: 'Response from daemon not received', success: false })
-  }, Daemon.checkTimeout_seconds * 1000);
+  setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
 
-  while (!pass) {
-    pass = await Daemon.check({ outputs: Daemon.outputs, count: newCount, duration: 250 })
+  while (!p.success || !p.failed) {
+    p.success = await Daemon.check({ outputs: Daemon.outputs, count: newCount, duration: 250 })
   }
 
-  return res.status(200).send({ success: true })
+  if (p.success) return res.status(200).send({ success: true })
+  else res.status(502).send({ message: 'Response from daemon not received', success: false })
 
 
 
