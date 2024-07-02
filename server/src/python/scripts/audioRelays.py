@@ -71,9 +71,8 @@ try:
     count = 0
     while True:
         text = ''
-        text += sys.stdin[count]
+        text += sys.stdin.readline()
         if text != '':
-            count += 1
             print(f'reading text ... {text}', flush=True)
         else:
             print('...')
