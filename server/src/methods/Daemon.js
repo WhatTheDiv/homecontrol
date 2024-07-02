@@ -8,6 +8,23 @@ class DaemonClass {
     this.checkTimeout_seconds = 2
   }
 
+  processOutput = (data) => {
+    const _d = data.toString()
+    if ('*' === _d.slice(0, 1))
+      return
+
+    const d = _d.indexOf('\n') >= 0 ? _d.slice(0, _d.indexOf('\n')) : _d
+
+    console.log('(From Daemon)', d)
+    this.outputs.push(d)
+
+    console.log('outputs.length: ', this.outputs.length)
+
+    if (this.outputs.length > this.maxCount) {
+      this.outputs.splice(0, 1)
+    }
+  }
+
   init = async () => {
     const controller = new AbortController()
 
@@ -42,15 +59,11 @@ class DaemonClass {
       });
 
       process.stdout.on('data', data => {
-        const _d = data.toString()
-        if ('*' === _d.slice(0, 1)) return
 
-        const d = _d.indexOf('\n') >= 0 ? _d.slice(0, _d.indexOf('\n')) : _d
 
-        console.log('(server)', d)
-        this.outputs.push(d)
+        this.processOutput.bind(this)(data)
 
-        if (this.outputs.length > this.maxCount) this.outputs.splice(0, 1)
+
       })
 
       process.stdin.on('data', data => {
