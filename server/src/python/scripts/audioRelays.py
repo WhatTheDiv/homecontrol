@@ -8,7 +8,7 @@ from signal import pause
 try: 
 
     z_1_L = LED(pin=18, initial_value=True)
-    z_1_R = LED(pin=19, initial_value=False)
+    z_1_R = LED(pin=19, initial_value=True)
 
     z_2_L = LED(pin=20, initial_value=True)
     z_2_R = LED(pin=21, initial_value=True)
@@ -23,12 +23,12 @@ try:
             elif bool(set_state):
                 print("* Setting zone 1 to active")
                 z_1_L.on()
-                z_1_r.on()
+                z_1_R.on()
                 return True
             else:
                 print("* Setting zone 1 to inactive")
                 z_1_L.off()
-                z_1_r.off()
+                z_1_R.off()
                 return True
         elif zone == 2:
             curr_state = z_2_L.is_lit
@@ -39,12 +39,12 @@ try:
             elif bool(set_state):
                 print("* Setting zone 2 to active")
                 z_2_L.on()
-                z_2_r.on()
+                z_2_R.on()
                 return True
             else:
                 print("* Setting zone 2 to inactive")
                 z_2_L.off()
-                z_2_r.off()
+                z_2_R.off()
                 return True
         else:
             return False
