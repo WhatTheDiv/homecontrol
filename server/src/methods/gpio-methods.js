@@ -104,12 +104,12 @@ const testLeds = async () => {
 
 const initGPIO = async (Daemon) => {
   // return new Promise((res, rej) => {
+  const { spawn } = require('child_process')
+  const controller = new AbortController()
 
 
   // })
   try {
-    const { spawn } = require('child_process')
-    const controller = new AbortController()
 
     // const process = spawn('cd src/python && env/bin/python3 scripts/audioRelays.py', ['2', 'True'], { detached: true })
     const process = spawn('python3 ./scripts/audioRelays.py', ['2', 'True'], { cwd: './src/python', shell: true, signal: controller.signal })
@@ -166,6 +166,8 @@ const initGPIO = async (Daemon) => {
     console.error('Error in child process: ', e)
     Daemon.active = false
     console.log('Exiting Daemon')
+    controller.abort()
+
   }
 
 }
