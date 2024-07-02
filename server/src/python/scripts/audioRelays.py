@@ -73,7 +73,7 @@ try:
         text = ''
         text += sys.stdin[count]
         if text != '':
-            count++
+            count += 1
             print(f'reading text ... {text}', flush=True)
         else:
             print('...')
