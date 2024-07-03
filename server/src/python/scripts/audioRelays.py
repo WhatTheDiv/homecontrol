@@ -28,13 +28,13 @@ try:
                 return True
             elif bool(set_state):
                 # print("* Setting zone 1 to active")
-                z_1_L.on()
-                z_1_R.on()
+                z_1_L.off()
+                z_1_R.off()
                 return True
             else:
                 # print("* Setting zone 1 to inactive")
-                z_1_L.off()
-                z_1_R.off()
+                z_1_L.on()
+                z_1_R.on()
                 return True
         elif zone == 2:
             curr_state = z_2_L.is_lit
@@ -44,13 +44,13 @@ try:
                 return True
             elif bool(set_state):
                 # print("* Setting zone 2 to active")
-                z_2_L.on()
-                z_2_R.on()
+                z_2_L.off()
+                z_2_R.off()
                 return True
             else:
                 # print("* Setting zone 2 to inactive")
-                z_2_L.off()
-                z_2_R.off()
+                z_2_L.on()
+                z_2_R.on()
                 return True
         else:
             return False
