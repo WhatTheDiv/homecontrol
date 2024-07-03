@@ -28,16 +28,63 @@ const HomeState = {
     inputs: [],
     menuInput: { id: 'null', name: 'null' },
     tvURL: 'http://192.168.10.109:8060'
+  },
+  audio: {
+    zone_1: {
+      name: "Zone 1",
+      active: true,
+      updated: true
+    },
+    zone_2: {
+      name: "Zone 2",
+      active: true,
+      updated: true
+    }
   }
+
 }
 
 const Daemon = new DaemonClass()
 
 app.get('/initialState', async (req, res) => {
+  // Get tv state // 
   HomeState.tv = { ...HomeState.tv, ... await getTvState(HomeState.tv) }
-  const indoorState = await getIndoorTempReading()
-  HomeState.temp.indoor_temp = indoorState.temp
-  HomeState.temp.indoor_humidity = indoorState.humidity
+
+  // Get audio state // 
+  if (!Daemon.active || !Daemon.process) {
+    HomeState.audio.zone_1.updated = false
+    HomeState.audio.zone_1.active = true
+    HomeState.audio.zone_2.updated = false
+    HomeState.audio.zone_2.active = true
+  }
+  else {
+    const count = Daemon.count
+    const { newCount, command, err, message } = Daemon.getCommand({ name: 'state', count })
+
+    if (err) return res.status(502).send({ message: 'Deamon failed at send: ' + message, success: false })
+    Daemon.count = newCount
+    Daemon.process.stdin.write(command)
+
+    const p = { success: false, failed: false }
+
+    setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
+
+    while (!p.success && !p.failed)
+      p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250 })
+
+    if (p.success) HomeState.audio = {
+      ...Daemon.format_audio_status({
+        audio: HomeState.audio,
+        string: Daemon.outputs.find(string => string.indexOf(`${count}:`) >= 0)
+      })
+    }
+    else {
+      HomeState.audio.zone_1.updated = false
+      HomeState.audio.zone_2.updated = false
+    }
+
+  }
+
 
   res.status(200).send({ ...HomeState })
 })

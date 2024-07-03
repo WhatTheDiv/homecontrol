@@ -6,7 +6,7 @@ class DaemonClass {
     this.count = 1
     this.maxCount = 10
     this.checkTimeout_seconds = 2
-    this.log = true
+    this.log = false
   }
 
   processOutput = (data) => {
@@ -108,11 +108,15 @@ class DaemonClass {
       case 'audio':
         obj.name = 'a'
         obj.cmd = 'z' + zone + '-' + state
+        break;
+      case 'state':
+        obj.name = 's'
+        obj.cmd = false
 
     }
     // 1:a/z1-0       =     [ count : name / command ]
 
-    return { newCount: this.inc(count), command: `${obj.count}:${obj.name}/${obj.cmd}\n` }
+    return { newCount: this.inc(count), command: `${obj.count}:${obj.name}${obj.cmd && '/' + obj.cmd}\n` }
   }
 
   check = async ({ outputs, count, duration }) => {
@@ -128,6 +132,23 @@ class DaemonClass {
       const item = outputs.find((output) => Number(output.slice(0, output.indexOf(':'))) === count)
 
     })
+  }
+
+  format_audio_status = ({ string, audio }) => {
+    const z1_active = (string.slice(string.indexOf('z1-') + 3, string.indexOf(','))).toLowerCase() === 'true'
+    const z2_active = (string.slice(string.indexOf('z2-') + 3)).toLowerCase() === 'true'
+
+    const a = {
+      zone_1: {
+        ...audio.zone_1, updated: true, active: z1_active
+      },
+      zone_2: {
+        ...audio.zone_2, updated: true, active: z2_active
+      }
+    }
+
+    console.log('a', a)
+    return a
   }
 }
 

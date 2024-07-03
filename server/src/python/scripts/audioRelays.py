@@ -5,6 +5,12 @@ import sys
 import select
 from signal import pause
 
+
+print("* ")
+print("-------   Starting AudioRelays.py   -------")
+print(" ", flush=True)
+
+
 try: 
 
     z_1_L = LED(pin=18, initial_value=True)
@@ -58,6 +64,7 @@ try:
         # print(f'* command:{command}',flush=True)
 
         if command == 'a':
+          # Toggle Audio
             zone_index = input.find('z') + 1
             state_index = input.find('-') + 1
             zone = input[zone_index:zone_index + 1]
@@ -65,17 +72,15 @@ try:
             # print(f'* zone:{zone}',flush=True)
             # print(f'* state:{state}',flush=True)
             passed = toggleZone(int(zone), int(state))
+
             return f"{count}:Success-{passed}"
-              
         
-        
-        
+        elif command == 's':
+          #  Get State
+            z1_active = z_1_L.is_lit
+            z2_active = z_2_L.is_lit
 
-      
-
-    print("* ")
-    print("-------   Starting AudioRelays.py   -------")
-    print(" ", flush=True)
+            return f"{count}:z1-{z1_active},z2-{z2_active}"
 
 
     while True:
@@ -90,7 +95,6 @@ try:
             print(f'{process_input(inp)}',flush=True)
 
 
-      
 except RuntimeError as err:
     print("RuntimeError in - audioRelays.py - :" + err.args[0], flush=True)
 
