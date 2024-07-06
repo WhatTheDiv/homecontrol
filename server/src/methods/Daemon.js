@@ -128,15 +128,16 @@ class DaemonClass {
         else res(true)
       }, duration);
 
-      console.log('checking outputs: ', outputs)
       const item = outputs.find((output) => Number(output.slice(0, output.indexOf(':'))) === count)
 
     })
   }
 
-  format_audio_status = ({ string, audio }) => {
-    const z1_active = (string.slice(string.indexOf('z1-') + 3, string.indexOf(','))).toLowerCase() === 'true'
-    const z2_active = (string.slice(string.indexOf('z2-') + 3)).toLowerCase() === 'true'
+  format_audio_and_temp_status = ({ string, audio }) => {
+    const z1_active = (string.slice(string.indexOf('z1-') + 3, string.indexOf(',z2-'))).toLowerCase() === 'true'
+    const z2_active = (string.slice(string.indexOf('z2-') + 3, string.indexOf(string.indexOf(',t-')))).toLowerCase() === 'true'
+    const temp = string.slice(string.indexOf(',t-') + 3, string.indexOf(',h-'))
+    const humidity = string.slice(string.indexOf(',h-') + 3)
 
     const a = {
       zone_1: {
@@ -146,9 +147,11 @@ class DaemonClass {
         ...audio.zone_2, updated: true, active: z2_active
       }
     }
+    const t = {
+      temp, humidity
+    }
 
-    console.log('a', a)
-    return a
+    return { a, t }
   }
 }
 
