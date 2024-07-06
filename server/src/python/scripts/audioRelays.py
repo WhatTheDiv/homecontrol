@@ -13,11 +13,10 @@ print(" ", flush=True)
 
 try: 
 
-    z_1_L = LED(pin=18, initial_value=True)
-    z_1_R = LED(pin=19, initial_value=True)
-
-    z_2_L = LED(pin=20, initial_value=True)
-    z_2_R = LED(pin=21, initial_value=True)
+    z_1_L = LED(pin=18, initial_value=False)
+    z_1_R = LED(pin=19, initial_value=False)
+    z_2_L = LED(pin=20, initial_value=False)
+    z_2_R = LED(pin=21, initial_value=False)
 
     def toggleZone(zone, set_state):
         if zone == 1:
