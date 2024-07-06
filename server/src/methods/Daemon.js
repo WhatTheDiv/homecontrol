@@ -137,8 +137,8 @@ class DaemonClass {
   format_audio_and_temp_status = ({ string, audio }) => {
     const z1_active = (string.slice(string.indexOf('z1-') + 3, string.indexOf(',z2-'))).toLowerCase() === 'true'
     const z2_active = (string.slice(string.indexOf('z2-') + 3, string.indexOf(string.indexOf(',t-')))).toLowerCase() === 'true'
-    const temp = string.slice(string.indexOf(',t-' + 3), string.indexOf(',h-'))
-    const humidity = string.slice(string.indexOf(',h-' + 3))
+    const temp = string.slice(string.indexOf(',t-') + 3, string.indexOf(',h-'))
+    const humidity = string.slice(string.indexOf(',h-') + 3)
 
     const a = {
       zone_1: {
