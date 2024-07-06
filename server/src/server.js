@@ -31,12 +31,12 @@ const HomeState = {
   },
   audio: {
     zone_1: {
-      name: "Zone 1",
+      name: "Bedroom",
       active: true,
       updated: true
     },
     zone_2: {
-      name: "Zone 2",
+      name: "Living Room",
       active: true,
       updated: true
     }
