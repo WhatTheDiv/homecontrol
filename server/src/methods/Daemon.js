@@ -1,0 +1,156 @@
+class DaemonClass {
+  constructor() {
+    this.active = false
+    this.process = null
+    this.outputs = []
+    this.count = 1
+    this.maxCount = 10
+    this.checkTimeout_seconds = 2
+    this.log = false
+  }
+
+  processOutput = (data) => {
+    const _d = data.toString()
+
+    this.log && console.log('(From Daemon)', _d)
+
+    if ('*' === _d.slice(0, 1)) {
+      return
+    }
+    else
+      console.log('pushing input to outputs: ')
+
+    const d = _d.indexOf('\n') >= 0 ? _d.slice(0, _d.indexOf('\n')) : _d
+
+    console.log('(From Daemon)', d)
+    this.outputs.push(d)
+
+    if (this.outputs.length > this.maxCount)
+      this.outputs.splice(0, 1)
+  }
+
+  init = async () => {
+    const controller = new AbortController()
+
+    try {
+      const { spawn } = require('child_process')
+      const process = spawn('python3 ./scripts/audioRelays.py', [], { cwd: './src/python', shell: true, signal: controller.signal })
+
+
+
+      // process.stdin.write('hello from node! \n')
+
+      process.on('disconnect', (data) => {
+        console.log(`--- disconnected: ${data}`);
+        controller.abort()
+        this.process = null
+        this.active = false
+      });
+
+      process.on('error', (e) => {
+        // throw new Error(`stderr: ${data}`);
+        console.log('--- errored: ', e)
+        controller.abort()
+        this.process = null
+        this.active = false
+      });
+
+      process.on('close', (code) => {
+        console.log(`--- closed: code ${code}`);
+        controller.abort()
+        this.process = null
+        this.active = false
+      });
+
+      process.stdout.on('data', data => {
+
+
+        this.processOutput.bind(this)(data)
+
+
+      })
+
+      process.stdin.on('data', data => {
+        console.log('--- stdin data: ', data)
+      })
+
+      process.stderr.on('data', e => {
+        console.log('--- stderr: ', e.toString())
+        controller.abort()
+        this.process = null
+        this.active = false
+      })
+
+      this.process = process
+      this.active = true
+
+    } catch (e) {
+      console.error('Error in child process: ', e)
+      this.process = null
+      this.active = false
+      console.log('Exiting Daemon')
+      controller.abort()
+    }
+  }
+
+  inc = (count) => {
+    if (count >= this.maxCount) return 1
+    else if (count < this.maxCount) return count += 1
+  }
+
+  getCommand = ({ name, zone = -1, state = 0, count }) => {
+    if (!this.process)
+      return { err: true, message: 'Daemon is dead' }
+
+    const obj = { count }
+
+    switch (name) {
+      case 'audio':
+        obj.name = 'a'
+        obj.cmd = 'z' + zone + '-' + state
+        break;
+      case 'state':
+        obj.name = 's'
+        obj.cmd = false
+
+    }
+    // 1:a/z1-0       =     [ count : name / command ]
+
+    return { newCount: this.inc(count), command: `${obj.count}:${obj.name}${obj.cmd && '/' + obj.cmd}\n` }
+  }
+
+  check = async ({ outputs, count, duration }) => {
+    return await new Promise((res) => {
+
+      setTimeout(() => {
+        if (item === undefined) res(false)
+        else if ((item.slice(item.indexOf('-') + 1)).toLowerCase() === 'false') res(false)
+        else res(true)
+      }, duration);
+
+      console.log('checking outputs: ', outputs)
+      const item = outputs.find((output) => Number(output.slice(0, output.indexOf(':'))) === count)
+
+    })
+  }
+
+  format_audio_status = ({ string, audio }) => {
+    const z1_active = (string.slice(string.indexOf('z1-') + 3, string.indexOf(','))).toLowerCase() === 'true'
+    const z2_active = (string.slice(string.indexOf('z2-') + 3)).toLowerCase() === 'true'
+
+    const a = {
+      zone_1: {
+        ...audio.zone_1, updated: true, active: z1_active
+      },
+      zone_2: {
+        ...audio.zone_2, updated: true, active: z2_active
+      }
+    }
+
+    console.log('a', a)
+    return a
+  }
+}
+
+module.exports = { DaemonClass }
+

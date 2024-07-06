@@ -5,31 +5,34 @@ const getIndoorTempReading = async () => {
   return await new Promise(async (res, rej) => {
     let returned = false
     const returnObj = {
-      temp: 100,
-      humidity: 100
+      temp: 999,
+      humidity: 999
     }
 
     try {
-      const childProcess = await exec('cd src/dht22 && python3 humidity.py', (error, stdout, stderr) => {
+      const childProcess = await exec('cd src/python && env/bin/python3 scripts/humidity.py', (error, stdout, stderr) => {
+
         if (error) {
           console.error('Error in process, server temp reading: ', stderr)
           throw new Error("Error in process, server temp reading: " + error)
         }
-        if (stderr) {
+        else if (stderr) {
           console.error('Temperature read created error: ', stderr)
           throw new Error("Sensor error: " + stdout)
         }
-        if (stdout.indexOf('Temp:') === -1) {
+        else if (stdout.indexOf('Temp:') === -1) {
           console.error('Bad temperature response from server: ', stdout)
           res(returnObj)
         }
+        else {
+          const temp = Number(stdout.slice(stdout.indexOf("Temp:") + 5, stdout.indexOf('F')))
+          const humidity = Number(stdout.slice(stdout.indexOf('Humidity:') + 9, stdout.indexOf('%')))
 
-        const temp = Number(stdout.slice(stdout.indexOf("Temp:") + 5, stdout.indexOf('F')))
-        const humidity = Number(stdout.slice(stdout.indexOf('Humidity:') + 9, stdout.indexOf('%')))
+          console.log('Got temp and humidity', { temp, humidity })
+          returnObj.temp = temp
+          returnObj.humidity = humidity
+        }
 
-        console.log('Got temp and humidity', { temp, humidity })
-        returnObj.temp = temp
-        returnObj.humidity = humidity
 
       })
 
@@ -60,7 +63,7 @@ const testLeds = async () => {
 
 
     try {
-      const childProcess = await exec('cd src/dht22 && python3 neopixel.py', (error, stdout, stderr) => {
+      const childProcess = await exec('cd src/python && env/bin/python3 neopixel.py', (error, stdout, stderr) => {
         if (error) {
           console.error("testLED's, error before child process:", error)
           throw new Error("testLED's, error before child process:" + error)

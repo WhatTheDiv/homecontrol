@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "git pull && nodemon src/server.js",
-    "env": "source src/dht22/env/bin/activate"
+    "start": "nodemon src/server.js dev",
+    "live": "node src/server.js live",
+    "env": "source src/python/.venv/bin/activate "
   },
   "author": "",
   "license": "ISC",

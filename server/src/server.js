@@ -1,9 +1,10 @@
 const express = require('express')
 const cors = require('cors')
 const app = express()
-const port = 3000
+const port = process.argv[2] === 'live' ? 3000 : 3001
 const { handleButtonPress, getTvState, test } = require('./methods/tv-methods.js')
 const { getIndoorTempReading } = require('./methods/gpio-methods.js')
+const { DaemonClass } = require('./methods/Daemon')
 
 app.use(cors())
 app.use(express.json())
@@ -17,8 +18,8 @@ const HomeState = {
     blue: 119
   },
   temp: {
-    indoor_temp: 99,
-    indoor_humidity: 99,
+    indoor_temp: 0,
+    indoor_humidity: 0,
     showTwoDay: true
   },
   tv: {
@@ -27,15 +28,63 @@ const HomeState = {
     inputs: [],
     menuInput: { id: 'null', name: 'null' },
     tvURL: 'http://192.168.10.109:8060'
+  },
+  audio: {
+    zone_1: {
+      name: "Bedroom",
+      active: true,
+      updated: true
+    },
+    zone_2: {
+      name: "Living Room",
+      active: true,
+      updated: true
+    }
   }
+
 }
 
-app.get('/initialState', async (req, res) => {
+const Daemon = new DaemonClass()
 
+app.get('/initialState', async (req, res) => {
+  // Get tv state // 
   HomeState.tv = { ...HomeState.tv, ... await getTvState(HomeState.tv) }
-  const indoorState = await getIndoorTempReading()
-  HomeState.temp.indoor_temp = indoorState.temp
-  HomeState.temp.indoor_humidity = indoorState.humidity
+
+  // Get audio state // 
+  if (!Daemon.active || !Daemon.process) {
+    HomeState.audio.zone_1.updated = false
+    HomeState.audio.zone_1.active = true
+    HomeState.audio.zone_2.updated = false
+    HomeState.audio.zone_2.active = true
+  }
+  else {
+    const count = Daemon.count
+    const { newCount, command, err, message } = Daemon.getCommand({ name: 'state', count })
+
+    if (err) return res.status(502).send({ message: 'Deamon failed at send: ' + message, success: false })
+    Daemon.count = newCount
+    Daemon.process.stdin.write(command)
+
+    const p = { success: false, failed: false }
+
+    setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
+
+    while (!p.success && !p.failed)
+      p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250 })
+
+    if (p.success) HomeState.audio = {
+      ...Daemon.format_audio_status({
+        audio: HomeState.audio,
+        string: Daemon.outputs.find(string => string.indexOf(`${count}:`) >= 0)
+      })
+    }
+    else {
+      HomeState.audio.zone_1.updated = false
+      HomeState.audio.zone_2.updated = false
+    }
+
+  }
+
 
   res.status(200).send({ ...HomeState })
 })
@@ -45,6 +94,8 @@ app.get('/test', async (req, res) => {
   res.status(200).send({ success: true })
 })
 
+
+
 app.post('/toggleLightsActive', (req, res) => {
   const { mode, newState, action } = req.body
 
@@ -52,6 +103,43 @@ app.post('/toggleLightsActive', (req, res) => {
 
   res.status(200).end()
 })
+
+app.post('/toggleAudioZones', async (req, res) => {
+  const { zone, newState } = req.body
+
+  if (!Daemon.active || !Daemon.process)
+    return res.status(502).send({ message: 'Deamon inactive', success: false })
+
+  const count = Daemon.count
+  const { newCount, command, err, message } = Daemon.getCommand({ name: 'audio', zone, state: newState ? 1 : 0, count })
+
+  if (err) return res.status(502).send({ message: 'Deamon failed at send: ' + message, success: false })
+
+  Daemon.count = newCount
+  Daemon.process.stdin.write(command)
+
+  const p = { success: false, failed: false }
+
+  setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
+
+  while (!p.success && !p.failed)
+    p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250 })
+
+  if (p.success) return res.status(200).send({ success: true }).end()
+
+  res.status(502).send({ message: 'Daemon failed at receive', success: false }).end()
+
+})
+
+app.post('/setZoneName', ((req, res) => {
+  const { zone, newName } = req.body
+  if (!zone || newName.length <= 0 || newName.length > 20)
+    return res.status(406).send({ message: 'Missing zone or name missing criteria' }).end()
+
+  console.log('Good name change: ', newName)
+  HomeState.audio[`zone_${zone}`].name = newName
+  return res.status(200).end()
+}))
 
 app.post('/setColor', (req, res) => {
   const { r, g, b } = req.body.output
@@ -92,34 +180,7 @@ app.post('/remote', async (req, res) => {
 })
 
 app.listen(port, () => {
-  console.log('Starting server on port [', port, '], dev: ' + process.env.NODE_ENV_DEV)
+  Daemon.init.bind(Daemon)()
+  console.log('Starting server on port [', port, '] ')
 })
-
-
-const testReq = async () => {
-  return await new Promise(async (res, rej) => {
-    try {
-      const url = `${HomeState.tv.tvURL}/keydown/power`
-      const options = {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        method: 'POST'
-      }
-
-      const result = await fetch(url, options)
-      // const r = await result.json()
-      console.log(result.status, ', ', result.body)
-
-
-      res(false)
-
-
-
-    } catch (e) {
-      console.log('error: ', e.message)
-      res(false)
-    }
-  })
-}
 
