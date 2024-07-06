@@ -128,7 +128,6 @@ class DaemonClass {
         else res(true)
       }, duration);
 
-      console.log('checking outputs: ', outputs)
       const item = outputs.find((output) => Number(output.slice(0, output.indexOf(':'))) === count)
 
     })
@@ -152,8 +151,6 @@ class DaemonClass {
       temp, humidity
     }
 
-    console.log('string: ', string)
-    console.log('t: ', t)
     return { a, t }
   }
 }
