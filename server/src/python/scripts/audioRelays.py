@@ -5,6 +5,7 @@ import sys
 import select
 from signal import pause
 import adafruit_ahtx0
+import board
 
 
 print("* ")
