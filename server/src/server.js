@@ -84,6 +84,7 @@ app.get('/initialState', async (req, res) => {
     HomeState.audio = a
     HomeState.temp.indoor_temp = temp
     HomeState.temp.indoor_humidity = humidity
+    console.log('#################### t:', HomeState.temp)
   }
   else {
     HomeState.audio.zone_1.updated = false
