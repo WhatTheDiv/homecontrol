@@ -152,7 +152,7 @@ class DaemonClass {
       temp, humidity
     }
 
-    console.log('a', a)
+    console.log('string: ', string)
     return { a, t }
   }
 }
