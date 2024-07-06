@@ -137,7 +137,7 @@ app.post('/setZoneName', ((req, res) => {
     return res.status(406).send({ message: 'Missing zone or name missing criteria' }).end()
 
   HomeState.audio[`zone_${zone}`].name = newName
-  return res.status(200).end()
+  return res.status(200)
 }))
 
 app.post('/setColor', (req, res) => {
