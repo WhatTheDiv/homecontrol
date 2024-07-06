@@ -76,8 +76,8 @@ try:
         
         elif command == 's':
           #  Get State
-            z1_active = z_1_L.is_lit
-            z2_active = z_2_L.is_lit
+            z1_active = not z_1_L.is_lit
+            z2_active = not z_2_L.is_lit
 
             return f"{count}:z1-{z1_active},z2-{z2_active}"
 
