@@ -139,7 +139,7 @@ app.post('/setZoneName', ((req, res) => {
 
   console.log('good name change: ', newName)
   HomeState.audio[`zone_${zone}`].name = newName
-  return res.status(200)
+  return res.status(200).end()
 }))
 
 app.post('/setColor', (req, res) => {
