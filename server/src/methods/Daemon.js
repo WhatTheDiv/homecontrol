@@ -153,6 +153,7 @@ class DaemonClass {
     }
 
     console.log('string: ', string)
+    console.log('t: ', t)
     return { a, t }
   }
 }
