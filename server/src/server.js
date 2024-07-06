@@ -132,12 +132,11 @@ app.post('/toggleAudioZones', async (req, res) => {
 })
 
 app.post('/setZoneName', ((req, res) => {
-  console.log(' set zone cp ')
   const { zone, newName } = req.body
   if (!zone || newName.length <= 0 || newName.length > 20)
     return res.status(406).send({ message: 'Missing zone or name missing criteria' }).end()
 
-  console.log('good name change: ', newName)
+  console.log('Good name change: ', newName)
   HomeState.audio[`zone_${zone}`].name = newName
   return res.status(200).end()
 }))
