@@ -50,40 +50,47 @@ app.get('/initialState', async (req, res) => {
   // Get tv state // 
   HomeState.tv = { ...HomeState.tv, ... await getTvState(HomeState.tv) }
 
-  // Get audio state // 
+  // Get audio state & temp // 
   if (!Daemon.active || !Daemon.process) {
     HomeState.audio.zone_1.updated = false
     HomeState.audio.zone_1.active = true
     HomeState.audio.zone_2.updated = false
     HomeState.audio.zone_2.active = true
+    return res.status(200).send({ ...HomeState })
+  }
+
+
+  const count = Daemon.count
+  const { newCount, command, err, message } = Daemon.getCommand({ name: 'state', count })
+
+  if (err) return res.status(502).send({ message: 'Deamon failed at send: ' + message, success: false })
+  Daemon.count = newCount
+  Daemon.process.stdin.write(command)
+
+  const p = { success: false, failed: false }
+
+  setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
+
+  while (!p.success && !p.failed)
+    p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250 })
+
+  if (p.success) {
+    const { a, t } = Daemon.format_audio_and_temp_status({
+      audio: HomeState.audio,
+      string: Daemon.outputs.find(string => string.indexOf(`${count}:`) >= 0)
+    })
+    const { temp, humidity } = t
+
+    HomeState.audio = a
+    HomeState.temp.indoor_temp = temp
+    HomeState.temp.indoor_humidity = humidity
   }
   else {
-    const count = Daemon.count
-    const { newCount, command, err, message } = Daemon.getCommand({ name: 'state', count })
-
-    if (err) return res.status(502).send({ message: 'Deamon failed at send: ' + message, success: false })
-    Daemon.count = newCount
-    Daemon.process.stdin.write(command)
-
-    const p = { success: false, failed: false }
-
-    setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
-
-    while (!p.success && !p.failed)
-      p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250 })
-
-    if (p.success) HomeState.audio = {
-      ...Daemon.format_audio_status({
-        audio: HomeState.audio,
-        string: Daemon.outputs.find(string => string.indexOf(`${count}:`) >= 0)
-      })
-    }
-    else {
-      HomeState.audio.zone_1.updated = false
-      HomeState.audio.zone_2.updated = false
-    }
-
+    HomeState.audio.zone_1.updated = false
+    HomeState.audio.zone_2.updated = false
   }
+
+
 
 
   res.status(200).send({ ...HomeState })

@@ -4,6 +4,7 @@ import time
 import sys
 import select
 from signal import pause
+import adafruit_ahtx0
 
 
 print("* ")
@@ -17,6 +18,7 @@ try:
     z_1_R = LED(pin=19, initial_value=False)
     z_2_L = LED(pin=20, initial_value=False)
     z_2_R = LED(pin=21, initial_value=False)
+    aht20 = adafruit_ahtx0.AHTx0(board.I2C())
 
     def toggleZone(zone, set_state):
         if zone == 1:
@@ -78,8 +80,10 @@ try:
           #  Get State
             z1_active = not z_1_L.is_lit
             z2_active = not z_2_L.is_lit
+            temp = round(aht20.temperature * (9 / 5) + 32, 1)
+            humidity = round(aht20.relative_humidity, 1)
 
-            return f"{count}:z1-{z1_active},z2-{z2_active}"
+            return f"{count}:z1-{z1_active},z2-{z2_active},t-{temp},h-{humidity}"
 
 
     while True:
