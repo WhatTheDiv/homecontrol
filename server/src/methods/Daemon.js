@@ -163,13 +163,23 @@ class DaemonClass {
 
   format_audio_and_temp_status_and_lights = ({ string, audio, lights }) => {
     const parseString = (str) => {
-      return {
-        z1_active: (string.slice(string.indexOf('z1-') + 3, string.indexOf(',z2-'))).toLowerCase() === 't',
-        z2_active: (string.slice(string.indexOf('z2-') + 3, string.indexOf(',t-'))).toLowerCase() === 't',
-        temp: string.slice(string.indexOf(',t-') + 3, string.indexOf(',h-')),
-        humidity: string.slice(string.indexOf(',h-') + 3, string.indexOf(',l-')),
-        lights_active: string.slice(string.indexOf(',l-') + 3, string.indexOf(',a-')),
-        animation: string.slice(string.indexOf(',a-') + 3)
+      if (str.indexOf("success") >= 0 && str.slice(str.indexOf("success-" + 8), str.indexOf(",z1-")) === 'false')
+        return {
+          z1_active: 'false',
+          z2_active: 'false',
+          temp: '98',
+          humidity: '98',
+          lights_active: 'false',
+          animation: 'walk'
+
+        }
+      else return {
+        z1_active: (str.slice(str.indexOf('z1-') + 3, str.indexOf(',z2-'))).toLowerCase() === 't',
+        z2_active: (str.slice(str.indexOf('z2-') + 3, str.indexOf(',t-'))).toLowerCase() === 't',
+        temp: str.slice(str.indexOf(',t-') + 3, str.indexOf(',h-')),
+        humidity: str.slice(str.indexOf(',h-') + 3, str.indexOf(',l-')),
+        lights_active: str.slice(str.indexOf(',l-') + 3, str.indexOf(',a-')),
+        animation: str.slice(str.indexOf(',a-') + 3)
       }
     }
     // [ count : zone1, zone2, temp, humidity, lightsActive, animation ]

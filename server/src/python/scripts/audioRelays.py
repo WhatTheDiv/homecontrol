@@ -90,13 +90,19 @@ try:
               temp = round(aht20.temperature * (9 / 5) + 32, 1)
               humidity = round(aht20.relative_humidity, 1)
               
-              block = bus.read_i2c_block_data(slave_nano_addr, 0, 16)
-              string = ''.join(chr(x) for x in block)
+              try:
+                block = bus.read_i2c_block_data(slave_nano_addr, 0, 16)
+                string = ''.join(chr(x) for x in block)
 
-              lights_active = string[string.index('S:')+2:string.index(',A:')]
-              animation_index = string[string.index(',A:') + 3:string.index(']')]
+                lights_active = string[string.index('S:')+2:string.index(',A:')]
+                animation_index = string[string.index(',A:') + 3:string.index(']')]
+                return f"{count}:success-true,z1-{z1_active[0:1]},z2-{z2_active[0:1]},t-{temp},h-{humidity},l-{lights_active},a-{animation_index}"
+              
+              except:
+                return f"{count}:success-false"
+                  
 
-            return f"{count}:z1-{z1_active[0:1]},z2-{z2_active[0:1]},t-{temp},h-{humidity},l-{lights_active},a-{animation_index}"
+            # return f"{count}:z1-{z1_active[0:1]},z2-{z2_active[0:1]},t-{temp},h-{humidity},l-{lights_active},a-{animation_index}"
 
         elif command == 'l':
           # Handle lights
