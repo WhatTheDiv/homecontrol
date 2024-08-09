@@ -3,7 +3,7 @@ git pull
 git add .
 
 $message = "updates"
-if ( -not $arg ) {
+if ( $arg ) {
   $message = $arg[0]
 }
 
