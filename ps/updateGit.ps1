@@ -6,8 +6,8 @@ Write-Host "..."
 Write-Host ""
 Write-Host " Git pulling ..."
 if ( $arg ) {
-  $message = $arg[0]
-  Write-Host "Updating git with message :$arg[0]"
+  $message = $arg
+  Write-Host "Updating git with message :$arg"
 }
 Write-Host ""
 Write-Host "..."
