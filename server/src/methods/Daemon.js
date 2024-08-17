@@ -147,7 +147,6 @@ class DaemonClass {
 
   check = async ({ outputs, count, duration, failed }) => {
     return await new Promise((res) => {
-      console.log({ pass })
 
       const item = outputs.find((output) => Number(output.slice(0, output.indexOf(':'))) === count)
 
