@@ -152,9 +152,15 @@ class DaemonClass {
 
       setTimeout(() => {
         console.log('at timeout ... item: ', item)
-        if (item === undefined) res(false)
+        if (item === undefined) {
+          console.error('Daemon failed to respond... audio and lights are not updated!')
+          res(false)
+        }
         // else if (item) res(true)
-        else if ((item.slice(item.indexOf('-') + 1)).toLowerCase() === 'false') res(false)
+        else if ((item.slice(item.indexOf('-') + 1)).toLowerCase() === 'false') {
+          console.error('Daemon responded with fail... audio and lights are not updated!')
+          res(false)
+        }
         else res(true)
       }, duration);
 

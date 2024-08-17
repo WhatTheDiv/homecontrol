@@ -95,13 +95,8 @@ app.get('/initialState', async (req, res) => {
 
   setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
 
-  while (!p.success && !p.failed) {
-    console.group('check for daemon response')
-    console.log('checking response from daemon ... ')
+  while (!p.success && !p.failed)
     p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250 })
-    console.log('Result: ', p)
-    console.groupEnd()
-  }
 
 
   if (p.success) {
@@ -119,7 +114,6 @@ app.get('/initialState', async (req, res) => {
     HomeState.lights.state = { ...l }
   }
   else {
-    console.error('Daemon failed... audio and lights are not updated!')
     HomeState.audio.zone_1.updated = false
     HomeState.audio.zone_2.updated = false
     HomeState.lights.state.updated = false
