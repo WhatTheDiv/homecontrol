@@ -145,7 +145,7 @@ class DaemonClass {
     return { newCount: this.inc(count), command: `${obj.count}:${obj.name}/${obj.cmd && obj.cmd}\n` }
   }
 
-  check = async ({ outputs, count, duration, pass }) => {
+  check = async ({ outputs, count, duration, failed }) => {
     return await new Promise((res) => {
       console.log({ pass })
 
@@ -159,7 +159,7 @@ class DaemonClass {
         }
         else if ((item.slice(item.indexOf('-') + 1)).toLowerCase() === 'false') {
           console.error('Daemon responded with fail...')
-          pass.failed = true;
+          failed = true;
           res(false)
         }
         else res(true)

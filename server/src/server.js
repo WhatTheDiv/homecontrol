@@ -96,7 +96,7 @@ app.get('/initialState', async (req, res) => {
   setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
 
   while (!p.success && !p.failed)
-    p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250, pass: p })
+    p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250, failed: p.failed })
 
 
   if (p.success) {
