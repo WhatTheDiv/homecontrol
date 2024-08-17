@@ -145,7 +145,7 @@ class DaemonClass {
     return { newCount: this.inc(count), command: `${obj.count}:${obj.name}/${obj.cmd && obj.cmd}\n` }
   }
 
-  check = async ({ outputs, count, duration }) => {
+  check = async ({ outputs, count, duration, failed }) => {
     return await new Promise((res) => {
 
       const item = outputs.find((output) => Number(output.slice(0, output.indexOf(':'))) === count)
@@ -153,12 +153,13 @@ class DaemonClass {
       setTimeout(() => {
         console.log('at timeout ... item: ', item)
         if (item === undefined) {
-          console.error('Daemon failed to respond... audio and lights are not updated!')
+          console.error('Daemon failed to respond... audio, temp, and lights are not updated!')
           res(false)
         }
         // else if (item) res(true)
         else if ((item.slice(item.indexOf('-') + 1)).toLowerCase() === 'false') {
-          console.error('Daemon responded with fail... audio and lights are not updated!')
+          console.error('Daemon responded with fail... audio, temp, and lights are not updated!')
+          failed = true;
           res(false)
         }
         else res(true)
