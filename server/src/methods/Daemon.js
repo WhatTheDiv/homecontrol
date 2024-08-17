@@ -163,7 +163,11 @@ class DaemonClass {
 
   format_audio_and_temp_status_and_lights = ({ string, audio, lights }) => {
     const parseString = (str) => {
-      if (str.indexOf("success") >= 0 && str.slice(str.indexOf("success-" + 8), str.indexOf(",z1-")) === 'false')
+      console.log('Response from python Daemon === ', str)
+
+      if (str.indexOf("success") >= 0 && str.slice(str.indexOf("success-" + 8), str.indexOf(",z1-")) === 'false') {
+        console.log('Success false from python Daemon === ', str)
+
         return {
           z1_active: 'false',
           z2_active: 'false',
@@ -173,6 +177,7 @@ class DaemonClass {
           animation: 'walk'
 
         }
+      }
       else return {
         z1_active: (str.slice(str.indexOf('z1-') + 3, str.indexOf(',z2-'))).toLowerCase() === 't',
         z2_active: (str.slice(str.indexOf('z2-') + 3, str.indexOf(',t-'))).toLowerCase() === 't',

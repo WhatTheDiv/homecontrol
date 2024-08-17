@@ -112,7 +112,7 @@ try:
                 print(f"String too long to send to arduino slave! (Len: {len(t)})", flush=True)
 
               bus.write_i2c_block_data(slave_nano_addr, 0, t)
-            return f"{count}:Success"
+            return f"{count}:Success-true"
 
     while True:
         inp = sys.stdin.readline()

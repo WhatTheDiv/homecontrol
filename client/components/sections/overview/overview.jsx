@@ -371,7 +371,9 @@ const render_temp = ({ weather, dispatch }) => {
 
   const determineColor = (val, f, inside = false, humidity = false) => {
     if (val !== 0 && (!val || isNaN(Number(val)))) {
-      console.warn("non-number passed to determine color: ", val);
+      console.log(`%cnon-number passed to determine color: '${val}'`, {
+        color: "blue",
+      });
       return f.isWarmDay ? orangeColor : mid_coldColor;
     }
 
