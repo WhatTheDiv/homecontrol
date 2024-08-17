@@ -99,6 +99,7 @@ app.get('/initialState', async (req, res) => {
     p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250 })
 
   if (p.success) {
+    console.log('successful response from daemon')
     const { a, t, l } = Daemon.format_audio_and_temp_status_and_lights({
       audio: HomeState.audio,
       lights: HomeState.lights,
