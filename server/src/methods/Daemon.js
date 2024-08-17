@@ -148,16 +148,18 @@ class DaemonClass {
   check = async ({ outputs, count, duration }) => {
     return await new Promise((res) => {
 
+      const item = outputs.find((output) => {
+        console.log(`checking output: '${output}' - against count:${count}, output = count: ${Number(output.slice(0, output.indexOf(':'))) === count}`)
+        return Number(output.slice(0, output.indexOf(':'))) === count
+      })
+
       setTimeout(() => {
         if (item === undefined) res(false)
         else if ((item.slice(item.indexOf('-') + 1)).toLowerCase() === 'false') res(false)
         else res(true)
       }, duration);
 
-      const item = outputs.find((output) => {
-        console.log(`checking output: '${output}' - against count:${count}, output = count: ${Number(output.slice(0, output.indexOf(':'))) === count}`)
-        return Number(output.slice(0, output.indexOf(':'))) === count
-      })
+
 
     })
   }
