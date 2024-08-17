@@ -61,11 +61,18 @@ try:
             return False
 
     def process_input(input):
+# ---Input--------------------------------------------------------------------- #
         # 1:a/z1-0\n                      = audio  =    [ count : name / zone - state ]
         # 2:l/at&z0-s0\n                  = lights =    [ count: name  / action_toggle & zone - state ]
         # 3:l/aa&a1\n                     = lights =    [ count: name / action_animation & animationId ]
         # 4:l/ac&c-colorName(0,0,0,0)\n   = lights =    [ count: name / action_colorChange & color - name(r,g,b,w) ]            -- 13 char max length name
         # 5:l/as&\n                       = lights =    [ count: name / action_getState ]
+        # 6:s/&                           = state  =    [ count: name /  ]
+
+# ---Returns------------------------------------------------------------------- #
+        # everything should return "{count}:success-false" on fail
+
+# ----------------------------------------------------------------------------- #
 
         count = input[:input.find(':')]
         command = input[input.find(':') + 1:input.find(':') + 2]
@@ -117,17 +124,21 @@ try:
     while True:
         inp = sys.stdin.readline()
 
+# Command - Quit
         if inp.strip() == 'q':
             print('* quitting-',flush=True)
             break
+# Command - Error, no string
         elif bool(inp.strip()) == False:
             break
+# Command - Test
         elif inp.strip() == 't':
             with SMBus(1) as bus: 
               block = bus.read_i2c_block_data(slave_nano_addr, 0, 16)
               string = ''.join(chr(x) for x in block)
               print(string[:string.index(']')+1],flush=True)
               # trimmed = string[:string.find("]")+1]
+# Command Received
         else:
             print(f'{process_input(inp)}',flush=True)
 

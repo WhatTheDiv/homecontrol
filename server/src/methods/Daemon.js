@@ -140,6 +140,7 @@ class DaemonClass {
     // 3:l/aa&a1                    = lights =    [ count: name / action_animation & animationId ]
     // 4:l/ac&c-colorName(0,0,0,0)  = lights =    [ count: name / action_colorChange & color - name(r,g,b,w) ]            -- 13 char max length name
     // 5:l/as&                      = lights =    [ count: name / action_getState ]
+    // 6:s/&                        = state  =    [ count: name /  ]
 
     if (obj.cmd === null) return { err: true, message: "Bad input data to 'Daemon.getCommand' " }
     return { newCount: this.inc(count), command: `${obj.count}:${obj.name}/${obj.cmd && obj.cmd}\n` }
@@ -167,8 +168,6 @@ class DaemonClass {
 
     })
   }
-
-
 
   format_audio_and_temp_status_and_lights = ({ string, audio, lights }) => {
     const parseString = (str) => {
