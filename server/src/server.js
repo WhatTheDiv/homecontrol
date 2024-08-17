@@ -119,6 +119,7 @@ app.get('/initialState', async (req, res) => {
     HomeState.lights.state = { ...l }
   }
   else {
+    console.error('Daemon failed... audio and lights are not updated!')
     HomeState.audio.zone_1.updated = false
     HomeState.audio.zone_2.updated = false
     HomeState.lights.state.updated = false
