@@ -73,7 +73,7 @@ app.get('/initialState', async (req, res) => {
   // Get tv state // 
   HomeState.tv = { ...HomeState.tv, ... await getTvState(HomeState.tv) }
 
-  // Get audio state & temp // 
+  // Get audio state & temp & lights // 
   if (!Daemon.active || !Daemon.process) {
     HomeState.audio.zone_1.updated = false
     HomeState.audio.zone_1.active = true
@@ -89,6 +89,7 @@ app.get('/initialState', async (req, res) => {
   if (err) return res.status(502).send({ message: 'Deamon failed at send: ' + message, success: false })
   Daemon.count = newCount
 
+  Daemon.outputs[count] = undefined
   Daemon.process.stdin.write(command)
 
   const p = { success: false, failed: false }

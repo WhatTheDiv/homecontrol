@@ -225,7 +225,6 @@ const getServerState = async ({ timeout = 7000 }) => {
     }
 
     const data = await response.json()
-    console.log('data from initial request: ', data)
 
     const { lights, temp, tv, audio } = data
 
