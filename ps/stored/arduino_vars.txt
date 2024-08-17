@@ -1,0 +1,3 @@
+LastAccessedScript=ArdTest
+LastUsedCommand=4
+fqbn=arduino:avr:nano
