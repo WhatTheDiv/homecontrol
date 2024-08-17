@@ -96,8 +96,11 @@ app.get('/initialState', async (req, res) => {
   setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
 
   while (!p.success && !p.failed) {
+    console.group('check for daemon response')
     console.log('checking response from daemon ... ')
     p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250 })
+    console.log('Result: ', p)
+    console.groupEnd()
   }
 
 
