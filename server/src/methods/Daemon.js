@@ -154,7 +154,12 @@ class DaemonClass {
         else res(true)
       }, duration);
 
-      const item = outputs.find((output) => Number(output.slice(0, output.indexOf(':'))) === count)
+      console.log(" Count: ", count)
+
+      const item = outputs.find((output) => {
+        console.log(`checking output: '${output}'`)
+        return Number(output.slice(0, output.indexOf(':'))) === count
+      })
 
     })
   }
