@@ -145,20 +145,19 @@ class DaemonClass {
     return { newCount: this.inc(count), command: `${obj.count}:${obj.name}/${obj.cmd && obj.cmd}\n` }
   }
 
-  check = async ({ outputs, count, duration, failed }) => {
+  check = async ({ outputs, count, duration, pass }) => {
     return await new Promise((res) => {
 
       const item = outputs.find((output) => Number(output.slice(0, output.indexOf(':'))) === count)
 
       setTimeout(() => {
-        console.log('at timeout ... item: ', item)
         if (item === undefined) {
           console.error('Daemon failed to respond...')
           res(false)
         }
         else if ((item.slice(item.indexOf('-') + 1)).toLowerCase() === 'false') {
           console.error('Daemon responded with fail...')
-          failed = true;
+          pass.failed = true;
           res(false)
         }
         else res(true)

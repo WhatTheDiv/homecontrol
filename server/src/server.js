@@ -96,7 +96,7 @@ app.get('/initialState', async (req, res) => {
   setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
 
   while (!p.success && !p.failed)
-    p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250, failed: p.failed })
+    p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250, pass: p })
 
 
   if (p.success) {
@@ -245,7 +245,7 @@ app.post('/setLights', async (req, res) => {
   const ref = setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
 
   while (!p.success && !p.failed)
-    p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250 })
+    p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250, pass: p })
 
   if (p.success) {
     clearTimeout(ref)
@@ -278,7 +278,7 @@ app.post('/toggleAudioZones', async (req, res) => {
   setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
 
   while (!p.success && !p.failed)
-    p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250 })
+    p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250, pass: p })
 
   if (p.success) return res.status(200).send({ success: true }).end()
 
@@ -333,7 +333,7 @@ app.post('/toggleLightsActive', async (req, res) => {
   const ref = setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
 
   while (!p.success && !p.failed)
-    p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250 })
+    p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250, pass: p })
 
   clearTimeout(ref)
   if (p.success) HomeState.lights.state = { ...updater }
@@ -398,7 +398,7 @@ app.post('/setLightsAnimation', async (req, res) => {
   const ref = setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
 
   while (!p.success && !p.failed)
-    p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250 })
+    p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250, pass: p })
 
   clearTimeout(ref)
   if (p.success) HomeState.lights.state = { ...updater }
