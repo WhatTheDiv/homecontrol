@@ -152,7 +152,7 @@ class DaemonClass {
 
       setTimeout(() => {
         if (item === undefined) {
-          console.error('Daemon failed to respond...')
+          console.warn('Daemon has not responded yet...')
           res(false)
         }
         else if ((item.slice(item.indexOf('-') + 1)).toLowerCase() === 'false') {
