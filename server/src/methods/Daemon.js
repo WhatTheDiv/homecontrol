@@ -147,18 +147,18 @@ class DaemonClass {
 
   check = async ({ outputs, count, duration, pass }) => {
     return await new Promise((res) => {
+      console.log({ pass })
 
       const item = outputs.find((output) => Number(output.slice(0, output.indexOf(':'))) === count)
 
       setTimeout(() => {
         console.log('at timeout ... item: ', item)
         if (item === undefined) {
-          console.error('Daemon failed to respond... audio, temp, and lights are not updated!')
+          console.error('Daemon failed to respond...')
           res(false)
         }
-        // else if (item) res(true)
         else if ((item.slice(item.indexOf('-') + 1)).toLowerCase() === 'false') {
-          console.error('Daemon responded with fail... audio, temp, and lights are not updated!')
+          console.error('Daemon responded with fail...')
           pass.failed = true;
           res(false)
         }
