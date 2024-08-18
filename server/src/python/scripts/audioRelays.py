@@ -168,7 +168,7 @@ try:
           # return f"{count}:l-{lights_active}/a-{animation_index}"
         
         else:
-           print( f'action: {action.find('l')}', flush=True)
+           print( f'action: {action.find("l")}', flush=True)
            return "success-false"
         
 
