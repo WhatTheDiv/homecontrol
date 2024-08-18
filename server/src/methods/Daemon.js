@@ -101,21 +101,12 @@ class DaemonClass {
   }
 
   clearNextOutput = () => {
-
     if (this.outputs.length >= this.maxCount) {
-      console.group('ClearNextOutput')
-      console.log('outputs: ', this.outputs)
-      console.log('this count: ', this.count)
-      console.log(`Clearing output at index (
-        ${this.outputs.findIndex(output => output && Number(output.slice(0, output.indexOf(':'))) == this.count)}
-      )`)
-      console.groupEnd()
-
       this.outputs[
-        this.outputs.findIndex(output => output && Number(output.slice(0, output.indexOf(':'))) == this.count)
+        this.outputs.findIndex(output =>
+          output && Number(output.slice(0, output.indexOf(':'))) == this.count)
       ] = undefined
     }
-
   }
 
   getCommand = ({ name, count, zone = -1, state = 0, lights }) => {
