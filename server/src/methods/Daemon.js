@@ -328,6 +328,7 @@ class DaemonClass {
       Daemon.inc()
 
       // -------------------- Write new message
+      console.log('writing message to python: ' + `${obj.count}:${obj.name}/${obj.cmd}\n`)
       Daemon.process.stdin.write(`${obj.count}:${obj.name}/${obj.cmd}\n`)
 
 
