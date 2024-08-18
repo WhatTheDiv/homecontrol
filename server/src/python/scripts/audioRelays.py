@@ -168,8 +168,8 @@ try:
           # return f"{count}:l-{lights_active}/a-{animation_index}"
         
         else:
-           print('(python) out of bounds "' + input + '"')
-           print("command: " + command)
+           print('(python) out of bounds "' + input + '"', flush=True)
+           print('command: ' + command, flush=True)
            print("action: " + action[:action.find('-')], flush=True)
            return "success-false"
         
