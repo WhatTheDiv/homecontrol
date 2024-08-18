@@ -76,50 +76,96 @@ try:
 
         count = input[:input.find(':')]
         command = input[input.find(':') + 1:input.find(':') + 2]
+        action = input[input.find('/') +1]
+        z1 = 0 if not z_1_L.is_lit == False else 1
+        z2 = 0 if not z_2_L.is_lit == False else 1
+        temp = round(aht20.temperature * (9 / 5) + 32, 1)
+        humidity = round(aht20.relative_humidity, 1)
 
-        if command == 'a':
-          # Toggle Audio
-            zone_index = input.find('z') + 1
-            state_index = input.find('-') + 1
-            zone = input[zone_index:zone_index + 1]
-            state = input[state_index:]
-            # print(f'* zone:{zone}',flush=True)
-            # print(f'* state:{state}',flush=True)
-            passed = toggleAudioZone(int(zone), int(state))
+        # if command == 'a':
+        #   # Toggle Audio
+        #     zone_index = input.find('z') + 1
+        #     state_index = input.find('-') + 1
+        #     zone = input[zone_index:zone_index + 1]
+        #     state = input[state_index:]
+        #     # print(f'* zone:{zone}',flush=True)
+        #     # print(f'* state:{state}',flush=True)
+        #     passed = toggleAudioZone(int(zone), int(state))
 
-            return f"{count}:Success-{passed}"
+        #     return f"{count}:Success-{passed}"
         
-        elif command == 's':
-          #  Get State
-            with SMBus(1) as bus:
-              z1_active = str(not z_1_L.is_lit)
-              z2_active = str(not z_2_L.is_lit)
-              temp = round(aht20.temperature * (9 / 5) + 32, 1)
-              humidity = round(aht20.relative_humidity, 1)
+        # elif command == 's':
+        #   #  Get State
+        #     with SMBus(1) as bus:
+        #       z1_active = str(not z_1_L.is_lit)
+        #       z2_active = str(not z_2_L.is_lit)
+        #       temp = round(aht20.temperature * (9 / 5) + 32, 1)
+        #       humidity = round(aht20.relative_humidity, 1)
               
-              try:
-                block = bus.read_i2c_block_data(slave_nano_addr, 0, 16)
-                string = ''.join(chr(x) for x in block)
+        #       try:
+        #         block = bus.read_i2c_block_data(slave_nano_addr, 0, 16)
+        #         string = ''.join(chr(x) for x in block)
 
-                lights_active = string[string.index('S:')+2:string.index(',A:')]
-                animation_index = string[string.index(',A:') + 3:string.index(']')]
-                return f"{count}:success-true,z1-{z1_active[0:1]},z2-{z2_active[0:1]},t-{temp},h-{humidity},l-{lights_active},a-{animation_index}"
+        #         lights_active = string[string.index('S:')+2:string.index(',A:')]
+        #         animation_index = string[string.index(',A:') + 3:string.index(']')]
+        #         return f"{count}:success-true,z1-{z1_active[0:1]},z2-{z2_active[0:1]},t-{temp},h-{humidity},l-{lights_active},a-{animation_index}"
               
-              except:
-                return f"{count}:success-false"
+        #       except:
+        #         return f"{count}:success-false"
                   
 
-            # return f"{count}:z1-{z1_active[0:1]},z2-{z2_active[0:1]},t-{temp},h-{humidity},l-{lights_active},a-{animation_index}"
+        #     # return f"{count}:z1-{z1_active[0:1]},z2-{z2_active[0:1]},t-{temp},h-{humidity},l-{lights_active},a-{animation_index}"
 
-        elif command == 'l':
-          # Handle lights
-            with SMBus(1) as bus:
-              t = bytes(input[4:-1], 'utf-8')
-              if(len(t) > 31):
-                print(f"String too long to send to arduino slave! (Len: {len(t)})", flush=True)
+        # elif command == 'l':
+        #   # Handle lights
+        #     with SMBus(1) as bus:
+        #       t = bytes(input[4:-1], 'utf-8')
+        #       if(len(t) > 31):
+        #         print(f"String too long to send to arduino slave! (Len: {len(t)})", flush=True)
 
-              bus.write_i2c_block_data(slave_nano_addr, 0, t)
-            return f"{count}:Success-true"
+        #       bus.write_i2c_block_data(slave_nano_addr, 0, t)
+        #     return f"{count}:Success-true"
+        
+
+
+  # New Commands
+        if command == 'z': #                                            Get Audio & Temp State    ***** 
+          return f"{count}:z1-{z1},z2-{z2},t-{temp},h-{humidity}"
+        
+        elif command == 't': #                                          Get Temp State            *****
+          return f"{count}:t-{temp},h-{humidity},"
+        
+        elif command == 'a' and action == 's': #                        Get Audio State           *****
+          return f"{count}:z1-{z1},z2-{z2}"
+        
+        elif command == 'a': #                                          Set Audio                 *****  
+          zone_index = input.find('z') + 1
+          state_index = input.find('-') + 1
+          zone = input[zone_index:state_index - 1]
+          state = input[state_index:]
+        
+          return f"{ count }:z{ zone }-{ state }" if toggleAudioZone(int(zone), int(state)) == True else f"{count}:success-false"
+        
+        elif command == 'l' and action == 's': #                        Get Lights State          ***** 
+          return f"{count}:l-{lights_active},a-{animation_index}"
+        
+
+        # [ ] Set animation
+        elif command == 'l' and action[:action.find('-')] == 'a': #     Set Animation             *****            #--------- 
+          return f"{count}:l-{lights_active},a-{animation_index}"
+        
+        # [ ] Toggle Lights
+        elif command == 'l' and action[:action.find('-')] == 'l': #     Toggle Lights             *****            #--------- 
+          return f"{count}:l-{lights_active},a-{animation_index}"
+        
+        # [ ] Set Color
+        elif command == 'l' and action[:action.find('-')] == 'c': #     Set Color                 *****            #--------- 
+          return f"{count}:l-{lights_active},a-{animation_index}"
+        
+        else:
+           return "success-false"
+        
+
 
     while True:
         inp = sys.stdin.readline()

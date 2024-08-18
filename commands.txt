@@ -11,26 +11,26 @@ server -> python
 
     Get Audio & Temp State *****
           (Message) ------------------------- {count}:z/s
-          (Response - Success) -------------- {count}:  z1-{active?}, z2-{active?}, t-{temp}, h-{humidity}
-          (Response - Fail) ----------------- {count}:success-false
+          (Response - Success) --------------               {count}:  z1-{active?}/ z2-{active?}/ t-{temp}/ h-{humidity}
+          (Response - Fail) -----------------                             {count}:success-false
 
 
     Get Temp State *****
           (Message) ------------------------- {count}:t/s
-          (Response - Success) -------------- {count}:{count}:  t-{temp}, h-{humidity}
-          (Response - Fail) ----------------- {count}:success-false
+          (Response - Success) --------------               {count}:{count}:  t-{temp}/ h-{humidity}
+          (Response - Fail) -----------------                             {count}:success-false
 
 
     Get Audio State *****
           (Message) ------------------------- {count}:a/s
-          (Response - Success) -------------- {count}:{count}:  z1-{active?}, z2-{active?}
-          (Response - Fail) ----------------- {count}:success-false
+          (Response - Success) --------------               {count}:  z1-{active?}/ z2-{active?}
+          (Response - Fail) -----------------                             {count}:success-false
 
 
     Set Audio *****
           (Message) ------------------------- {count}:a/z{zone}-{active?} ----------------- [ zone - state ]
-          (Response - Success) -------------- {count}:z{zone}-{active?}
-          (Response - Fail) ----------------- {count}:success-false
+          (Response - Success) --------------               {count}:z{zone}-{active?}
+          (Response - Fail) -----------------                             {count}:success-false
       
 
 - lights
@@ -38,24 +38,39 @@ server -> python
 
     Get State *****
           (Message) ------------------------- {count}:l/  s
-          (Response - Success) -------------- {count}:  l-{active?},  a-{animation_index}
-          (Response - Fail) ----------------- {count}:success-false
+          (Response - Success) --------------               {count}:  l-{active?}/  a-{animation_index}
+          (Response - Fail) -----------------                             {count}:success-false
 
 
     Set Animation *****
           (Message) ------------------------- {count}:l/  a-{animation_index}
-          (Response - Success) -------------- {count}:  l-{active?},  a-{animation_index}
-          (Response - Fail) ----------------- {count}:success-false
+          (Response - Success) --------------               {count}:  l-{active?}/  a-{animation_index}
+          (Response - Fail) -----------------                             {count}:success-false
 
 
     Toggle Lights *****
           (Message) ------------------------- {count}:l/  l-{active?}
-          (Response - Success) -------------- {count}:  l-{active?},  a-{animation_index}
-          (Response - Fail) ----------------- {count}:success-false
+          (Response - Success) --------------               {count}:  l-{active?}/  a-{animation_index}
+          (Response - Fail) -----------------                             {count}:success-false
 
 
     Set Color *****
-          (Message) ------------------------- {count}:l/  c-({red},{green},{blue},{white}), n-{name}, b-{1-100}
-          (Response - Success) -------------- {count}:  n-{name}, c-({red},{green},{blue},{white}), b-{1-100}
-          (Response - Fail) ----------------- {count}:success-false
+          (Message) ------------------------- {count}:l/  c-({red},{green},{blue},{white}), b-{1-100}, n-{name}
+          (Response - Success) --------------               {count}:  c-({red},{green},{blue},{white})/ b-{1-100}/ n-{name}
+          (Response - Fail) -----------------                             {count}:success-false
+
+- TV
+    Send Command *****
+          (Message) ------------------------- {count}:i/c-{command}
+          (Response - Success) --------------               {count}:  c-{command}
+          (Response - Fail) -----------------                             {count}:success-false
+
+
+const { newCount, command, err, message } = Daemon.getCommand({ name: 'state', count, lights: {} })
+const { newCount, command, err, message } = Daemon.getCommand({ name: 'lights', count, lights })
+const { newCount, command, err, message } = Daemon.getCommand({ name: 'audio', zone, state: newState ? 1 : 0, count, lights: {} })
+const { newCount, command, err, message } = Daemon.getCommand({ name: 'lights', count, lights })
+const { newCount, command, err, message } = Daemon.getCommand({ name: 'lights', count, lights })
+
+
 
