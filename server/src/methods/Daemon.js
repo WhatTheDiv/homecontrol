@@ -380,7 +380,7 @@ class DaemonClass {
 
   parseReceipt = (name, output) => {
     // -------------------- Break output into sections
-    console.log('output: ', output, ', length: ', output.length, ', type: ', typeof output)
+    console.log('output: "', output, '", length: ', output.length, ', type: ', typeof output)
     const trimmedOutput = output.splice(output.indexOf(':') + 1)
     const sections = trimmedOutput.split('/')
 
