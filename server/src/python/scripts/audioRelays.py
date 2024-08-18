@@ -168,9 +168,7 @@ try:
           # return f"{count}:l-{lights_active}/a-{animation_index}"
         
         else:
-           print(f'command: {command}', flush=True)
-           print(f'(python) out of bounds "{input}"', flush=True)
-           print(f"action: {action[:action.find('-')]}", flush=True)
+           print(f'(python) out of bounds "{input}" - command: {command}, action: {action[:action.find('-')]}', flush=True)
            return "success-false"
         
 
