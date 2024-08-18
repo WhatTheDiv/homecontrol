@@ -381,7 +381,7 @@ class DaemonClass {
   parseReceipt = (name, output) => {
     // -------------------- Break output into sections
     console.log('output: "', output, '", length: ', output.length, ', type: ', typeof output)
-    const trimmedOutput = output.splice(output.indexOf(':') + 1)
+    const trimmedOutput = output.slice(output.indexOf(':') + 1)
     const sections = trimmedOutput.split('/')
 
     // -------------------- Initialize return object
@@ -392,30 +392,30 @@ class DaemonClass {
       case 'audio_State': {
         const [z1, z2] = sections
 
-        r.audio.z1 = Number(z1.splice(z1.getIndex('-') + 1)) === 0 ? false : true
-        r.audio.z2 = Number(z2.splice(z2.getIndex('-') + 1)) === 0 ? false : true
+        r.audio.z1 = Number(z1.slice(z1.getIndex('-') + 1)) === 0 ? false : true
+        r.audio.z2 = Number(z2.slice(z2.getIndex('-') + 1)) === 0 ? false : true
         break;
       }
       case 'audio_Toggle': {
         const [z] = sections
         // r.audio[z1] = 0 ? false : true
-        r.audio[0, z.indexOf('-')] = Number(z.splice(z.indexOf('-') + 1) === 0 ? false : true)
+        r.audio[0, z.indexOf('-')] = Number(z.slice(z.indexOf('-') + 1) === 0 ? false : true)
         break;
       }
       case 'temp_State': {
         const [t, h] = sections
 
-        r.temp.indoorTemp = t.splice(t.indexOf('-') + 1)
-        r.temp.indoorHumidity = h.splice(h.indexOf('-') + 1)
+        r.temp.indoorTemp = t.slice(t.indexOf('-') + 1)
+        r.temp.indoorHumidity = h.slice(h.indexOf('-') + 1)
         break;
       }
       case 'all_State': {
         const [z1, z2, t, h] = sections
 
-        r.audio.z1 = Number(z1.splice(z1.getIndex('-') + 1)) === 0 ? false : true
-        r.audio.z2 = Number(z2.splice(z2.getIndex('-') + 1)) === 0 ? false : true
-        r.temp.indoorTemp = t.splice(t.indexOf('-') + 1)
-        r.temp.indoorHumidity = h.splice(h.indexOf('-') + 1)
+        r.audio.z1 = Number(z1.slice(z1.getIndex('-') + 1)) === 0 ? false : true
+        r.audio.z2 = Number(z2.slice(z2.getIndex('-') + 1)) === 0 ? false : true
+        r.temp.indoorTemp = t.slice(t.indexOf('-') + 1)
+        r.temp.indoorHumidity = h.slice(h.indexOf('-') + 1)
         break;
       }
       case 'lights_State':
@@ -423,13 +423,13 @@ class DaemonClass {
       case 'lights_Toggle': {
         const [l, a] = sections
 
-        r.lights.active = Number(l.splice(l.getIndex('-') + 1)) === 0 ? false : true
-        r.lights.animation = a.splice(a.getIndex('-') + 1)
+        r.lights.active = Number(l.slice(l.getIndex('-') + 1)) === 0 ? false : true
+        r.lights.animation = a.slice(a.getIndex('-') + 1)
         break;
       }
       case 'lights_SetColor': {
         const [c, b, n] = sections
-        const [red, green, blue, white] = (c.splice(3, c.getIndex(')'))).split(',')
+        const [red, green, blue, white] = (c.slice(3, c.getIndex(')'))).split(',')
 
         r.lights.name = n
         r.lights.brightness = b
@@ -438,7 +438,7 @@ class DaemonClass {
       }
       case 'ir': {
         const [c] = sections
-        r.tv.lastCommand = c.splice(c.indexOf('-') + 1)
+        r.tv.lastCommand = c.slice(c.indexOf('-') + 1)
         break;
       }
       default:
