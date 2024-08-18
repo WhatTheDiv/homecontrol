@@ -392,8 +392,8 @@ class DaemonClass {
       case 'audio_State': {
         const [z1, z2] = sections
 
-        r.audio.z1 = Number(z1.slice(z1.getIndex('-') + 1)) === 0 ? false : true
-        r.audio.z2 = Number(z2.slice(z2.getIndex('-') + 1)) === 0 ? false : true
+        r.audio.z1 = Number(z1.slice(z1.indexOf('-') + 1)) === 0 ? false : true
+        r.audio.z2 = Number(z2.slice(z2.indexOf('-') + 1)) === 0 ? false : true
         break;
       }
       case 'audio_Toggle': {
@@ -412,8 +412,8 @@ class DaemonClass {
       case 'all_State': {
         const [z1, z2, t, h] = sections
 
-        r.audio.z1 = Number(z1.slice(z1.getIndex('-') + 1)) === 0 ? false : true
-        r.audio.z2 = Number(z2.slice(z2.getIndex('-') + 1)) === 0 ? false : true
+        r.audio.z1 = Number(z1.slice(z1.indexOf('-') + 1)) === 0 ? false : true
+        r.audio.z2 = Number(z2.slice(z2.indexOf('-') + 1)) === 0 ? false : true
         r.temp.indoorTemp = t.slice(t.indexOf('-') + 1)
         r.temp.indoorHumidity = h.slice(h.indexOf('-') + 1)
         break;
@@ -423,13 +423,13 @@ class DaemonClass {
       case 'lights_Toggle': {
         const [l, a] = sections
 
-        r.lights.active = Number(l.slice(l.getIndex('-') + 1)) === 0 ? false : true
-        r.lights.animation = a.slice(a.getIndex('-') + 1)
+        r.lights.active = Number(l.slice(l.indexOf('-') + 1)) === 0 ? false : true
+        r.lights.animation = a.slice(a.indexOf('-') + 1)
         break;
       }
       case 'lights_SetColor': {
         const [c, b, n] = sections
-        const [red, green, blue, white] = (c.slice(3, c.getIndex(')'))).split(',')
+        const [red, green, blue, white] = (c.slice(3, c.indexOf(')'))).split(',')
 
         r.lights.name = n
         r.lights.brightness = b
