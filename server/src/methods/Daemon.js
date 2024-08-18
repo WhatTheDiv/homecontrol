@@ -101,17 +101,20 @@ class DaemonClass {
   }
 
   clearNextOutput = () => {
-    console.group('ClearNextOutput')
-    console.log('outputs: ', this.outputs)
-    console.log('this count: ', this.count)
-    console.log(`Clearing output at index (
-      ${this.outputs.findIndex(output => output && Number(output.slice(0, output.indexOf(':'))) == this.count)}
-      )`)
-    console.groupEnd()
 
-    if (this.olutputs.length > this.maxCount) this.outputs[
-      this.outputs.findIndex(output => output && Number(output.slice(0, output.indexOf(':'))) == this.count)
-    ] = undefined
+    if (this.olutputs.length > this.maxCount) {
+      console.group('ClearNextOutput')
+      console.log('outputs: ', this.outputs)
+      console.log('this count: ', this.count)
+      console.log(`Clearing output at index (
+        ${this.outputs.findIndex(output => output && Number(output.slice(0, output.indexOf(':'))) == this.count)}
+        )`)
+      console.groupEnd()
+
+      this.outputs[
+        this.outputs.findIndex(output => output && Number(output.slice(0, output.indexOf(':'))) == this.count)
+      ] = undefined
+    }
 
   }
 
