@@ -384,12 +384,13 @@ class DaemonClass {
 
     // -------------------- Parse receipt
     switch (name) {
-      case 'audio_State':
-        const [z11, z2] = sections
+      case 'audio_State': {
+        const [z1, z2] = sections
 
-        r.audio.z1 = Number(z11.splice(z11.getIndex('-') + 1)) === 0 ? false : true
+        r.audio.z1 = Number(z1.splice(z1.getIndex('-') + 1)) === 0 ? false : true
         r.audio.z2 = Number(z2.splice(z2.getIndex('-') + 1)) === 0 ? false : true
         break;
+      }
       case 'audio_Toggle':
         const [z] = sections
         // r.audio[z1] = 0 ? false : true
