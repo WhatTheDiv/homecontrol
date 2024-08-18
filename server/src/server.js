@@ -76,7 +76,7 @@ app.get('/initialState', async (req, res) => {
   HomeState.tv = { ...HomeState.tv, ... await getTvState(HomeState.tv) }
 
   const tempAndAudio = await Daemon.sendCommand({ name: 'all_State', Daemon })
-  const lightsState = await Daemon.sendCommand({ name: 'all_State', Daemon })
+  const lightsState = await Daemon.sendCommand({ name: 'lights_State', Daemon })
 
   const { audio, temp } = tempAndAudio
   const { lights } = lightsState
