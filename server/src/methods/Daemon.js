@@ -95,11 +95,6 @@ class DaemonClass {
   }
 
   inc = () => {
-    console.log(`incrementing count(${this.count} to ${this.count >= this.maxCount
-      ? 1
-      : this.count + 1
-      })`)
-
     this.count = this.count >= this.maxCount
       ? 1
       : this.count + 1
