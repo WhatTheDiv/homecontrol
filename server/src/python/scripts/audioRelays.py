@@ -168,7 +168,7 @@ try:
           # return f"{count}:l-{lights_active}/a-{animation_index}"
         
         else:
-           print( f'{command}, action: {action[:action.find("-")]}', flush=True)
+           print( f'command: {command}', flush=True)
            return "success-false"
         
 
