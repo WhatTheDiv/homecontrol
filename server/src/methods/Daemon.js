@@ -385,24 +385,24 @@ class DaemonClass {
     // -------------------- Parse receipt
     switch (name) {
       case 'audio_State':
-        let [z1, z2] = sections
+        const [z11, z2] = sections
 
-        r.audio.z1 = Number(z1.splice(z1.getIndex('-') + 1)) === 0 ? false : true
+        r.audio.z1 = Number(z11.splice(z11.getIndex('-') + 1)) === 0 ? false : true
         r.audio.z2 = Number(z2.splice(z2.getIndex('-') + 1)) === 0 ? false : true
         break;
       case 'audio_Toggle':
-        let [z] = sections
+        const [z] = sections
         // r.audio[z1] = 0 ? false : true
         r.audio[0, z.indexOf('-')] = Number(z.splice(z.indexOf('-') + 1) === 0 ? false : true)
         break;
       case 'temp_State':
-        let [t, h] = sections
+        const [t, h] = sections
 
         r.temp.indoorTemp = t.splice(t.indexOf('-') + 1)
         r.temp.indoorHumidity = h.splice(h.indexOf('-') + 1)
         break;
       case 'all_State':
-        let [z1, z2, t, h] = sections
+        const [z1, z2, t, h] = sections
 
         r.audio.z1 = Number(z1.splice(z1.getIndex('-') + 1)) === 0 ? false : true
         r.audio.z2 = Number(z2.splice(z2.getIndex('-') + 1)) === 0 ? false : true
@@ -412,21 +412,21 @@ class DaemonClass {
       case 'lights_State':
       case 'lights_SetAnimation':
       case 'lights_Toggle':
-        let [l, a] = sections
+        const [l, a] = sections
 
         r.lights.active = Number(l.splice(l.getIndex('-') + 1)) === 0 ? false : true
         r.lights.animation = a.splice(a.getIndex('-') + 1)
         break;
       case 'lights_SetColor':
-        let [c, b, n] = sections
-        let [red, green, blue, white] = (c.splice(3, c.getIndex(')'))).split(',')
+        const [c, b, n] = sections
+        const [red, green, blue, white] = (c.splice(3, c.getIndex(')'))).split(',')
 
         r.lights.name = n
         r.lights.brightness = b
         r.lights.color = { red, green, blue, white }
         break;
       case 'ir':
-        let [c] = sections
+        const [c] = sections
         r.tv.lastCommand = c.splice(c.indexOf('-') + 1)
         break;
       default:
