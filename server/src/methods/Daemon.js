@@ -96,8 +96,8 @@ class DaemonClass {
 
   inc = () => {
     console.log(`incrementing count(${this.count} to ${count >= this.maxCount
-        ? 1
-        : this.count + 1
+      ? 1
+      : this.count + 1
       })`)
 
     this.count = count >= this.maxCount
@@ -385,24 +385,24 @@ class DaemonClass {
     // -------------------- Parse receipt
     switch (name) {
       case 'audio_State':
-        const [z1, z2] = sections
+        let [z1, z2] = sections
 
         r.audio.z1 = Number(z1.splice(z1.getIndex('-') + 1)) === 0 ? false : true
         r.audio.z2 = Number(z2.splice(z2.getIndex('-') + 1)) === 0 ? false : true
         break;
       case 'audio_Toggle':
-        const [z] = sections
+        let [z] = sections
         // r.audio[z1] = 0 ? false : true
         r.audio[0, z.indexOf('-')] = Number(z.splice(z.indexOf('-') + 1) === 0 ? false : true)
         break;
       case 'temp_State':
-        const [t, h] = sections
+        let [t, h] = sections
 
         r.temp.indoorTemp = t.splice(t.indexOf('-') + 1)
         r.temp.indoorHumidity = h.splice(h.indexOf('-') + 1)
         break;
       case 'all_State':
-        const [z1, z2, t, h] = sections
+        let [z1, z2, t, h] = sections
 
         r.audio.z1 = Number(z1.splice(z1.getIndex('-') + 1)) === 0 ? false : true
         r.audio.z2 = Number(z2.splice(z2.getIndex('-') + 1)) === 0 ? false : true
@@ -412,21 +412,21 @@ class DaemonClass {
       case 'lights_State':
       case 'lights_SetAnimation':
       case 'lights_Toggle':
-        const [l, a] = sections
+        let [l, a] = sections
 
         r.lights.active = Number(l.splice(l.getIndex('-') + 1)) === 0 ? false : true
         r.lights.animation = a.splice(a.getIndex('-') + 1)
         break;
       case 'lights_SetColor':
-        const [c, b, n] = sections
-        const [red, green, blue, white] = (c.splice(3, c.getIndex(')'))).split(',')
+        let [c, b, n] = sections
+        let [red, green, blue, white] = (c.splice(3, c.getIndex(')'))).split(',')
 
         r.lights.name = n
         r.lights.brightness = b
         r.lights.color = { red, green, blue, white }
         break;
       case 'ir':
-        const [c] = sections
+        let [c] = sections
         r.tv.lastCommand = c.splice(c.indexOf('-') + 1)
         break;
       default:
