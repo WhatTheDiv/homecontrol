@@ -157,7 +157,7 @@ try:
           # return f"{count}:l-{lights_active}/a-{animation_index}"
         
         # [ ] Toggle Lights
-        elif command == 'l' and action[:action.find('-')] == 'l': #     Toggle Lights             *****            #--------- 
+        elif command == 'l' and action[:input.find('-')] == 'l': #     Toggle Lights             *****            #--------- 
           
           return f"{count}:l-{0}/a-{1}"
           # return f"{count}:l-{lights_active}/a-{animation_index}"
