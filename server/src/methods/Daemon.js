@@ -306,7 +306,7 @@ class DaemonClass {
           break;
         case 'lights_Toggle':
           obj.name = 'l'
-          obj.cmd = lightsConfig.newState ? 1 : 0
+          obj.cmd = `l-${lightsConfig.newState ? 1 : 0}`
           break;
         case 'lights_SetColor':
           if (lightsConfig.color === undefined) throw new Error('No color given to set')
