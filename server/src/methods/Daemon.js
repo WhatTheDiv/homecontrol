@@ -109,7 +109,7 @@ class DaemonClass {
       )`)
     console.groupEnd()
 
-    this.outputs[
+    if (this.olutputs.length > this.maxCount) this.outputs[
       this.outputs.findIndex(output => output && Number(output.slice(0, output.indexOf(':'))) == this.count)
     ] = undefined
 
@@ -281,7 +281,6 @@ class DaemonClass {
 
       // -------------------- Initialize variable object
       obj.count = Daemon.count
-      console.log('count: ', Daemon.count)
 
       // -------------------- Configure variable object
       switch (name) {
