@@ -102,7 +102,7 @@ class DaemonClass {
 
   clearNextOutput = () => {
 
-    if (this.olutputs.length > this.maxCount) {
+    if (this.outputs.length > this.maxCount) {
       console.group('ClearNextOutput')
       console.log('outputs: ', this.outputs)
       console.log('this count: ', this.count)
