@@ -391,18 +391,20 @@ class DaemonClass {
         r.audio.z2 = Number(z2.splice(z2.getIndex('-') + 1)) === 0 ? false : true
         break;
       }
-      case 'audio_Toggle':
+      case 'audio_Toggle': {
         const [z] = sections
         // r.audio[z1] = 0 ? false : true
         r.audio[0, z.indexOf('-')] = Number(z.splice(z.indexOf('-') + 1) === 0 ? false : true)
         break;
-      case 'temp_State':
+      }
+      case 'temp_State': {
         const [t, h] = sections
 
         r.temp.indoorTemp = t.splice(t.indexOf('-') + 1)
         r.temp.indoorHumidity = h.splice(h.indexOf('-') + 1)
         break;
-      case 'all_State':
+      }
+      case 'all_State': {
         const [z1, z2, t, h] = sections
 
         r.audio.z1 = Number(z1.splice(z1.getIndex('-') + 1)) === 0 ? false : true
@@ -410,15 +412,17 @@ class DaemonClass {
         r.temp.indoorTemp = t.splice(t.indexOf('-') + 1)
         r.temp.indoorHumidity = h.splice(h.indexOf('-') + 1)
         break;
+      }
       case 'lights_State':
       case 'lights_SetAnimation':
-      case 'lights_Toggle':
+      case 'lights_Toggle': {
         const [l, a] = sections
 
         r.lights.active = Number(l.splice(l.getIndex('-') + 1)) === 0 ? false : true
         r.lights.animation = a.splice(a.getIndex('-') + 1)
         break;
-      case 'lights_SetColor':
+      }
+      case 'lights_SetColor': {
         const [c, b, n] = sections
         const [red, green, blue, white] = (c.splice(3, c.getIndex(')'))).split(',')
 
@@ -426,10 +430,12 @@ class DaemonClass {
         r.lights.brightness = b
         r.lights.color = { red, green, blue, white }
         break;
-      case 'ir':
+      }
+      case 'ir': {
         const [c] = sections
         r.tv.lastCommand = c.splice(c.indexOf('-') + 1)
         break;
+      }
       default:
         throw new Error(`Out of bounds (${name})`)
         break;
