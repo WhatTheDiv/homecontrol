@@ -284,7 +284,7 @@ class DaemonClass {
           break;
         case 'audio_Toggle':
           obj.name = 'a'
-          obj.cmd = 'z' + audioConfig.zone + '-' + audioConfig.newState ? 1 : 0
+          obj.cmd = `z${audioConfig.zone}-${audioConfig.newState ? 1 : 0}`
           break;
         case 'temp_State':
           obj.name = 't'
