@@ -162,11 +162,12 @@ class DaemonClass {
 
   check = async ({ count, duration, status }) => {
     return await new Promise((res) => {
-
-      const index = this.outputs.findIndex((output) => output && Number(output.slice(0, output.indexOf(':'))) === count)
-      const item = this.outputs[index]
-
       setTimeout(() => {
+
+        // -------------------- Search for receipt in outputs
+        const index = this.outputs.findIndex((output) => output && Number(output.slice(0, output.indexOf(':'))) === count)
+        const item = this.outputs[index]
+
         // -------------------- Return false if output was not found
         if (index < 0) {
           console.warn('Daemon has not responded yet...')

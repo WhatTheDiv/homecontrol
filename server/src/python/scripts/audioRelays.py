@@ -129,7 +129,7 @@ try:
 
 
   # New Commands
-        if command == 'z': #                                            Get Audio & Temp State    ***** 
+        if command == 'z': #                                            Get Audio & Temp State    ***** working
           return f"{count}:z1-{z1}/z2-{z2}/t-{temp}/h-{humidity}"
         
         elif command == 't': #                                          Get Temp State            *****
@@ -138,7 +138,7 @@ try:
         elif command == 'a' and action == 's': #                        Get Audio State           *****
           return f"{count}:z1-{z1}/z2-{z2}"
         
-        elif command == 'a': #                                          Set Audio                 *****  
+        elif command == 'a': #                                          Set Audio                 ***** working  
           zone_index = input.find('z') + 1
           state_index = input.find('-') + 1
           zone = input[zone_index:state_index - 1]
@@ -147,20 +147,24 @@ try:
           return f"{ count }:z{ zone }-{ state }" if toggleAudioZone(int(zone), int(state)) == True else f"{count}:success-false"
         
         elif command == 'l' and action == 's': #                        Get Lights State          ***** 
-          return f"{count}:l-{lights_active}/a-{animation_index}"
+          return f"{count}:l-{0}/a-{1}"
+          # return f"{count}:l-{lights_active}/a-{animation_index}"
         
 
         # [ ] Set animation
         elif command == 'l' and action[:action.find('-')] == 'a': #     Set Animation             *****            #--------- 
-          return f"{count}:l-{lights_active}/a-{animation_index}"
+          return f"{count}:l-{0}/a-{1}"
+          # return f"{count}:l-{lights_active}/a-{animation_index}"
         
         # [ ] Toggle Lights
         elif command == 'l' and action[:action.find('-')] == 'l': #     Toggle Lights             *****            #--------- 
-          return f"{count}:l-{lights_active}/a-{animation_index}"
+          return f"{count}:l-{0}/a-{1}"
+          # return f"{count}:l-{lights_active}/a-{animation_index}"
         
         # [ ] Set Color
         elif command == 'l' and action[:action.find('-')] == 'c': #     Set Color                 *****            #--------- 
-          return f"{count}:l-{lights_active}/a-{animation_index}"
+          return f"{count}:l-{0}/a-{1}"
+          # return f"{count}:l-{lights_active}/a-{animation_index}"
         
         else:
            return "success-false"
