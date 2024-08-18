@@ -109,52 +109,6 @@ app.get('/initialState', async (req, res) => {
   }
 
   res.status(200).send({ ...HomeState })
-
-
-
-
-  // const count = Daemon.count
-  // const { newCount, command, err, message } = Daemon.getCommand({ name: 'state', count, lights: {} })
-
-  // if (err) return res.status(502).send({ message: 'Deamon failed at send: ' + message, success: false })
-  // Daemon.count = newCount
-
-  // Daemon.outputs[count] = undefined
-  // Daemon.process.stdin.write(command)
-
-  // const p = { success: false, failed: false }
-
-  // setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
-
-  // while (!p.success && !p.failed)
-  //   p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250, pass: p })
-
-
-  // if (p.success) {
-  //   console.log('successful response from daemon')
-  //   const { a, t, l } = Daemon.format_audio_and_temp_status_and_lights({
-  //     audio: HomeState.audio,
-  //     lights: HomeState.lights,
-  //     string: Daemon.outputs.find(string => string.indexOf(`${count}:`) >= 0)
-  //   })
-  //   const { temp, humidity } = t
-
-  //   HomeState.audio = a
-  //   HomeState.temp.indoor_temp = temp
-  //   HomeState.temp.indoor_humidity = humidity
-  //   HomeState.lights.state = { ...l }
-  // }
-  // else {
-  //   console.error("Audio, temp, and lights are not updated!")
-  //   HomeState.audio.zone_1.updated = false
-  //   HomeState.audio.zone_2.updated = false
-  //   HomeState.lights.state.updated = false
-  // }
-
-
-
-
-  // res.status(200).send({ ...HomeState })
 })
 
 app.get('/test', async (req, res) => {
@@ -293,28 +247,23 @@ app.post('/setLights', async (req, res) => {
 app.post('/toggleAudioZones', async (req, res) => {
   const { zone, newState } = req.body
 
-  if (!Daemon.active || !Daemon.process)
-    return res.status(502).send({ message: 'Deamon inactive', success: false })
+  const { err, audio } = await Daemon.sendCommand({ name: 'audio_Toggle', Daemon, audioConfig: { zone, newState } })
 
-  const count = Daemon.count
-  const { newCount, command, err, message } = Daemon.getCommand({ name: 'audio', zone, state: newState ? 1 : 0, count, lights: {} })
+  if (err) {
+    HomeState.audio.zone_1.updated = false
+    HomeState.audio.zone_2.updated = false
+  } else {
+    if (audio.z1 !== undefined) {
+      HomeState.audio.zone_1.updated = true
+      HomeState.audio.zone_1.active = audio.z1
+    }
+    if (audio.z2 !== undefined) {
+      HomeState.audio.zone_2.updated = true
+      HomeState.audio.zone_2.active = audio.z2
+    }
+  }
 
-  if (err) return res.status(502).send({ message: 'Deamon failed at send: ' + message, success: false })
-
-  Daemon.count = newCount
-  Daemon.process.stdin.write(command)
-
-  const p = { success: false, failed: false }
-
-  setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
-
-  while (!p.success && !p.failed)
-    p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250, pass: p })
-
-  if (p.success) return res.status(200).send({ success: true }).end()
-
-  res.status(502).send({ message: 'Daemon failed at receive', success: false }).end()
-
+  return res.status(200).send({ success: !err }).end()
 })
 
 app.post('/toggleLightsActive', async (req, res) => {
@@ -322,60 +271,27 @@ app.post('/toggleLightsActive', async (req, res) => {
   // mode = 'animation' || 'color'
   // name = animationName, colorName
 
-  console.log('/toggleLightsActive - From client: ', { newState })
+  const { err, lights } = await Daemon.sendCommand({ name: 'lights_Toggle', lightsConfig: { newState }, Daemon })
 
-  if (!Daemon.active || !Daemon.process) {
-    return res.status(502).send({ message: 'Daemon is inactive' })
+  if (err) {
+    HomeState.lights.state.updated = false
+  } else {
+    HomeState.lights.state.updated = true
+    HomeState.lights.state.lights_active = lights.active
+
+    const a = HomeState.lights.Animations
+    HomeState.lights.state.animation = (Object.keys(a)).find(animName => a[animName] === lights.animation) || 'walk'
+    HomeState.lights.state.animation_active = HomeState.lights.ActiveAnimations.indexOf(HomeState.lights.state.animation) >= 0 ? true : false
   }
 
-  const count = Daemon.count
-  const lights = {
-    newState,
-    toggle: true,
-    animationId: HomeState.lights.Animations[newState ? HomeState.lights.defaultOnAnimation : HomeState.lights.defaultOffAnimation],
-    animationName: newState ? HomeState.lights.defaultOnAnimation : HomeState.lights.defaultOffAnimation
-  }
+  res.status(200).send({ success: !err, state: HomeState.lights.state })
 
-  if (lights.animationId === undefined) {
-    return res.status(502).send({ Success: false, Message: 'Bad inputs given to server @ /toggleLightsActive.', lights })
-  }
-
-  const updater = {
-    lights_active: newState,
-    animation_active: HomeState.lights.ActiveAnimations.find(anim => anim === lights.animationName) === undefined ? false : true,
-    animation: lights.animationName,
-    updated: true,
-  }
-
-  const { newCount, command, err, message } = Daemon.getCommand({
-    name: 'lights',
-    count,
-    lights
-  })
-  console.log('Command created: ', command)
-
-  if (err) return res.status(502).send({ message: 'Deamon failed at send: ' + message, success: false })
-
-  Daemon.count = newCount
-  Daemon.process.stdin.write(command)
-
-  const p = { success: false, failed: false }
-
-  const ref = setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
-
-  while (!p.success && !p.failed)
-    p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250, pass: p })
-
-  clearTimeout(ref)
-  if (p.success) HomeState.lights.state = { ...updater }
-  const response = {
-    Success: p.success,
-    message: p.success ? 'Arduino received command' : 'Arduino may have not received command',
-    lights,
-    state: HomeState.lights.state
-  }
-  console.log(response.message)
-  res.status(p.success ? 200 : 502).send(response)
+  // const response = {
+  //   Success: p.success,
+  //   message: p.success ? 'Arduino received command' : 'Arduino may have not received command',
+  //   lights,
+  //   state: HomeState.lights.state
+  // }
 
 })
 
