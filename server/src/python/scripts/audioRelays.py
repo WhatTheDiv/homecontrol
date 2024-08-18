@@ -130,13 +130,13 @@ try:
 
   # New Commands
         if command == 'z': #                                            Get Audio & Temp State    ***** 
-          return f"{count}:z1-{z1},z2-{z2},t-{temp},h-{humidity}"
+          return f"{count}:z1-{z1}/z2-{z2}/t-{temp}/h-{humidity}"
         
         elif command == 't': #                                          Get Temp State            *****
-          return f"{count}:t-{temp},h-{humidity},"
+          return f"{count}:t-{temp}/h-{humidity},"
         
         elif command == 'a' and action == 's': #                        Get Audio State           *****
-          return f"{count}:z1-{z1},z2-{z2}"
+          return f"{count}:z1-{z1}/z2-{z2}"
         
         elif command == 'a': #                                          Set Audio                 *****  
           zone_index = input.find('z') + 1
@@ -147,20 +147,20 @@ try:
           return f"{ count }:z{ zone }-{ state }" if toggleAudioZone(int(zone), int(state)) == True else f"{count}:success-false"
         
         elif command == 'l' and action == 's': #                        Get Lights State          ***** 
-          return f"{count}:l-{lights_active},a-{animation_index}"
+          return f"{count}:l-{lights_active}/a-{animation_index}"
         
 
         # [ ] Set animation
         elif command == 'l' and action[:action.find('-')] == 'a': #     Set Animation             *****            #--------- 
-          return f"{count}:l-{lights_active},a-{animation_index}"
+          return f"{count}:l-{lights_active}/a-{animation_index}"
         
         # [ ] Toggle Lights
         elif command == 'l' and action[:action.find('-')] == 'l': #     Toggle Lights             *****            #--------- 
-          return f"{count}:l-{lights_active},a-{animation_index}"
+          return f"{count}:l-{lights_active}/a-{animation_index}"
         
         # [ ] Set Color
         elif command == 'l' and action[:action.find('-')] == 'c': #     Set Color                 *****            #--------- 
-          return f"{count}:l-{lights_active},a-{animation_index}"
+          return f"{count}:l-{lights_active}/a-{animation_index}"
         
         else:
            return "success-false"
