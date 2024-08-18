@@ -158,7 +158,7 @@ try:
         
         # [ ] Toggle Lights
         elif command == 'l' and action[:action.find('-')] == 'l': #     Toggle Lights             *****            #--------- 
-          print('touch lights toggle', flush=True)
+          
           return f"{count}:l-{0}/a-{1}"
           # return f"{count}:l-{lights_active}/a-{animation_index}"
         
@@ -168,6 +168,7 @@ try:
           # return f"{count}:l-{lights_active}/a-{animation_index}"
         
         else:
+           print('out of bounds' + input, flush=True)
            return "success-false"
         
 
