@@ -385,7 +385,7 @@ class DaemonClass {
     const sections = trimmedOutput.split('/')
 
     // -------------------- Initialize return object
-    const r = { err: false }
+    const r = { err: false, audio: {}, temp: {}, lights: {} }
 
     // -------------------- Parse receipt
     switch (name) {
