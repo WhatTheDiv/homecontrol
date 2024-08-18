@@ -106,7 +106,11 @@ class DaemonClass {
   }
 
   clearNextOutput = () => {
-    console.log(`Clearing output at index (${this.outputs.findIndex(output => output && Number(output.slice(0, output.indexOf(':'))) == this.count)})`)
+    console.log('outputs: ', this.outputs)
+    console.log('this count: ', this.count)
+    console.log(`Clearing output at index (
+      ${this.outputs.findIndex(output => output && Number(output.slice(0, output.indexOf(':'))) == this.count)}
+      )`)
 
     this.outputs[
       this.outputs.findIndex(output => output && Number(output.slice(0, output.indexOf(':'))) == this.count)
