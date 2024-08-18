@@ -108,7 +108,7 @@ class DaemonClass {
       console.log('this count: ', this.count)
       console.log(`Clearing output at index (
         ${this.outputs.findIndex(output => output && Number(output.slice(0, output.indexOf(':'))) == this.count)}
-        )`)
+      )`)
       console.groupEnd()
 
       this.outputs[
@@ -275,7 +275,7 @@ class DaemonClass {
   sendCommand = async ({ name, audioConfig = {}, lightsConfig = {}, tvCommand = '', Daemon }) => {
     // -------------------- Initialize variable object
     const obj = {}
-    const output = ''
+    let output = ''
 
     // -------------------- Send Message Block
     try {
