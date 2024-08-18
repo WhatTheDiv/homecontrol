@@ -284,7 +284,7 @@ class DaemonClass {
           break;
         case 'audio_Toggle':
           obj.name = 'a'
-          obj.cmd = 'z' + audioConfig.zone + '-' + audioConfig.newState
+          obj.cmd = 'z' + audioConfig.zone + '-' + audioConfig.newState ? 1 : 0
           break;
         case 'temp_State':
           obj.name = 't'
@@ -304,9 +304,8 @@ class DaemonClass {
           obj.cmd = 'a-' + lightsConfig.animationId
           break;
         case 'lights_Toggle':
-          if (lightsConfig.newState !== 1 || lightsConfig.newState !== 0)
-            obj.name = 'l'
-          obj.cmd = lightsConfig.newState
+          obj.name = 'l'
+          obj.cmd = lightsConfig.newState ? 1 : 0
           break;
         case 'lights_SetColor':
           if (lightsConfig.color === undefined) throw new Error('No color given to set')

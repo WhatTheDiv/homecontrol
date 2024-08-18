@@ -142,7 +142,7 @@ try:
           zone_index = input.find('z') + 1
           state_index = input.find('-') + 1
           zone = input[zone_index:state_index - 1]
-          state = input[state_index:state_index+2]
+          state = input[state_index:state_index+1]
         
           return f"{ count }:z{ zone }-{ state }" if toggleAudioZone(int(zone), int(state)) == True else f"{count}:success-false"
         
