@@ -95,12 +95,12 @@ class DaemonClass {
   }
 
   inc = () => {
-    console.log(`incrementing count(${this.count} to ${count >= this.maxCount
+    console.log(`incrementing count(${this.count} to ${this.count >= this.maxCount
       ? 1
       : this.count + 1
       })`)
 
-    this.count = count >= this.maxCount
+    this.count = this.count >= this.maxCount
       ? 1
       : this.count + 1
   }
@@ -280,6 +280,7 @@ class DaemonClass {
 
       // -------------------- Initialize variable object
       obj.count = Daemon.count
+      console.log('count: ', Daemon.count)
 
       // -------------------- Configure variable object
       switch (name) {
