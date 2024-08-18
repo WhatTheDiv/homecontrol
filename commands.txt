@@ -1,0 +1,61 @@
+***************************************************************************************************
+
+server -> python
+
+***************************************************************************************************
+
+
+
+- Audio & Temp
+
+
+    Get Audio & Temp State *****
+          (Message) ------------------------- {count}:z/s
+          (Response - Success) -------------- {count}:  z1-{active?}, z2-{active?}, t-{temp}, h-{humidity}
+          (Response - Fail) ----------------- {count}:success-false
+
+
+    Get Temp State *****
+          (Message) ------------------------- {count}:t/s
+          (Response - Success) -------------- {count}:{count}:  t-{temp}, h-{humidity}
+          (Response - Fail) ----------------- {count}:success-false
+
+
+    Get Audio State *****
+          (Message) ------------------------- {count}:a/s
+          (Response - Success) -------------- {count}:{count}:  z1-{active?}, z2-{active?}
+          (Response - Fail) ----------------- {count}:success-false
+
+
+    Set Audio *****
+          (Message) ------------------------- {count}:a/z{zone}-{active?} ----------------- [ zone - state ]
+          (Response - Success) -------------- {count}:z{zone}-{active?}
+          (Response - Fail) ----------------- {count}:success-false
+      
+
+- lights
+
+
+    Get State *****
+          (Message) ------------------------- {count}:l/  s
+          (Response - Success) -------------- {count}:  l-{active?},  a-{animation_index}
+          (Response - Fail) ----------------- {count}:success-false
+
+
+    Set Animation *****
+          (Message) ------------------------- {count}:l/  a-{animation_index}
+          (Response - Success) -------------- {count}:  l-{active?},  a-{animation_index}
+          (Response - Fail) ----------------- {count}:success-false
+
+
+    Toggle Lights *****
+          (Message) ------------------------- {count}:l/  l-{active?}
+          (Response - Success) -------------- {count}:  l-{active?},  a-{animation_index}
+          (Response - Fail) ----------------- {count}:success-false
+
+
+    Set Color *****
+          (Message) ------------------------- {count}:l/  c-({red},{green},{blue},{white}), n-{name}, b-{1-100}
+          (Response - Success) -------------- {count}:  n-{name}, c-({red},{green},{blue},{white}), b-{1-100}
+          (Response - Fail) ----------------- {count}:success-false
+

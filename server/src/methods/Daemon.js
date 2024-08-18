@@ -7,6 +7,7 @@ class DaemonClass {
     this.count = 1
     this.maxCount = 10
     this.checkTimeout_seconds = 2
+    this.checkInterval_ms = 250
     this.log = true
   }
 
@@ -93,12 +94,36 @@ class DaemonClass {
     }
   }
 
-  inc = (count) => {
-    if (count >= this.maxCount) return 1
-    else if (count < this.maxCount) return count += 1
+  inc = () => {
+    console.log(`incrementing count(${this.count} to ${count >= this.maxCount
+        ? 1
+        : this.count + 1
+      })`)
+
+    this.count = count >= this.maxCount
+      ? 1
+      : this.count + 1
+  }
+
+  clearNextOutput = () => {
+    console.log(`Clearing output at index (${this.outputs.findIndex(output => output && Number(output.slice(0, output.indexOf(':'))) == this.count)})`)
+
+    this.outputs[
+      this.outputs.findIndex(output => output && Number(output.slice(0, output.indexOf(':'))) == this.count)
+    ] = undefined
+
   }
 
   getCommand = ({ name, count, zone = -1, state = 0, lights }) => {
+    /*
+    
+    ***************************************************************************************************
+    ***************************************************************************************************
+    ***********                      Creating Commands for Python                           ***********
+    ***************************************************************************************************
+    ***************************************************************************************************
+    
+    */
 
     const lights_command = ({ toggle, animation, animationId, setColor, zone, newState }) => {
       const newColor = setColor?.newColor
@@ -135,37 +160,37 @@ class DaemonClass {
         break;
     }
 
-    // 1:a/z1-0                     = audio  =    [ count : name / zone - state ]
-    // 2:l/at&z0-s0                     deleteThis      [ count: name  / action_toggle & zone - state ]
-    // 3:l/aa&a1                    = lights =    [ count: name / action_animation & animationId ]
-    // 4:l/ac&c-colorName(0,0,0,0)  = lights =    [ count: name / action_colorChange & color - name(r,g,b,w) ]            -- 13 char max length name
-    // 5:l/as&                      = lights =    [ count: name / action_getState ]
-    // 6:s/&                        = state  =    [ count: name /  ]
 
     if (obj.cmd === null) return { err: true, message: "Bad input data to 'Daemon.getCommand' " }
     return { newCount: this.inc(count), command: `${obj.count}:${obj.name}/${obj.cmd && obj.cmd}\n` }
   }
 
-  check = async ({ outputs, count, duration, pass }) => {
+  check = async ({ count, duration, status }) => {
     return await new Promise((res) => {
 
-      const item = outputs.find((output) => output && Number(output.slice(0, output.indexOf(':'))) === count)
+      const index = this.outputs.findIndex((output) => output && Number(output.slice(0, output.indexOf(':'))) === count)
+      const item = this.outputs[index]
 
       setTimeout(() => {
-        if (item === undefined) {
+        // -------------------- Return false if output was not found
+        if (index < 0) {
           console.warn('Daemon has not responded yet...')
+          status.success = false
           res(false)
         }
+        // -------------------- Return false if response success = false
         else if ((item.slice(item.indexOf('-') + 1)).toLowerCase() === 'false') {
           console.error('Daemon responded with fail...')
-          pass.failed = true;
-          res(false)
+          status.failed = true;
+          res()
         }
-        else res(true)
+        // -------------------- Return true if found output at current count
+        else {
+          status.success = true
+          status.index = index
+          res()
+        }
       }, duration);
-
-
-
     })
   }
 
@@ -241,6 +266,175 @@ class DaemonClass {
       case 'toggle':
         break;
     }
+  }
+
+  sendCommand = async ({ name, audioConfig = {}, lightsConfig = {}, tvCommand = '', Daemon }) => {
+    // -------------------- Initialize variable object
+    const obj = {}
+    const output = ''
+
+    // -------------------- Send Message Block
+    try {
+      // -------------------- Error handle if process not running
+      if (!Daemon.process || !Daemon.active) throw new Error('Daemon is dead')
+
+      // -------------------- Initialize variable object
+      obj.count = Daemon.count
+
+      // -------------------- Configure variable object
+      switch (name) {
+        case 'audio_State':
+          obj.name = 'a'
+          obj.cmd = 's'
+          break;
+        case 'audio_Toggle':
+          obj.name = 'a'
+          obj.cmd = 'z' + audioConfig.zone + '-' + audioConfig.newState
+          break;
+        case 'temp_State':
+          obj.name = 't'
+          obj.cmd = 's'
+          break;
+        case 'all_State':
+          obj.name = 'z'
+          obj.cmd = 's'
+          break;
+        case 'lights_State':
+          obj.name = 'l'
+          obj.cmd = 's'
+          break;
+        case 'lights_SetAnimation':
+          if (lightsConfig.animationId === undefined) throw new Error('Sending incomplete command')
+          obj.name = 'l'
+          obj.cmd = 'a-' + lightsConfig.animationId
+          break;
+        case 'lights_Toggle':
+          if (lightsConfig.newState !== 1 || lightsConfig.newState !== 0)
+            obj.name = 'l'
+          obj.cmd = lightsConfig.newState
+          break;
+        case 'lights_SetColor':
+          if (lightsConfig.color === undefined) throw new Error('No color given to set')
+          else if (lightsConfig.colorName === undefined) throw new Error("No name given to SetColor")
+          obj.name = 'l'
+          obj.cmd = `c-(${lightsConfig.color.r},${lightsConfig.color.g},${lightsConfig.color.b},${lightsConfig.color.w}), b-${lightsConfig.brightness}, n-${lightsConfig.colorName}`
+          break;
+        case 'ir':
+          if (tvCommand === '') throw new Error('No command given to TV')
+          obj.name = 'i'
+          obj.cmd = tvCommand
+          break;
+        default:
+          throw new Error(`Sending incomplete command, or bad command name (${name})`)
+          break
+      }
+
+      // -------------------- Prep Daemon for next message
+      Daemon.clearNextOutput()
+      Daemon.inc()
+
+      // -------------------- Write new message
+      Daemon.process.stdin.write(`${obj.count}:${obj.name}/${obj.cmd}\n`)
+
+
+    } catch (e) {
+      console.error(`(Daemon Send Command) - ${e.message}`)
+      return { err: true, message: `(Daemon Send Command) - ${e.message}` }
+    }
+
+    // -------------------- Receive Message Block
+    try {
+      // -------------------- Set Status flags
+      const status = { success: false, failed: false, index: -1 }
+
+      // -------------------- Set Message Receipt Timeout
+      setTimeout(() => status.failed = true, Daemon.checkTimeout_seconds * 1000);
+
+      while (!status.success && !status.failed)
+        await Daemon.check({ count: obj.count, duration: Daemon.checkInterval_ms, status })
+
+      if (!status.success) throw new Error('Did not get receipt from Python script')
+      else output = Daemon.outputs[status.index]
+
+    } catch (e) {
+      console.error(`(Daemon Receive Command) - ${e.message}`)
+      return { err: true, message: `(Daemon Receive Command) - ${e.message}` }
+    }
+
+    // -------------------- Handle Receipt Block
+    try {
+      // -------------------- Parse Receipt
+      const parsedCommand = Daemon.parseReceipt(name, output)
+
+      return parsedCommand
+
+    } catch (e) {
+      console.error(`(Daemon Parse Receipt) - ${e.message}`)
+      return { err: true, message: `(Daemon Parse Receipt) - ${e.message}` }
+    }
+  }
+
+  parseReceipt = (name, output) => {
+    // -------------------- Break output into sections
+    const trimmedOutput = output.splice(output.indexOf(':') + 1)
+    const sections = trimmedOutput.split('/')
+
+    // -------------------- Initialize return object
+    const r = { err: false }
+
+    // -------------------- Parse receipt
+    switch (name) {
+      case 'audio_State':
+        const [z1, z2] = sections
+
+        r.audio.z1 = Number(z1.splice(z1.getIndex('-') + 1)) === 0 ? false : true
+        r.audio.z2 = Number(z2.splice(z2.getIndex('-') + 1)) === 0 ? false : true
+        break;
+      case 'audio_Toggle':
+        const [z] = sections
+        // r.audio[z1] = 0 ? false : true
+        r.audio[0, z.indexOf('-')] = Number(z.splice(z.indexOf('-') + 1) === 0 ? false : true)
+        break;
+      case 'temp_State':
+        const [t, h] = sections
+
+        r.temp.indoorTemp = t.splice(t.indexOf('-') + 1)
+        r.temp.indoorHumidity = h.splice(h.indexOf('-') + 1)
+        break;
+      case 'all_State':
+        const [z1, z2, t, h] = sections
+
+        r.audio.z1 = Number(z1.splice(z1.getIndex('-') + 1)) === 0 ? false : true
+        r.audio.z2 = Number(z2.splice(z2.getIndex('-') + 1)) === 0 ? false : true
+        r.temp.indoorTemp = t.splice(t.indexOf('-') + 1)
+        r.temp.indoorHumidity = h.splice(h.indexOf('-') + 1)
+        break;
+      case 'lights_State':
+      case 'lights_SetAnimation':
+      case 'lights_Toggle':
+        const [l, a] = sections
+
+        r.lights.active = Number(l.splice(l.getIndex('-') + 1)) === 0 ? false : true
+        r.lights.animation = a.splice(a.getIndex('-') + 1)
+        break;
+      case 'lights_SetColor':
+        const [c, b, n] = sections
+        const [red, green, blue, white] = (c.splice(3, c.getIndex(')'))).split(',')
+
+        r.lights.name = n
+        r.lights.brightness = b
+        r.lights.color = { red, green, blue, white }
+        break;
+      case 'ir':
+        const [c] = sections
+        r.tv.lastCommand = c.splice(c.indexOf('-') + 1)
+        break;
+      default:
+        throw new Error(`Out of bounds (${name})`)
+        break;
+    }
+
+    return r
   }
 }
 

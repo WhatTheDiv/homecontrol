@@ -5,6 +5,7 @@ const port = 3000 //process.argv[2] === 'live' ? 3000 : 3001
 const { handleButtonPress, getTvState, test } = require('./methods/tv-methods.js')
 const { getIndoorTempReading } = require('./methods/gpio-methods.js')
 const { DaemonClass } = require('./methods/Daemon')
+const localMethods = require('./methods/server-methods.js')
 
 app.use(cors())
 app.use(express.json())
@@ -43,7 +44,8 @@ const HomeState = {
   temp: {
     indoor_temp: 0,
     indoor_humidity: 0,
-    showTwoDay: true
+    showTwoDay: true,
+    updated: false
   },
   tv: {
     power: false,
@@ -73,58 +75,86 @@ app.get('/initialState', async (req, res) => {
   // Get tv state // 
   HomeState.tv = { ...HomeState.tv, ... await getTvState(HomeState.tv) }
 
-  // Get audio state & temp & lights // 
-  if (!Daemon.active || !Daemon.process) {
-    HomeState.audio.zone_1.updated = false
-    HomeState.audio.zone_1.active = true
-    HomeState.audio.zone_2.updated = false
-    HomeState.audio.zone_2.active = true
-    return res.status(200).send({ ...HomeState })
-  }
+  const tempAndAudio = await Daemon.sendCommand({ name: 'all_State', Daemon })
+  const lightsState = await Daemon.sendCommand({ name: 'all_State', Daemon })
 
+  const { audio, temp } = tempAndAudio
+  const { lights } = lightsState
 
-  const count = Daemon.count
-  const { newCount, command, err, message } = Daemon.getCommand({ name: 'state', count, lights: {} })
-
-  if (err) return res.status(502).send({ message: 'Deamon failed at send: ' + message, success: false })
-  Daemon.count = newCount
-
-  Daemon.outputs[count] = undefined
-  Daemon.process.stdin.write(command)
-
-  const p = { success: false, failed: false }
-
-  setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
-
-  while (!p.success && !p.failed)
-    p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250, pass: p })
-
-
-  if (p.success) {
-    console.log('successful response from daemon')
-    const { a, t, l } = Daemon.format_audio_and_temp_status_and_lights({
-      audio: HomeState.audio,
-      lights: HomeState.lights,
-      string: Daemon.outputs.find(string => string.indexOf(`${count}:`) >= 0)
-    })
-    const { temp, humidity } = t
-
-    HomeState.audio = a
-    HomeState.temp.indoor_temp = temp
-    HomeState.temp.indoor_humidity = humidity
-    HomeState.lights.state = { ...l }
-  }
-  else {
-    console.error("Audio, temp, and lights are not updated!")
+  if (tempAndAudio.err) {
     HomeState.audio.zone_1.updated = false
     HomeState.audio.zone_2.updated = false
+    HomeState.temp.updated = false
+  } else {
+    HomeState.audio.zone_1.updated = true
+    HomeState.audio.zone_1.active = audio.z1
+
+    HomeState.audio.zone_2.updated = true
+    HomeState.audio.zone_2.active = audio.z2
+
+    HomeState.temp.updated = true
+    HomeState.temp.indoor_temp = temp.indoorTemp
+    HomeState.temp.indoor_humidity = temp.indoorHumidity
+  }
+
+  if (lightsState.err) {
     HomeState.lights.state.updated = false
+  } else {
+    HomeState.lights.state.updated = true
+    HomeState.lights.state.lights_active = lights.active
+
+    const a = HomeState.lights.Animations
+    HomeState.lights.state.animation = (Object.keys(a)).find(animName => a[animName] === lights.animation) || 'walk'
+    HomeState.lights.state.animation_active = HomeState.lights.ActiveAnimations.indexOf(HomeState.lights.state.animation) >= 0 ? true : false
   }
-
-
-
 
   res.status(200).send({ ...HomeState })
+
+
+
+
+  // const count = Daemon.count
+  // const { newCount, command, err, message } = Daemon.getCommand({ name: 'state', count, lights: {} })
+
+  // if (err) return res.status(502).send({ message: 'Deamon failed at send: ' + message, success: false })
+  // Daemon.count = newCount
+
+  // Daemon.outputs[count] = undefined
+  // Daemon.process.stdin.write(command)
+
+  // const p = { success: false, failed: false }
+
+  // setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
+
+  // while (!p.success && !p.failed)
+  //   p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250, pass: p })
+
+
+  // if (p.success) {
+  //   console.log('successful response from daemon')
+  //   const { a, t, l } = Daemon.format_audio_and_temp_status_and_lights({
+  //     audio: HomeState.audio,
+  //     lights: HomeState.lights,
+  //     string: Daemon.outputs.find(string => string.indexOf(`${count}:`) >= 0)
+  //   })
+  //   const { temp, humidity } = t
+
+  //   HomeState.audio = a
+  //   HomeState.temp.indoor_temp = temp
+  //   HomeState.temp.indoor_humidity = humidity
+  //   HomeState.lights.state = { ...l }
+  // }
+  // else {
+  //   console.error("Audio, temp, and lights are not updated!")
+  //   HomeState.audio.zone_1.updated = false
+  //   HomeState.audio.zone_2.updated = false
+  //   HomeState.lights.state.updated = false
+  // }
+
+
+
+
+  // res.status(200).send({ ...HomeState })
 })
 
 app.get('/test', async (req, res) => {
