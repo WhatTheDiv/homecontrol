@@ -176,7 +176,7 @@ try:
               # print(f'st: {st}', flush=True)
 
               bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
-              bus.read_i2c_block_data(slave_bedroom_nano, 0, 20)
+              bus.read_byte(slave_bedroom_nano)
               return f"{count}:success-true"
           except RuntimeError as err:
              print(f'{count}:success-false {err.args[0]}')
