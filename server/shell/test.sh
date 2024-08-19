@@ -2,4 +2,4 @@
 
 
 echo 'Test'
-echo $root
+echo $root.FullName
