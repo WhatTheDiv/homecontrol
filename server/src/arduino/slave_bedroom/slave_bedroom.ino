@@ -82,7 +82,8 @@ void requestInput() {
   }
   else if (request.compareTo("newIr")) {
     Serial.println("Looking for IR signal ... ");
-    Wire.write(lookForIrSignal());
+    byte sig = lookForIrSignal();
+    Wire.write(sig);
   }
   else {
     Serial.println("Arduino out of bounds in requestInput()");

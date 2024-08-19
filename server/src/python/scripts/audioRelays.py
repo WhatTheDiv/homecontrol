@@ -173,7 +173,7 @@ try:
               st = ''.join(chr(x) for x in block)
               return f"{count}:success-true"
           except:
-             return f"{count}:success-true"
+             return f"{count}:success-false"
 
         elif command == 'i' and action[:input.find('-')] == 's': #     Send Ir Command           *****
            
