@@ -87,11 +87,11 @@ void requestInput() {
     Wire.write(0xA5);
   }
   else if (request.compareTo("newIr")) {
-    Serial.println("Looking for IR signal ... ");
+    // Serial.println("Looking for IR signal ... ");
     // byte op[] = { 0x01,0x02,0x03,0x04 };
     Wire.write("something\n");
     // byte sig = lookForIrSignal();
-    Serial.println("bypass look for sig");
+    // Serial.println("bypass look for sig");
     // Wire.write(sig);
   }
   else {

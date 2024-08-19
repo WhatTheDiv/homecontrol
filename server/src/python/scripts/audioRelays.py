@@ -177,7 +177,10 @@ try:
 
               bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
               block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
-              return f"{count}:success-true"
+
+              string = ''.join(chr(x) for x in block)
+
+              return f"{count}:success-true/{string}"
           except RuntimeError as err:
              return f"{count}:success-false"
 
