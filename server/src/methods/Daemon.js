@@ -350,8 +350,11 @@ class DaemonClass {
       // -------------------- Set Message Receipt Timeout
       setTimeout(() => status.failed = true, Daemon.checkTimeout_seconds * 1000);
 
-      while (!status.success && !status.failed)
+      while (!status.success && !status.failed) {
         status = { ... await Daemon.check({ count: obj.count, duration: extendedTimeout <= 0 ? Daemon.checkInterval_ms : extendedTimeout, status }) }
+        console.log(`status now: ${status}`)
+      }
+
 
       if (!status.success) throw new Error('Did not get receipt from Python script')
       if (status.failed) throw new Error('Python responded with fail')
