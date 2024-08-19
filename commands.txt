@@ -59,18 +59,79 @@ server -> python
           (Response - Success) --------------               {count}:  c-({red},{green},{blue},{white})/ b-{1-100}/ n-{name}
           (Response - Fail) -----------------                             {count}:success-false
 
-- TV
+- IR
     Send Command *****
           (Message) ------------------------- {count}:i/c-{command}
           (Response - Success) --------------               {count}:  c-{command}
           (Response - Fail) -----------------                             {count}:success-false
 
 
-const { newCount, command, err, message } = Daemon.getCommand({ name: 'state', count, lights: {} })
-const { newCount, command, err, message } = Daemon.getCommand({ name: 'lights', count, lights })
-const { newCount, command, err, message } = Daemon.getCommand({ name: 'audio', zone, state: newState ? 1 : 0, count, lights: {} })
-const { newCount, command, err, message } = Daemon.getCommand({ name: 'lights', count, lights })
-const { newCount, command, err, message } = Daemon.getCommand({ name: 'lights', count, lights })
+    Receive Signal *****
+          (Message) ------------------------- {count}:i/r
+          (Response - Success) --------------               {count}:  r-{command}
+          (Response - Fail) -----------------                             {count}:success-false
+
+
+
+------------------------------------ Python -> Arduino ------------------------------------
+
+- IR
+    Send Command *****
+          (Message) ------------------------- "sendCommand"
+          (Response - Success) --------------               "success"
+          (Response - Fail) -----------------                             "fail"
+
+
+    Read New IR ***** ( increase timeout to 1 minute )
+          (Message) ------------------------- "newIr"
+          (Response - Success) --------------               "{IrCommand}"
+          (Response - Fail) -----------------                             "fail"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$355.41 made
+gas cost: $35.40   (250 miles @ 25mpg @ $3.54/gal = 10 gal)
+$320.01 net
+
+
+28 trips
+250 miles
+$11.42 / trip avg ( Net )
+8.9 miles / trip avg
+$1.28 / mile
+
+Total Time Spent: 
+- 17.25 hours
+- 1035 minutes
+- $20.6 / hour
+
+
+Active Time:
+- 9.4 hours
+- 564 minutes
+- $37.81 / hour - ( Gross )
+- $34.04 / hour - ( Net )
+- $6.30 / 10 minute interval ( Gross )
+
+
+
+
+
+
+
 
 
 

@@ -113,135 +113,13 @@ app.get('/initialState', async (req, res) => {
 
 app.get('/test', async (req, res) => {
   console.log('hitting tester')
-  if (!Daemon.active || !Daemon.process) {
-    return res.status(200).send({ success: false })
-  }
 
-  Daemon.process.stdin.write('t\n')
+  const { err, message, tv } = await Daemon.sendCommand({ name: 'ir_Learn', Daemon })
+
+  if (err) console.error(message)
+  else console.log('tv: ', tv)
 
   res.status(200).send({ success: true })
-})
-
-app.post('/setLights', async (req, res) => {
-  const setupCommand_animation = (n) => {
-    if (!n || HomeState.lights.Animations[n] === undefined)
-      return {
-        failed: true,
-        initialValues: {
-          input_animationName: n,
-          resolvedAnimationId: HomeState.lights.Animations[n],
-          animationList: HomeState.lights.Animations
-        }
-      }
-
-
-
-    return {
-      animation: true,
-      animationId: HomeState.lights.Animations[n],
-      animationName: n
-    }
-  }
-  const setupCommand_toggle = (v) => {
-    if (v === undefined)
-      return {
-        failed: true,
-        initialValues: {
-          input_newState: v
-        }
-      }
-    const animationName = v ? HomeState.lights.defaultOnAnimation : HomeState.lights.defaultOffAnimation
-
-    return {
-      toggle: true,
-      animationId: HomeState.lights.Animations[v ? HomeState.lights.defaultOnAnimation : HomeState.lights.defaultOffAnimation],
-      animationName
-    }
-  }
-  const setupCommand_color = (label, rgbw) => {
-    if (!label || !rgbw)
-      return {
-        failed: true,
-        initialValues: {
-          input_Label: label, input_RGBW: rgbw
-        }
-      }
-
-    return {
-      setColor: {
-        newColor: true,
-        colorLabel: label,
-        rgbw
-      }
-    }
-  }
-
-  const setupLightsObject = (m, n, v) => {
-    switch (m) {
-      case 'animation':
-        return setupCommand_animation(n.indexOf('default') >= 0 ? HomeState.lights[n] : n)
-      case 'color':
-        return setupCommand_color(n, v)
-      case 'toggle':
-        console.log(' server, setting command to toggle')
-        return setupCommand_toggle(v)
-      default:
-        return {
-          failed: true,
-          initialValue: {
-            mode: m,
-            name: n,
-            value: v
-          }
-        }
-    }
-  }
-
-  const { mode, name, value } = req.body
-  // mode = 'animation' || 'color'
-  // name = animationName, colorName
-
-  console.log('From client: ', { mode, name, value })
-
-  if (!Daemon.active || !Daemon.process) {
-    return res.status(502).send({ message: 'Daemon is inactive' })
-  }
-
-  const count = Daemon.count
-  const lights = setupLightsObject(mode, name, value)
-
-  if (lights.failed)
-    return res.status(502).send({ Success: false, Message: 'Bad inputs given to server @ /setLightsScheme for ' + mode, helper: lights.initialValues })
-
-  const { newCount, command, err, message } = Daemon.getCommand({
-    name: 'lights',
-    count,
-    lights
-  })
-  console.log('Command created: ', command)
-
-  if (err) return res.status(502).send({ message: 'Deamon failed at send: ' + message, success: false })
-
-  Daemon.count = newCount
-  Daemon.process.stdin.write(command)
-
-  const p = { success: false, failed: false }
-
-  const ref = setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
-
-  while (!p.success && !p.failed)
-    p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250, pass: p })
-
-  if (p.success) {
-    clearTimeout(ref)
-    console.log('Good response from arduino')
-    res.status(200).send({ Success: true, message: 'Good response from arduino ', lights })
-    // [ ] Set light state in HomeState
-  } else {
-    console.log('bad response from arduino')
-    res.status(502).send({ Success: false, message: 'Arduino failed to respond' })
-
-  }
 })
 
 app.post('/toggleAudioZones', async (req, res) => {
@@ -272,7 +150,6 @@ app.post('/toggleLightsActive', async (req, res) => {
   // name = animationName, colorName
 
   const { err, lights } = await Daemon.sendCommand({ name: 'lights_Toggle', lightsConfig: { newState }, Daemon })
-  console.log('response from lightsactivetoggle : ', lights)
 
   if (err) {
     HomeState.lights.state.updated = false
@@ -299,65 +176,37 @@ app.post('/toggleLightsActive', async (req, res) => {
 app.post('/setLightsAnimation', async (req, res) => {
   const { _animationName } = req.body
 
-  console.log('From client: ', { _animationName })
-
-  if (!Daemon.active || !Daemon.process) {
-    return res.status(502).send({ message: 'Daemon is inactive' })
-  }
-
-  const count = Daemon.count
-
   const animationName = _animationName.indexOf('default') >= 0
     ? HomeState.lights[_animationName]
     : _animationName
 
-  const lights = {
-    animation: true,
-    animationId: HomeState.lights.Animations[animationName],
-    animationName
-  }
-
-  if (lights.animationId === undefined) {
-    return res.status(502).send({ Success: false, Message: 'Bad inputs given to server @ /setLightsAnimation.', lights })
-  }
-
-  const updater = {
-    lights_active: true,
-    animation_active: HomeState.lights.ActiveAnimations.find(anim => anim === lights.animationName) === undefined ? false : true,
-    animation: animationName,
-    updated: true,
-  }
-
-  const { newCount, command, err, message } = Daemon.getCommand({
-    name: 'lights',
-    count,
-    lights
+  const { err, lights } = await Daemon.sendCommand({
+    name: "lights_SetAnimation",
+    lightsConfig: { animationId: HomeState.lights.Animations[animationName] },
+    Daemon
   })
 
-  console.log('Command created: ', command)
+  if (err) {
+    HomeState.lights.state.updated = false
+  } else {
+    HomeState.lights.state.updated = true
+    HomeState.lights.state.lights_active = lights.active
 
-  if (err) return res.status(502).send({ message: 'Deamon failed at send: ' + message, success: false })
-
-  Daemon.count = newCount
-  Daemon.process.stdin.write(command)
-
-  const p = { success: false, failed: false }
-
-  const ref = setTimeout(() => p.failed = true, Daemon.checkTimeout_seconds * 1000);
-
-  while (!p.success && !p.failed)
-    p.success = await Daemon.check({ outputs: Daemon.outputs, count, duration: 250, pass: p })
-
-  clearTimeout(ref)
-  if (p.success) HomeState.lights.state = { ...updater }
-  const response = {
-    Success: p.success,
-    message: p.success ? 'Arduino received command' : 'Arduino may have not received command',
-    lights,
-    state: HomeState.lights.state
+    const a = HomeState.lights.Animations
+    HomeState.lights.state.animation = (Object.keys(a)).find(animName => a[animName] === lights.animation) || 'walk'
+    HomeState.lights.state.animation_active = HomeState.lights.ActiveAnimations.indexOf(HomeState.lights.state.animation) >= 0 ? true : false
   }
-  console.log(response.message)
-  res.status(p.success ? 200 : 502).send(response)
+
+  res.status(err ? 502 : 200).send({ Success: !err, state: HomeState.lights.state })
+
+
+
+  // const response = {
+  //   Success: p.success,
+  //   message: p.success ? 'Arduino received command' : 'Arduino may have not received command',
+  //   lights,
+  //   state: HomeState.lights.state
+  // }
 
 })
 
@@ -370,10 +219,6 @@ app.post('/updateDefaultAnimations', async (req, res) => {
   HomeState.lights[_animation] = _animationName
 
   res.status(200).send({ message: 'Success', lights: HomeState.lights })
-})
-
-app.post('/setLightsColor', async (req, res) => {
-
 })
 
 app.post('/setZoneName', ((req, res) => {
@@ -390,6 +235,10 @@ app.post('/setColor', (req, res) => {
   const { r, g, b } = req.body.output
   console.log(req.body.action, ': ', { r, g, b })
   res.status(200).end()
+})
+
+app.post('/setLightsColor', async (req, res) => {
+
 })
 
 app.post('/remote', async (req, res) => {

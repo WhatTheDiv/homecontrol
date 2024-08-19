@@ -314,11 +314,14 @@ class DaemonClass {
           obj.name = 'l'
           obj.cmd = `c-(${lightsConfig.color.r},${lightsConfig.color.g},${lightsConfig.color.b},${lightsConfig.color.w}), b-${lightsConfig.brightness}, n-${lightsConfig.colorName}`
           break;
-        case 'ir':
+        case 'ir_Send':
           if (tvCommand === '') throw new Error('No command given to TV')
           obj.name = 'i'
-          obj.cmd = tvCommand
+          obj.cmd = `c-${tvCommand}`
           break;
+        case 'ir_Learn':
+          obj.name = 'i'
+          obj.cmd = `r`
         default:
           throw new Error(`Sending incomplete command, or bad command name (${name})`)
           break
@@ -428,9 +431,14 @@ class DaemonClass {
         r.lights.color = { red, green, blue, white }
         break;
       }
-      case 'ir': {
+      case 'ir_Send': {
         const [c] = sections
         r.tv.lastCommand = c.slice(c.indexOf('-') + 1)
+        break;
+      }
+      case 'ir_Learn': {
+        const [r] = sections
+        r.tv.IrCommandLearned = r.slice(r.indexOf('-') + 1)
         break;
       }
       default:

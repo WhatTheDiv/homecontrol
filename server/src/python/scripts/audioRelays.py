@@ -23,6 +23,7 @@ try:
     z_2_R = LED(pin=21, initial_value=False)
     aht20 = adafruit_ahtx0.AHTx0(board.I2C())
     slave_nano_addr = 0x8
+    slave_bedroom_nano = 0x9
 
     def toggleAudioZone(zone, set_state):
         if zone == 1:
@@ -150,23 +151,31 @@ try:
           return f"{count}:l-{0}/a-{1}"
           # return f"{count}:l-{lights_active}/a-{animation_index}"
         
-
         # [ ] Set animation
-        elif command == 'l' and action[:action.find('-')] == 'a': #     Set Animation             *****            #--------- 
+        elif command == 'l' and action[:input.find('-')] == 'a': #     Set Animation             *****            #--------- 
           return f"{count}:l-{0}/a-{1}"
-          # return f"{count}:l-{lights_active}/a-{animation_index}"
         
         # [ ] Toggle Lights
         elif command == 'l' and action[:input.find('-')] == 'l': #     Toggle Lights             *****            #--------- 
-          
           return f"{count}:l-{1}/a-{1}"
           # return f"{count}:l-{lights_active}/a-{animation_index}"
         
         # [ ] Set Color
-        elif command == 'l' and action[:action.find('-')] == 'c': #     Set Color                 *****            #--------- 
+        elif command == 'l' and action[:input.find('-')] == 'c': #     Set Color                 *****            #--------- 
           return f"{count}:l-{0}/a-{1}"
           # return f"{count}:l-{lights_active}/a-{animation_index}"
         
+        elif command == 'i' and action == 'r': #                       Receive Signal            *****
+          with SMBus(1) as bus:
+            t = bytes("newIr", "utf-8")
+            block = bus.block_process_call(slave_bedroom_nano, 0, t )
+            st = ''.join(chr(x) for x in block)
+
+            
+        
+        elif command == 'i' and action[:input.find('-')] == 's': #     Send Ir Command           *****
+           
+           return
         else:
            print( f'(Python) Out of bounds: {input}', flush=True)
            return "success-false"

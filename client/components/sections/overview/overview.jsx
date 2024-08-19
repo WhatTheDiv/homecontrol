@@ -118,7 +118,7 @@ const overview = () => {
       {/* Audio */}
       {render_audio(bus)}
       {/* Test */}
-      {/* {render_test(bus)} */}
+      {render_test(bus)}
     </ScrollView>
   );
 };
