@@ -1,5 +1,4 @@
 
-from gpiozero import LED
 import time
 import sys
 import select
