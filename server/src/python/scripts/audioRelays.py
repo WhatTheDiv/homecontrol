@@ -176,10 +176,10 @@ try:
               # print(f'st: {st}', flush=True)
 
               bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
-              block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 16)
+              block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
               return f"{count}:success-true"
           except RuntimeError as err:
-             return f"{count}:success-false {err.args[0]}"
+             return f"{count}:success-false"
 
         elif command == 'i' and action[:input.find('-')] == 's': #     Send Ir Command           *****
            print( f'(Python) Incomplete: {input}', flush=True)
