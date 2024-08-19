@@ -354,6 +354,7 @@ class DaemonClass {
         await Daemon.check({ count: obj.count, duration: extendedTimeout <= 0 ? Daemon.checkInterval_ms : extendedTimeout, status })
 
       if (!status.success) throw new Error('Did not get receipt from Python script')
+      if (status.failed) throw new Error('Python responded with fail')
       else output = Daemon.outputs[status.index]
 
     } catch (e) {
