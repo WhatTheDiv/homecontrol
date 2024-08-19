@@ -176,10 +176,9 @@ try:
               # print(f'st: {st}', flush=True)
 
               bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
-              bus.read_byte(slave_bedroom_nano)
+              bus.read_i2c_block_data(slave_bedroom_nano, 0, 4)
               return f"{count}:success-true"
           except RuntimeError as err:
-             print(f'{count}:success-false {err.args[0]}')
              return f"{count}:success-false {err.args[0]}"
 
         elif command == 'i' and action[:input.find('-')] == 's': #     Send Ir Command           *****
