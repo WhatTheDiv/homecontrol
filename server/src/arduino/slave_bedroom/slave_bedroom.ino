@@ -90,8 +90,9 @@ void requestInput() {
     // Serial.println("Looking for IR signal ... ");
     // byte op[] = { 0x01,0x02,0x03,0x04 };
     Wire.write("something\n");
-    // byte sig = lookForIrSignal();
-    // Serial.println("bypass look for sig");
+    delay(1000);
+    byte sig = lookForIrSignal();
+    Serial.println("Got signal");
     // Wire.write(sig);
   }
   else {
