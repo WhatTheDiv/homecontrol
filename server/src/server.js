@@ -114,7 +114,7 @@ app.get('/initialState', async (req, res) => {
 app.get('/test', async (req, res) => {
   console.log('hitting tester')
 
-  const { err, message, tv } = await Daemon.sendCommand({ name: 'ir_Learn', Daemon, extendedTimeout: 20000 })
+  const { err, message, tv } = await Daemon.sendCommand({ name: 'ir_Learn', Daemon, extendedTimeout: 5 })
 
   if (err) console.error(message)
   else console.log('tv: ', tv)

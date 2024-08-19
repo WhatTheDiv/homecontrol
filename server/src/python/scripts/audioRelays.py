@@ -174,7 +174,6 @@ try:
               print(f'st: {st}', flush=True)
               return f"{count}:success-true"
           except:
-             print ('(Python) Failing on exception', flush=True)
              return f"{count}:success-false"
 
         elif command == 'i' and action[:input.find('-')] == 's': #     Send Ir Command           *****
