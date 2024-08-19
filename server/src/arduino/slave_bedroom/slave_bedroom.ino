@@ -91,6 +91,8 @@ void receiveRequest(uint8_t howMany) {
   str[howMany - 1] = '\0';
 
   request = str;
+  Serial.print("request: ");
+  Serial.println(request);
 
   // processInput(str, howMany);
 }

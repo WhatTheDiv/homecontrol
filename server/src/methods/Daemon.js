@@ -264,7 +264,7 @@ class DaemonClass {
     }
   }
 
-  sendCommand = async ({ name, audioConfig = {}, lightsConfig = {}, tvCommand = '', Daemon }) => {
+  sendCommand = async ({ name, audioConfig = {}, lightsConfig = {}, tvCommand = '', Daemon, extendedTimeout = 0 }) => {
     // -------------------- Initialize variable object
     const obj = {}
     let output = ''
@@ -351,7 +351,7 @@ class DaemonClass {
       setTimeout(() => status.failed = true, Daemon.checkTimeout_seconds * 1000);
 
       while (!status.success && !status.failed)
-        await Daemon.check({ count: obj.count, duration: Daemon.checkInterval_ms, status })
+        await Daemon.check({ count: obj.count, duration: extendedTimeout <= 0 ? Daemon.checkInterval_ms : extendedTimeout, status })
 
       if (!status.success) throw new Error('Did not get receipt from Python script')
       else output = Daemon.outputs[status.index]
