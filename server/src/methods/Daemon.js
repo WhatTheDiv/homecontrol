@@ -300,7 +300,7 @@ class DaemonClass {
           obj.cmd = 's'
           break;
         case 'lights_SetAnimation':
-          if (lightsConfig.animationId === undefined) throw new Error('Sending incomplete command')
+          if (lightsConfig.animationId === undefined) throw new Error(`Sending incomplete command, animationID: (${lightsConfig.animationId})`)
           obj.name = 'l'
           obj.cmd = 'a-' + lightsConfig.animationId
           break;
