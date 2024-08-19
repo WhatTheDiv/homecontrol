@@ -43,6 +43,7 @@ byte lookForIrSignal() {
   bool lookForIr = true;
   while (lookForIr) {
     Serial.println('looping...');
+    Serial.flush();
     if (IrReceiver.decode()) {
       if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
         Serial.println(F("Received noise or an unknown (or not yet enabled) protocol"));
@@ -62,6 +63,7 @@ byte lookForIrSignal() {
         return IrReceiver.decodedIRData.command;
       }
     }
+    Serial.flush();
   }
   delay(100);
 
