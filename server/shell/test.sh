@@ -2,4 +2,7 @@
 
 
 echo 'Test'
-echo [$root.FullName]
+$root = ([IO.DirectoryInfo] $PSScriptRoot).Parent
+$base = $root.Parent
+$root.FullName
+$base.FullName
