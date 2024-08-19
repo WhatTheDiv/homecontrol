@@ -349,12 +349,14 @@ class DaemonClass {
       let status = { success: false, failed: false, daemonErr: false, index: -1 }
 
       // -------------------- Set Message Receipt Timeout
-      setTimeout(() => status.failed = true, (extendedTimeout <= 0 ? Daemon.checkTimeout_seconds : extendedTimeout) * 1000);
+      const t = setTimeout(() => status.failed = true, (extendedTimeout <= 0 ? Daemon.checkTimeout_seconds : extendedTimeout) * 1000);
 
       while (!status.success && !status.failed && !status.daemonErr) {
         status = { ... await Daemon.check({ count: obj.count, duration: Daemon.checkInterval_ms, status }) }
         console.log(status)
       }
+
+      clearTimeout(t)
 
 
       if (status.daemonErr) throw new Error('Python responded with fail')
