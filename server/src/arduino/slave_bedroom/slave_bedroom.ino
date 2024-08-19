@@ -42,9 +42,9 @@ void loop() {
 byte lookForIrSignal() {
   bool lookForIr = true;
   while (lookForIr) {
-    Serial.println('looping...');
-    Serial.flush();
     if (IrReceiver.decode()) {
+      Serial.println("Decode available");
+      Serial.flush();
       if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
         Serial.println(F("Received noise or an unknown (or not yet enabled) protocol"));
         // We have an unknown protocol here, print extended info
@@ -63,9 +63,12 @@ byte lookForIrSignal() {
         return IrReceiver.decodedIRData.command;
       }
     }
+    else {
+      Serial.println("Not avail.");
+    }
     Serial.flush();
+    delay(500);
   }
-  delay(100);
 
 }
 
@@ -85,8 +88,10 @@ void requestInput() {
   }
   else if (request.compareTo("newIr")) {
     Serial.println("Looking for IR signal ... ");
-    byte sig = lookForIrSignal();
-    Wire.write(sig);
+    Wire.write("success");
+    // byte sig = lookForIrSignal();
+    Serial.println("bypass look for sig");
+    // Wire.write(sig);
   }
   else {
     Serial.println("Arduino out of bounds in requestInput()");
