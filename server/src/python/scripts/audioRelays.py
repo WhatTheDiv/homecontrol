@@ -169,11 +169,13 @@ try:
           try:
             with SMBus(1) as bus:
               t = bytes("newIr", "utf-8")
-              block = bus.block_process_call(slave_bedroom_nano, 0, t )
-              print(f'block: {block}')
-              bus.close()
-              st = ''.join(chr(x) for x in block)
-              print(f'st: {st}', flush=True)
+              # block = bus.block_process_call(slave_bedroom_nano, 0, t )
+              # print(f'block: {block}')
+              # bus.close()
+              # st = ''.join(chr(x) for x in block)
+              # print(f'st: {st}', flush=True)
+
+              bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
               return f"{count}:success-true"
           except RuntimeError as err:
              print(f'{count}:success-false {err.args[0]}')
