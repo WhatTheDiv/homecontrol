@@ -176,7 +176,7 @@ try:
               print(f'st: {st}', flush=True)
               return f"{count}:success-true"
           except RuntimeError as err:
-             print(f'{err.args[0]}')
+             print(f'{count}:success-false {err.args[0]}')
              return f"{count}:success-false {err.args[0]}"
 
         elif command == 'i' and action[:input.find('-')] == 's': #     Send Ir Command           *****
