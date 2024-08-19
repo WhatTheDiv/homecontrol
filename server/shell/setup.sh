@@ -1,7 +1,11 @@
 #!/bin/bash
 clear
 
-echo "updating apt-get"
+echo "pulling updates from git ... "
+git pull
+
+
+echo "updating apt-get ... "
 
 sudo apt-get update
 sudo apt-get install python3.6
