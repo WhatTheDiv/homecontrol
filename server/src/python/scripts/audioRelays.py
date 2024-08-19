@@ -147,7 +147,7 @@ try:
           return f"{ count }:z{ zone }-{ state }" if toggleAudioZone(int(zone), int(state)) == True else f"{count}:success-false"
         
         elif command == 'l' and action == 's': #                        Get Lights State          ***** 
-          return f"{count}:l-{0}/a-{1}"
+          return f"{count}:l-{1}/a-{1}"
           # return f"{count}:l-{lights_active}/a-{animation_index}"
         
 
@@ -168,7 +168,7 @@ try:
           # return f"{count}:l-{lights_active}/a-{animation_index}"
         
         else:
-           print( f'action: {input}', flush=True)
+           print( f'(Python) Out of bounds: {input}', flush=True)
            return "success-false"
         
 
