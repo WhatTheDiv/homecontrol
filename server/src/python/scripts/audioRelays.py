@@ -165,29 +165,39 @@ try:
           return f"{count}:l-{0}/a-{1}"
           # return f"{count}:l-{lights_active}/a-{animation_index}"
         
-        elif command == 'i' and action == 'r': #                       Receive Signal            *****
+        elif command == 'i' and action == 'r': #                       Read Signal            *****
           try:
             with SMBus(1) as bus:
               t = bytes("newIr", "utf-8")
-              # block = bus.block_process_call(slave_bedroom_nano, 0, t )
-              # print(f'block: {block}')
-              # bus.close()
-              # st = ''.join(chr(x) for x in block)
-              # print(f'st: {st}', flush=True)
 
               bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
               block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
 
-              print (f"arduino responded with 1: {chr(block[0]) == 1}")
-              print (f"arduino responded with 0: {chr(block[0]) == 0}", flush=True)
+              string = ''.join(chr(x) for x in block)
+              if(string == 'success'):
+                 return f"{count}:success-true"
+              else:
+                return f"{count}:success-false"
+
+              
+          except RuntimeError as err:
+             return f"{count}:success-false"
+          
+        elif command == 'i' and action == 'x': #                       Report Signal            *****
+          try:
+            with SMBus(1) as bus:
+              t = bytes("getIr", "utf-8")
+
+              bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
+              block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
 
               string = ''.join(chr(x) for x in block)
 
-              return f"{count}:success-true/{string}"
+              return f"{count}:x-{string}"
           except RuntimeError as err:
              return f"{count}:success-false"
 
-        elif command == 'i' and action[:input.find('-')] == 's': #     Send Ir Command           *****
+        elif command == 'i' and action[:input.find('-')] == 'c': #     Send Ir Command           *****
            print( f'(Python) Incomplete: {input}', flush=True)
            return f"{count}:success-false"
         else:

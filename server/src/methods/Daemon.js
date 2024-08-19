@@ -324,6 +324,10 @@ class DaemonClass {
           obj.name = 'i'
           obj.cmd = `r`
           break;
+        case 'ir_Report':
+          obj.name = 'i'
+          obj.cmd = 'x'
+          break;
         default:
           throw new Error(`Sending incomplete command, or bad command name (${name})`)
           break
@@ -445,8 +449,12 @@ class DaemonClass {
         break;
       }
       case 'ir_Learn': {
-        const [r] = sections
-        // r.tv.IrCommandLearned = r.slice(r.indexOf('-') + 1)
+        r.tv.IrCommandLearnMode = true
+        break;
+      }
+      case 'ir_Report': {
+        const [c] = sections
+        r.tv.newCommand = c.slice(c.indexOf('-') + 1)
         break;
       }
       default:

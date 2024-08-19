@@ -66,9 +66,15 @@ server -> python
           (Response - Fail) -----------------                             {count}:success-false
 
 
-    Receive Signal *****
+    Read Signal *****
           (Message) ------------------------- {count}:i/r
-          (Response - Success) --------------               {count}:  r-{command}
+          (Response - Success) --------------               {count}:  success-true
+          (Response - Fail) -----------------                             {count}:success-false
+
+
+    Report Signal *****
+          (Message) ------------------------- {count}:i/x
+          (Response - Success) --------------               {count}:  x-{command}
           (Response - Fail) -----------------                             {count}:success-false
 
 
@@ -82,9 +88,15 @@ server -> python
           (Response - Fail) -----------------                             "fail"
 
 
-    Read New IR ***** ( increase timeout to 1 minute )
+    New Ir - Read ***** 
           (Message) ------------------------- "newIr"
-          (Response - Success) --------------               "{IrCommand}"
+          (Response - Success) --------------               "success"
+          (Response - Fail) -----------------                             "fail"
+
+
+    New Ir - Report *****
+          (Message) ------------------------- "getIr"
+          (Response - Success) --------------               "[{IrCommand}]"
           (Response - Fail) -----------------                             "fail"
 
 

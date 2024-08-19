@@ -637,11 +637,18 @@ const render_loadingIcon = () => {
 const render_test = () => {
   return (
     <View>
-      <Pressable style={[gs.border_gray]} onPress={() => runTest()}>
+      <View style={[gs.flex_row]}>
+        <Pressable style={[gs.border_gray]} onPress={() => runTest({learn = true, report = false})}>
         <Text style={[gs.text_white, gs.text_xlarge, gs.text_center]}>
-          Test
+          Learn
         </Text>
       </Pressable>
+      <Pressable style={[gs.border_gray]} onPress={() => runTest({learn = true, report = false})}>
+        <Text style={[gs.text_white, gs.text_xlarge, gs.text_center]}>
+          Report
+        </Text>
+      </Pressable>
+      </View>
     </View>
   );
 };
@@ -736,7 +743,7 @@ const updateAppData = async (dispatch) => {
   const response = await RequestServer(dispatch);
 };
 
-const runTest = async () => {
+const runTest = async ({learn, report}) => {
   // console.log(
   //   "Test result: ",
   //   await RequestLights({
@@ -750,6 +757,7 @@ const runTest = async () => {
     headers: {
       "Content-Type": "application/json",
     },
+    body: JSON.stringify({learn, report})
   };
 
   const response = await fetch(

@@ -75,17 +75,17 @@ void requestInput() {
   Serial.println("Response requested ...");
   setDefaultVariables();
 
-  if (request == "sendCommand" && commandRequested == 00) {
-    Serial.println("Sending IR command but not command given.");
+  if (request.compareTo("sendCommand") && commandRequested == 00) {
+    Serial.println("Sending IR command but no command given.");
     Wire.write("fail");
   }
-  else if (request == "sendCommand") {
+  else if (request.compareTo("sendCommand")) {
     IrSender.sendNEC(0x0, commandRequested, 3);
     Wire.write(commandRequested);
   }
   else if (request.compareTo("newIr")) {
     lookForIr = 1;
-    Wire.write("1\n");
+    Wire.write("success\n");
   }
   else if (request.compareTo("getIr")) {
     Wire.write(lastIrReceived);

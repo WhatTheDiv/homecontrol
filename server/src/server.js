@@ -113,11 +113,18 @@ app.get('/initialState', async (req, res) => {
 
 app.get('/test', async (req, res) => {
   console.log('hitting tester')
+  const { learn, report } = req.body
 
-  const { err, message, tv } = await Daemon.sendCommand({ name: 'ir_Learn', Daemon, extendedTimeout: 1 })
-
-  if (err) console.error(message)
-  else console.log('tv: ', tv)
+  if (learn) {
+    const { err, message, tv } = await Daemon.sendCommand({ name: 'ir_Learn', Daemon, extendedTimeout: 1 })
+    if (err) console.error(message)
+    console.log('ir - learn: ', tv)
+  }
+  else if (report) {
+    const { err, message, tv } = await Daemon.sendCommand({ name: 'ir_Report', Daemon, extendedTimeout: 1 })
+    if (err) console.error(message)
+    console.log('ir - report: ', tv)
+  }
 
   res.status(200).send({ success: true })
 })
