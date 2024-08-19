@@ -272,6 +272,7 @@ app.post('/toggleLightsActive', async (req, res) => {
   // name = animationName, colorName
 
   const { err, lights } = await Daemon.sendCommand({ name: 'lights_Toggle', lightsConfig: { newState }, Daemon })
+  console.log('response from lightsactivetoggle : ', lights)
 
   if (err) {
     HomeState.lights.state.updated = false
