@@ -170,6 +170,7 @@ try:
             with SMBus(1) as bus:
               t = bytes("newIr", "utf-8")
               block = bus.block_process_call(slave_bedroom_nano, 0, t )
+              bus.close()
               st = ''.join(chr(x) for x in block)
               print(f'st: {st}', flush=True)
               return f"{count}:success-true"
