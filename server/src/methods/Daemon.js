@@ -177,7 +177,7 @@ class DaemonClass {
         // -------------------- Return false if response success = false
         else if ((item.slice(item.indexOf('-') + 1)).toLowerCase() === 'false') {
           console.error('Daemon responded with fail...')
-          status.failed = true;
+          status.daemonErr = true;
           res(status)
         }
         // -------------------- Return true if found output at current count
@@ -345,7 +345,7 @@ class DaemonClass {
     // -------------------- Receive Message Block
     try {
       // -------------------- Set Status flags
-      let status = { success: false, failed: false, index: -1 }
+      let status = { success: false, failed: false, daemonErr: false, index: -1 }
 
       // -------------------- Set Message Receipt Timeout
       setTimeout(() => status.failed = true, (extendedTimeout <= 0 ? Daemon.checkTimeout_seconds : extendedTimeout) * 1000);
@@ -356,8 +356,8 @@ class DaemonClass {
       }
 
 
-      if (!status.success) throw new Error('Did not get receipt from Python script')
-      if (status.failed) throw new Error('Python responded with fail')
+      if (status.daemonErr) throw new Error('Python responded with fail')
+      if (!status.failed) throw new Error('Did not get receipt from Python script')
       else output = Daemon.outputs[status.index]
 
     } catch (e) {
