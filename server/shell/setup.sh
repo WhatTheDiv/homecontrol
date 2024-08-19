@@ -1,6 +1,8 @@
 #!/bin/bash
 clear
 
+echo "root is " $root
+
 echo "pulling updates from git ... "
 git pull
 
@@ -11,6 +13,8 @@ sudo apt-get update
 
 echo "installing python 3.6 specifically ... "
 sudo apt-get install python3.6
+
+
 
 
 echo "installing adafruit-circuitpython-ahtx0 ..."
