@@ -178,6 +178,9 @@ try:
               bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
               block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
 
+              print (f"arduino responded with 1: {chr(block[0]) == 1}")
+              print (f"arduino responded with 0: {chr(block[0]) == 0}", flush=True)
+
               string = ''.join(chr(x) for x in block)
 
               return f"{count}:success-true/{string}"

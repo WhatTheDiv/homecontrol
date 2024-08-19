@@ -13,6 +13,7 @@
 byte lastIrReceived = NULL;
 String request = "";
 byte commandRequested = 00;
+bool lookForIr = 0;
 
 IRrecv irrecv(IR_RECEIVE_PIN);
 
@@ -36,22 +37,20 @@ void setup() {
 }
 
 void loop() {
-  delay(500);
+  if (lookForIr) lookForIrSignal();
+  delay(1000);
 }
 
-byte lookForIrSignal() {
-  bool lookForIr = true;
+void lookForIrSignal() {
+
   while (lookForIr) {
     if (IrReceiver.decode()) {
-      Serial.println("Decode available");
-      Serial.flush();
       if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
         Serial.println(F("Received noise or an unknown (or not yet enabled) protocol"));
         // We have an unknown protocol here, print extended info
         IrReceiver.printIRResultRawFormatted(&Serial, true);
         IrReceiver.resume(); // Do it here, to preserve raw data for printing with printIRResultRawFormatted()  
-        lookForIr = false;
-        return NULL;
+        lookForIr = 0;
       }
       else {
         IrReceiver.resume(); // Early enable receiving of the next IR frame
@@ -59,14 +58,13 @@ byte lookForIrSignal() {
         Serial.print("Received signal - ");
         Serial.println(IrReceiver.decodedIRData.command);
 
-        lookForIr = false;
-        return IrReceiver.decodedIRData.command;
+        lastIrReceived = IrReceiver.decodedIRData.command;
+        lookForIr = 0;
       }
     }
     else {
-      Serial.println("Not avail.");
+      Serial.println("Waiting for IR...");
     }
-    Serial.flush();
     delay(500);
   }
 
@@ -75,25 +73,22 @@ byte lookForIrSignal() {
 
 void requestInput() {
   Serial.println("Response requested ...");
+  setDefaultVariables();
 
   if (request == "sendCommand" && commandRequested == 00) {
     Serial.println("Sending IR command but not command given.");
     Wire.write("fail");
   }
   else if (request == "sendCommand") {
-    Serial.print("Sending IR command -");
-    Serial.println(commandRequested);
     IrSender.sendNEC(0x0, commandRequested, 3);
-    Wire.write(0xA5);
+    Wire.write(commandRequested);
   }
   else if (request.compareTo("newIr")) {
-    // Serial.println("Looking for IR signal ... ");
-    // byte op[] = { 0x01,0x02,0x03,0x04 };
-    Wire.write("something\n");
-    delay(1000);
-    byte sig = lookForIrSignal();
-    Serial.println("Got signal");
-    // Wire.write(sig);
+    lookForIr = 1;
+    Wire.write("1\n");
+  }
+  else if (request.compareTo("getIr")) {
+    Wire.write(lastIrReceived);
   }
   else {
     Serial.println("Arduino out of bounds in requestInput()");
@@ -123,6 +118,6 @@ void receiveRequest(uint8_t howMany) {
 
   // processInput(str, howMany);
 }
-// void processInput(char inp[], uint8_t howMany) {
-
-// }
+void setDefaultVariables() {
+  lookForIr = 0;
+}
