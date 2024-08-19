@@ -95,7 +95,7 @@ void requestInput() {
   }
   else {
     Serial.println("Arduino out of bounds in requestInput()");
-    Serial.print("Request: ");
+    Serial.print("Request -: ");
     Serial.println(request);
   }
 }
