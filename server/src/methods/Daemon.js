@@ -350,7 +350,7 @@ class DaemonClass {
       // -------------------- Set Message Receipt Timeout
       setTimeout(() => status.failed = true, (extendedTimeout <= 0 ? Daemon.checkTimeout_seconds : extendedTimeout) * 1000);
 
-      while (!status.success && !status.failed) {
+      while (!status.success && !status.failed && !status.daemonErr) {
         status = { ... await Daemon.check({ count: obj.count, duration: Daemon.checkInterval_ms, status }) }
         console.log(status)
       }
