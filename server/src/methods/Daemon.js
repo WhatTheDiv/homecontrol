@@ -357,7 +357,7 @@ class DaemonClass {
 
 
       if (status.daemonErr) throw new Error('Python responded with fail')
-      if (!status.failed) throw new Error('Did not get receipt from Python script')
+      if (status.failed) throw new Error('Did not get receipt from Python script')
       else output = Daemon.outputs[status.index]
 
     } catch (e) {
