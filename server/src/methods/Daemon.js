@@ -446,7 +446,7 @@ class DaemonClass {
       }
       case 'ir_Learn': {
         const [r] = sections
-        r.tv.IrCommandLearned = r.slice(r.indexOf('-') + 1)
+        // r.tv.IrCommandLearned = r.slice(r.indexOf('-') + 1)
         break;
       }
       default:
