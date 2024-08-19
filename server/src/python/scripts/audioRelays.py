@@ -23,7 +23,7 @@ try:
     z_2_R = LED(pin=21, initial_value=False)
     aht20 = adafruit_ahtx0.AHTx0(board.I2C())
     slave_nano_addr = 0x8
-    slave_bedroom_nano = 0x9
+    slave_bedroom_nano = 0x22
 
     def toggleAudioZone(zone, set_state):
         if zone == 1:

@@ -6,7 +6,7 @@
 #define RELAY_Z1_R 19
 #define RELAY_Z2_L 20
 #define RELAY_Z2_R 21
-#define i2c_addr 0x9
+#define i2c_addr 0x22
 #define IR_RECEIVE_PIN 2
 #define IR_SEND_PIN 3
 
