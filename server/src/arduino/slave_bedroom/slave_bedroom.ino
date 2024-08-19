@@ -84,11 +84,12 @@ void requestInput() {
     Serial.print("Sending IR command -");
     Serial.println(commandRequested);
     IrSender.sendNEC(0x0, commandRequested, 3);
-    Wire.write("success");
+    Wire.write(0xA5);
   }
   else if (request.compareTo("newIr")) {
     Serial.println("Looking for IR signal ... ");
-    Wire.write("success");
+    byte arr[10] = [0x8, 0x8, 0x8];
+    Wire.write(0xA5);
     // byte sig = lookForIrSignal();
     Serial.println("bypass look for sig");
     // Wire.write(sig);
