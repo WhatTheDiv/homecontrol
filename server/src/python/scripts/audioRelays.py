@@ -175,8 +175,8 @@ try:
               # st = ''.join(chr(x) for x in block)
               # print(f'st: {st}', flush=True)
 
-              bus.write_i2c_block_data(slave_bedroom_nano, 1, t)
-              bus.read_i2c_block_data(slave_bedroom_nano, 1, 4)
+              bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
+              bus.read_byte(slave_bedroom_nano)
               return f"{count}:success-true"
           except RuntimeError as err:
              return f"{count}:success-false {err.args[0]}"
