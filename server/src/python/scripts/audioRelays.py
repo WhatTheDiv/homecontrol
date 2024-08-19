@@ -147,7 +147,7 @@ try:
           return f"{ count }:z{ zone }-{ state }" if toggleAudioZone(int(zone), int(state)) == True else f"{count}:success-false"
         
         elif command == 'l' and action == 's': #                        Get Lights State          ***** 
-          return f"{count}:l-{1}/a-{1}"
+          return f"{count}:l-{0}/a-{1}"
           # return f"{count}:l-{lights_active}/a-{animation_index}"
         
 
@@ -159,7 +159,7 @@ try:
         # [ ] Toggle Lights
         elif command == 'l' and action[:input.find('-')] == 'l': #     Toggle Lights             *****            #--------- 
           
-          return f"{count}:l-{0}/a-{1}"
+          return f"{count}:l-{1}/a-{1}"
           # return f"{count}:l-{lights_active}/a-{animation_index}"
         
         # [ ] Set Color
