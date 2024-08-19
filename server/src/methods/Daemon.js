@@ -322,6 +322,7 @@ class DaemonClass {
         case 'ir_Learn':
           obj.name = 'i'
           obj.cmd = `r`
+          break;
         default:
           throw new Error(`Sending incomplete command, or bad command name (${name})`)
           break
