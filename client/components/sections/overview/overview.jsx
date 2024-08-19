@@ -753,7 +753,7 @@ const runTest = async ({learn, report}) => {
   //   })
   // );
   const options = {
-    method: "GET",
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
     },

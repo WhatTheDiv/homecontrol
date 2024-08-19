@@ -111,7 +111,7 @@ app.get('/initialState', async (req, res) => {
   res.status(200).send({ ...HomeState })
 })
 
-app.get('/test', async (req, res) => {
+app.post('/test', async (req, res) => {
   console.log('hitting tester')
   const { learn, report } = req.body
 
