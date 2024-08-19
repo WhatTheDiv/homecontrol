@@ -40,23 +40,30 @@ void loop() {
 }
 
 byte lookForIrSignal() {
-  if (IrReceiver.decode()) {
-    if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
-      Serial.println(F("Received noise or an unknown (or not yet enabled) protocol"));
-      // We have an unknown protocol here, print extended info
-      IrReceiver.printIRResultRawFormatted(&Serial, true);
-      IrReceiver.resume(); // Do it here, to preserve raw data for printing with printIRResultRawFormatted()
-      return NULL;
-    }
-    else {
-      IrReceiver.resume(); // Early enable receiving of the next IR frame
+  bool lookForIr = true;
+  while (lookForIr) {
+    Serial.println('looping...');
+    if (IrReceiver.decode()) {
+      if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
+        Serial.println(F("Received noise or an unknown (or not yet enabled) protocol"));
+        // We have an unknown protocol here, print extended info
+        IrReceiver.printIRResultRawFormatted(&Serial, true);
+        IrReceiver.resume(); // Do it here, to preserve raw data for printing with printIRResultRawFormatted()  
+        lookForIr = false;
+        return NULL;
+      }
+      else {
+        IrReceiver.resume(); // Early enable receiving of the next IR frame
 
-      Serial.print("Received signal - ");
-      Serial.println(IrReceiver.decodedIRData.command);
+        Serial.print("Received signal - ");
+        Serial.println(IrReceiver.decodedIRData.command);
 
-      return IrReceiver.decodedIRData.command;
+        lookForIr = false;
+        return IrReceiver.decodedIRData.command;
+      }
     }
   }
+
 }
 
 
@@ -64,14 +71,23 @@ void requestInput() {
   Serial.println("Response requested ...");
 
   if (request == "sendCommand" && commandRequested == 00) {
+    Serial.println("Sending IR command but not command given.");
     Wire.write("fail");
   }
   else if (request == "sendCommand") {
+    Serial.print("Sending IR command -");
+    Serial.println(commandRequested);
     IrSender.sendNEC(0x0, commandRequested, 3);
     Wire.write("success");
   }
-  else if (request == "newIr") {
+  else if (request.compareTo("newIr")) {
+    Serial.println("Looking for IR signal ... ");
     Wire.write(lookForIrSignal());
+  }
+  else {
+    Serial.println("Arduino out of bounds in requestInput()");
+    Serial.print("Request: ");
+    Serial.println(request);
   }
 }
 

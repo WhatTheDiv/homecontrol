@@ -166,13 +166,15 @@ try:
           # return f"{count}:l-{lights_active}/a-{animation_index}"
         
         elif command == 'i' and action == 'r': #                       Receive Signal            *****
-          with SMBus(1) as bus:
-            t = bytes("newIr", "utf-8")
-            block = bus.block_process_call(slave_bedroom_nano, 0, t )
-            st = ''.join(chr(x) for x in block)
+          try:
+            with SMBus(1) as bus:
+              t = bytes("newIr", "utf-8")
+              block = bus.block_process_call(slave_bedroom_nano, 0, t )
+              st = ''.join(chr(x) for x in block)
+              return f"{count}:success-true"
+          except:
+             return f"{count}:success-true"
 
-            
-        
         elif command == 'i' and action[:input.find('-')] == 's': #     Send Ir Command           *****
            
            return
