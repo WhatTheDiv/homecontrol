@@ -171,16 +171,17 @@ try:
               t = bytes("newIr", "utf-8")
               block = bus.block_process_call(slave_bedroom_nano, 0, t )
               st = ''.join(chr(x) for x in block)
+              print(f'st: {st}', flush=True)
               return f"{count}:success-true"
           except:
              return f"{count}:success-false"
 
         elif command == 'i' and action[:input.find('-')] == 's': #     Send Ir Command           *****
-           
-           return
+           print( f'(Python) Incomplete: {input}', flush=True)
+           return f"{count}:success-false"
         else:
            print( f'(Python) Out of bounds: {input}', flush=True)
-           return "success-false"
+           return f"{count}:success-false"
         
 
 

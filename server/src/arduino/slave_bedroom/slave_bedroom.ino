@@ -63,6 +63,7 @@ byte lookForIrSignal() {
       }
     }
   }
+  delay(100);
 
 }
 

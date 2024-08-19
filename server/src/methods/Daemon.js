@@ -172,19 +172,19 @@ class DaemonClass {
         if (index < 0) {
           console.warn('Daemon has not responded yet...')
           status.success = false
-          res(false)
+          res(status)
         }
         // -------------------- Return false if response success = false
         else if ((item.slice(item.indexOf('-') + 1)).toLowerCase() === 'false') {
           console.error('Daemon responded with fail...')
           status.failed = true;
-          res()
+          res(status)
         }
         // -------------------- Return true if found output at current count
         else {
           status.success = true
           status.index = index
-          res()
+          res(status)
         }
       }, duration);
     })
@@ -345,13 +345,13 @@ class DaemonClass {
     // -------------------- Receive Message Block
     try {
       // -------------------- Set Status flags
-      const status = { success: false, failed: false, index: -1 }
+      let status = { success: false, failed: false, index: -1 }
 
       // -------------------- Set Message Receipt Timeout
       setTimeout(() => status.failed = true, Daemon.checkTimeout_seconds * 1000);
 
       while (!status.success && !status.failed)
-        await Daemon.check({ count: obj.count, duration: extendedTimeout <= 0 ? Daemon.checkInterval_ms : extendedTimeout, status })
+        status = { ... await Daemon.check({ count: obj.count, duration: extendedTimeout <= 0 ? Daemon.checkInterval_ms : extendedTimeout, status }) }
 
       if (!status.success) throw new Error('Did not get receipt from Python script')
       if (status.failed) throw new Error('Python responded with fail')
