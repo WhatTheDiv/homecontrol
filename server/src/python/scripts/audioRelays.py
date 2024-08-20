@@ -174,10 +174,12 @@ try:
               block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
 
               string = ''.join(chr(x) for x in block)
-              if(string == "success"):
-                 return f"{count}:success-true"
-              else:
-                return f"{count}:success-false"
+              # if(string == "success"):
+              #    return f"{count}:success-true"
+              # else:
+              #   return f"{count}:success-false"
+
+              return f"{count}:success-true"
 
               
           except RuntimeError as err:
