@@ -642,7 +642,13 @@ const render_test = () => {
     <View>
       <View style={[gs.flex_row]}>
         <Pressable
-          style={[gs.border_gray]}
+          style={[
+            gs.border_gray,
+            gs.flex1,
+            gs.border_rad5,
+            gs.paddingV5,
+            { margin: 10 },
+          ]}
           onPress={() => runTest({ learn: true })}
         >
           <Text style={[gs.text_white, gs.text_xlarge, gs.text_center]}>
@@ -650,7 +656,13 @@ const render_test = () => {
           </Text>
         </Pressable>
         <Pressable
-          style={[gs.border_gray]}
+          style={[
+            gs.border_gray,
+            gs.flex1,
+            gs.border_rad5,
+            gs.paddingV5,
+            { margin: 10 },
+          ]}
           onPress={() => runTest({ report: true })}
         >
           <Text style={[gs.text_white, gs.text_xlarge, gs.text_center]}>
@@ -658,7 +670,13 @@ const render_test = () => {
           </Text>
         </Pressable>
         <Pressable
-          style={[gs.border_gray]}
+          style={[
+            gs.border_gray,
+            gs.flex1,
+            gs.border_rad5,
+            gs.paddingV5,
+            { margin: 10 },
+          ]}
           onPress={() => runTest({ send: true })}
         >
           <Text style={[gs.text_white, gs.text_xlarge, gs.text_center]}>

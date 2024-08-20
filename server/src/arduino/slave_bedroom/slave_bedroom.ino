@@ -1,3 +1,4 @@
+
 #include <Wire.h>
 #include <Arduino.h>
 #include <IRremote.hpp>
@@ -16,6 +17,8 @@ byte commandRequested = 00;
 bool lookForIr = 0;
 
 IRrecv irrecv(IR_RECEIVE_PIN);
+IRsend irsend(IR_SEND_PIN);
+
 
 void setup() {
   Serial.begin(9600);
@@ -27,8 +30,9 @@ void setup() {
 
   pinMode(LED_BUILTIN, OUTPUT);
   irrecv.enableIRIn();
+  irsend.enableIROut(38);
 
-  delay(100);
+  delay(1000);
   Serial.println("");
   Serial.println("");
   Serial.println("Beginning Bedroom Slave ...");
@@ -38,6 +42,14 @@ void setup() {
 
 void loop() {
   if (lookForIr) lookForIrSignal();
+  // if (lastIrReceived != NULL) {
+  //   Serial.println("Sending IR");
+  //   irsend.sendNEC(0x0, 0x45, 7);
+  //   // IrSender.sendNEC(0x0, lastIrReceived, 3);
+  // }
+  // else {
+  //   Serial.println("No ir to send yet ... ");
+  // }
   delay(1000);
 }
 
@@ -77,15 +89,14 @@ void requestInput() {
   // Serial.print(request);
   // Serial.println(")");
   // Serial.flush();
-  setDefaultVariables();
 
   if (request.equals("sendCommand") && lastIrReceived == 00) {
     // Serial.println("Sending IR command but no command given.");
     Wire.write("fail\n");
   }
   else if (request.equals("sendCommand")) {
-    IrSender.sendNEC(0x0, lastIrReceived, 3);
-    Wire.write(lastIrReceived);
+    irsend.sendNEC(0x0, lastIrReceived, 2);
+    Wire.write("success\n");
 
     // IrSender.sendNEC(0x0, commandRequested, 3);
     // Wire.write(commandRequested);
