@@ -72,11 +72,13 @@ void lookForIrSignal() {
 
 
 void requestInput() {
-  Serial.println("Response requested ...");
+  Serial.print("Response requested ... (");
+  Serial.print(request);
+  Serial.println(")");
   setDefaultVariables();
 
   if (request.compareTo("sendCommand") && commandRequested == 00) {
-    Serial.println("Sending IR command but no command given.");
+    // Serial.println("Sending IR command but no command given.");
     Wire.write("fail");
   }
   else if (request.compareTo("sendCommand")) {
@@ -91,9 +93,7 @@ void requestInput() {
     Wire.write(lastIrReceived);
   }
   else {
-    Serial.println("Arduino out of bounds in requestInput()");
-    Serial.print("Request -: ");
-    Serial.println(request);
+    Wire.write("OOB!");
   }
 }
 
@@ -112,8 +112,11 @@ void receiveRequest(uint8_t howMany) {
   }
   str[howMany - 1] = '\0';
 
+  Serial.print("HowMany: ");
+  Serial.print(howMany);
+  if (howMany <= 1) return;
   request = str;
-  Serial.print("request: ");
+  Serial.print(" request: ");
   Serial.println(request);
 
   // processInput(str, howMany);
