@@ -149,7 +149,7 @@ try:
                 return f"{count}:success-false/r-arduino"
 
               elif(string.find("success") >= 0):               
-                return f"{ count }:z1-{ string[string.find("z1-") + 3 : string.find("/")] }/z2-{ string[string.find("z2-") + 3: string.find("z2-") + 4]}"
+                return f"{ count }:z1-{ string[string.find('z1-') + 3 : string.find('/')] }/z2-{ string[string.find('z2-') + 3: string.find('z2-') + 4]}"
               
               else: 
                 return f"{count}:success-false/r-unexpectedResponse"
@@ -171,7 +171,7 @@ try:
               string = ''.join(chr(x) for x in block)
 
               if(string.find("fail") >= 0):
-                return f"{count}:success-false/r-{string[string.find("-") + 1:]}"
+                return f"{count}:success-false/r-{string[string.find('-') + 1:]}"
 
               elif(string.find("success") >= 0):               
                 return f"{ count }:z{ zone }-{ state }"
