@@ -40,6 +40,7 @@ import Animated, {
 
 const overview = () => {
   // @ts-ignore
+  const [lastCommand, setLastCommand] = useState(null);
   const weather = useSelector((state) => state.weather);
   const tvPower = useSelector((state) => state.tv.power);
   const tvInput = useSelector((state) => state.tv.input);
@@ -105,6 +106,8 @@ const overview = () => {
     setLoading_toggleAudio,
     AnimatedFade_audio,
     AnimatedFade_audio_style,
+    lastCommand,
+    setLastCommand,
   };
 
   return (
@@ -654,6 +657,14 @@ const render_test = () => {
             Report
           </Text>
         </Pressable>
+        <Pressable
+          style={[gs.border_gray]}
+          onPress={() => runTest({ send: true })}
+        >
+          <Text style={[gs.text_white, gs.text_xlarge, gs.text_center]}>
+            Send
+          </Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -749,7 +760,7 @@ const updateAppData = async (dispatch) => {
   const response = await RequestServer(dispatch);
 };
 
-const runTest = async ({ learn = false, report = false }) => {
+const runTest = async ({ learn = false, report = false, send = false }) => {
   // console.log(
   //   "Test result: ",
   //   await RequestLights({
@@ -763,7 +774,7 @@ const runTest = async ({ learn = false, report = false }) => {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ learn, report }),
+    body: JSON.stringify({ learn, report, send }),
   };
 
   const response = await fetch(

@@ -162,8 +162,24 @@ try:
         
         # [ ] Set Color
         elif command == 'l' and action[:input.find('-')] == 'c': #     Set Color                 *****            #--------- 
-          return f"{count}:l-{0}/a-{1}"
-          # return f"{count}:l-{lights_active}/a-{animation_index}"
+          try:
+            with SMBus(1) as bus:
+              t = bytes("sendCommand", "utf-8")
+
+              bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
+              block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
+
+              # string = ''.join(chr(x) for x in block)
+              # if(string == "success"):
+              #    return f"{count}:success-true"
+              # else:
+              #   return f"{count}:success-false"
+
+              return f"{count}:success-true"
+            
+          except RuntimeError as err:
+             return f"{count}:success-false"
+             
         
         elif command == 'i' and action == 'r': #                       Read Signal            *****
           try:
@@ -173,7 +189,7 @@ try:
               bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
               block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
 
-              string = ''.join(chr(x) for x in block)
+              # string = ''.join(chr(x) for x in block)
               # if(string == "success"):
               #    return f"{count}:success-true"
               # else:
