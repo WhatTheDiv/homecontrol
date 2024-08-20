@@ -3,10 +3,10 @@
 #include <Arduino.h>
 #include <IRremote.hpp>
 
-#define RELAY_Z1_L 18
-#define RELAY_Z1_R 19
-#define RELAY_Z2_L 20
-#define RELAY_Z2_R 21
+#define AUDIO_Z1_L 12
+#define AUDIO_Z1_R 11
+#define AUDIO_Z2_L 10
+#define AUDIO_Z2_R 9
 #define i2c_addr 0x22
 #define IR_RECEIVE_PIN 2
 #define IR_SEND_PIN 3
@@ -15,6 +15,10 @@ byte lastIrReceived = NULL;
 String request = "";
 byte commandRequested = 00;
 bool lookForIr = 0;
+bool sendIrOnce = 0;
+
+bool audioOn = 1;
+bool audioOff = 0;
 
 IRrecv irrecv(IR_RECEIVE_PIN);
 IRsend irsend(IR_SEND_PIN);
@@ -22,13 +26,26 @@ IRsend irsend(IR_SEND_PIN);
 
 void setup() {
   Serial.begin(9600);
+  Serial.write("Startup ...");
   Wire.begin(i2c_addr);
+
   Wire.onRequest(requestInput);
   Wire.onReceive(receiveRequest);
+
   while (!Serial)
     ;
 
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(AUDIO_Z1_L, OUTPUT);
+  pinMode(AUDIO_Z1_R, OUTPUT);
+  pinMode(AUDIO_Z2_L, OUTPUT);
+  pinMode(AUDIO_Z2_R, OUTPUT);
+
+  digitalWrite(AUDIO_Z1_L, HIGH);
+  digitalWrite(AUDIO_Z1_R, HIGH);
+  digitalWrite(AUDIO_Z2_L, HIGH);
+  digitalWrite(AUDIO_Z2_R, HIGH);
+
   irrecv.enableIRIn();
   irsend.enableIROut(38);
 
@@ -42,15 +59,12 @@ void setup() {
 
 void loop() {
   if (lookForIr) lookForIrSignal();
-  // if (lastIrReceived != NULL) {
-  //   Serial.println("Sending IR");
-  //   irsend.sendNEC(0x0, 0x45, 7);
-  //   // IrSender.sendNEC(0x0, lastIrReceived, 3);
-  // }
-  // else {
-  //   Serial.println("No ir to send yet ... ");
-  // }
-  delay(1000);
+  if (sendIrOnce) {
+    sendIrOnce = 0;
+    irsend.sendNEC(0x0, lastIrReceived, 10);
+  }
+
+  delay(200);
 }
 
 void lookForIrSignal() {
@@ -84,30 +98,64 @@ void lookForIrSignal() {
 
 
 void requestInput() {
-  // Serial.println("");
-  // Serial.print("Response requested ... (");
-  // Serial.print(request);
-  // Serial.println(")");
-  // Serial.flush();
-
   if (request.equals("sendCommand") && lastIrReceived == 00) {
     // Serial.println("Sending IR command but no command given.");
     Wire.write("fail\n");
   }
-  else if (request.equals("sendCommand")) {
-    irsend.sendNEC(0x0, lastIrReceived, 2);
+  else if (request.indexOf("sendCommand") >= 0) {
+    sendIrOnce = 1;
     Wire.write("success\n");
-
-    // IrSender.sendNEC(0x0, commandRequested, 3);
-    // Wire.write(commandRequested);
   }
-  else if (request.equals("newIr")) {
+  else if (request.indexOf("newIr") >= 0) {
     lastIrReceived = 00;
     lookForIr = 1;
     Wire.write("success\n");
   }
-  else if (request.equals("getIr")) {
+  else if (request.indexOf("getIr") >= 0) {
     Wire.write(lastIrReceived);
+  }
+  else if (request.indexOf("getAudio") >= 0) {
+    char s[20] = "success/z1-";
+    strcat(s, char(digitalRead(AUDIO_Z1_L)));
+    strcat(s, "/z2-");
+    strcat(s, char(digitalRead(AUDIO_Z2_L)));
+    strcat(s, "\n");
+
+    Wire.write(s);
+    // z1-0/z2-0
+  }
+  else if (request.indexOf("setAudio") >= 0) {
+    char index_zone = request.indexOf("/") + 2;
+    char index_state = request.indexOf("-") + 1;
+
+    if (index_zone == -1 || index_state == -1) Wire.write("fail-noData\n");
+
+    char z = char(request[index_zone]);
+    char s = char(request[index_state]);
+
+    if (z == "1" && s == "0") {
+      digitalWrite(AUDIO_Z1_L, audioOff);
+      digitalWrite(AUDIO_Z1_R, audioOff);
+    }
+    else if (z == "1") {
+      digitalWrite(AUDIO_Z1_L, audioOn);
+      digitalWrite(AUDIO_Z1_R, audioOn);
+    }
+    else if (z == "2" && s == "0") {
+      digitalWrite(AUDIO_Z2_L, audioOff);
+      digitalWrite(AUDIO_Z2_R, audioOff);
+    }
+    else if (z == "2") {
+      digitalWrite(AUDIO_Z2_L, audioOn);
+      digitalWrite(AUDIO_Z2_R, audioOn);
+    }
+    else {
+      Wire.write("fail-Zrange\n");
+      return;
+    }
+
+    Wire.write("success\n");
+
   }
   else {
     Wire.write("OOB!\n");

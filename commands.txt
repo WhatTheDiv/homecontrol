@@ -24,13 +24,13 @@ server -> python
     Get Audio State *****
           (Message) ------------------------- {count}:a/s
           (Response - Success) --------------               {count}:  z1-{active?}/ z2-{active?}
-          (Response - Fail) -----------------                             {count}:success-false
+          (Response - Fail) -----------------                             {count}:success-false/r-{reason}
 
 
     Set Audio *****
           (Message) ------------------------- {count}:a/z{zone}-{active?} ----------------- [ zone - state ]
           (Response - Success) --------------               {count}:z{zone}-{active?}
-          (Response - Fail) -----------------                             {count}:success-false
+          (Response - Fail) -----------------                             {count}:success-false/r-{reason}
       
 
 - lights
@@ -83,7 +83,7 @@ server -> python
 
 - IR
     Send Command *****
-          (Message) ------------------------- "sendCommand"
+          (Message) ------------------------- "sendCommand" --> "send
           (Response - Success) --------------               "success"
           (Response - Fail) -----------------                             "fail"
 
@@ -99,7 +99,17 @@ server -> python
           (Response - Success) --------------               "[{IrCommand}]"
           (Response - Fail) -----------------                             "fail"
 
+- Audio
+    Set audio zone ******
+          (Message) ------------------------- "setAudio/z{zone}-{active?}"
+          (Response - Success) --------------               "success"
+          (Response - Fail) -----------------                             "fail-{reason[6]}"
 
+
+    Get audio State ******
+          (Message) ------------------------- "getAudio"
+          (Response - Success) --------------               "success/z1-{active?}/z2-{active}"
+          (Response - Fail) -----------------                             "fail"
 
 
 

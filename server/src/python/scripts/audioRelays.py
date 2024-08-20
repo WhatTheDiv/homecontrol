@@ -60,6 +60,7 @@ try:
                 return True
         else:
             return False
+         
 
     def process_input(input):
 # ---Input--------------------------------------------------------------------- #
@@ -137,15 +138,49 @@ try:
           return f"{count}:t-{temp}/h-{humidity},"
         
         elif command == 'a' and action == 's': #                        Get Audio State           *****
-          return f"{count}:z1-{z1}/z2-{z2}"
+          try:
+            with SMBus(1) as bus:
+              t = bytes(f"getAudio")
+              bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
+              block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
+              string = ''.join(chr(x) for x in block)
+
+              if(string.find("fail") >= 0):
+                return f"{count}:success-false/r-arduino"
+
+              elif(string.find("success") >= 0):               
+                return f"{ count }:z1-{ string[string.find("z1-") + 3 : string.find("/")] }/{ string[string.find("z2-") + 3: string.find("z2-") + 4]}"
+              
+              else: 
+                return f"{count}:success-false/r-unexpectedResponse"
+
+          except:
+            return f"{count}:success-false/r-pythonRuntime" 
         
         elif command == 'a': #                                          Set Audio                 ***** working  
           zone_index = input.find('z') + 1
           state_index = input.find('-') + 1
           zone = input[zone_index:state_index - 1]
           state = input[state_index:]
-        
-          return f"{ count }:z{ zone }-{ state }" if toggleAudioZone(int(zone), int(state)) == True else f"{count}:success-false"
+
+          try:
+            with SMBus(1) as bus:
+              t = bytes(f"setAudio/{zone}-{state}")
+              bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
+              block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
+              string = ''.join(chr(x) for x in block)
+
+              if(string.find("fail") >= 0):
+                return f"{count}:success-false/r-{string[string.find("-") + 1:]}"
+
+              elif(string.find("success") >= 0):               
+                return f"{ count }:z{ zone }-{ state }"
+              
+              else: 
+                return f"{count}:success-false/r-unexpectedResponse"
+
+          except:
+            return f"{count}:success-false/r-pythonRuntime" 
         
         elif command == 'l' and action == 's': #                        Get Lights State          ***** 
           return f"{count}:l-{0}/a-{1}"
@@ -166,6 +201,7 @@ try:
           return f"{count}:success-false"
              
         
+
         elif command == 'i' and action == 'r': #                       Read Signal            *****
           try:
             with SMBus(1) as bus:
@@ -194,8 +230,6 @@ try:
               bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
               block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
 
-              string = ''.join(chr(x) for x in block)
-
               return f"{count}:x-{block[0]}"
           except RuntimeError as err:
              return f"{count}:success-false"
@@ -208,16 +242,11 @@ try:
               bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
               block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
 
-              # string = ''.join(chr(x) for x in block)
-              # if(string == "success"):
-              #    return f"{count}:success-true"
-              # else:
-              #   return f"{count}:success-false"
-
               return f"{count}:success-true"
             
           except RuntimeError as err:
              return f"{count}:success-false"
+        
         else:
            print( f'(Python) Out of bounds: {input}', flush=True)
            return f"{count}:success-false"
