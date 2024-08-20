@@ -195,7 +195,7 @@ try:
 
               string = ''.join(chr(x) for x in block)
 
-              return f"{count}:x-{string}-a{block}"
+              return f"{count}:x-{string}-a{block[0]}"
           except RuntimeError as err:
              return f"{count}:success-false"
 
