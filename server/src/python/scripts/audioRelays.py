@@ -63,79 +63,39 @@ try:
          
 
     def process_input(input):
-# ---Input--------------------------------------------------------------------- #
-        # 1:a/z1-0\n                      = audio  =    [ count : name / zone - state ]
-        # 2:l/at&z0-s0\n                  = lights =    [ count: name  / action_toggle & zone - state ]
-        # 3:l/aa&a1\n                     = lights =    [ count: name / action_animation & animationId ]
-        # 4:l/ac&c-colorName(0,0,0,0)\n   = lights =    [ count: name / action_colorChange & color - name(r,g,b,w) ]            -- 13 char max length name
-        # 5:l/as&\n                       = lights =    [ count: name / action_getState ]
-        # 6:s/&                           = state  =    [ count: name /  ]
-
-# ---Returns------------------------------------------------------------------- #
-        # everything should return "{count}:success-false" on fail
-
-# ----------------------------------------------------------------------------- #
-
         count = input[:input.find(':')]
         command = input[input.find(':') + 1:input.find(':') + 2]
         action = input[input.find('/') +1]
-        z1 = 0 if not z_1_L.is_lit == False else 1
-        z2 = 0 if not z_2_L.is_lit == False else 1
-        temp = round(aht20.temperature * (9 / 5) + 32, 1)
-        humidity = round(aht20.relative_humidity, 1)
 
-        # if command == 'a':
-        #   # Toggle Audio
-        #     zone_index = input.find('z') + 1
-        #     state_index = input.find('-') + 1
-        #     zone = input[zone_index:zone_index + 1]
-        #     state = input[state_index:]
-        #     # print(f'* zone:{zone}',flush=True)
-        #     # print(f'* state:{state}',flush=True)
-        #     passed = toggleAudioZone(int(zone), int(state))
-
-        #     return f"{count}:Success-{passed}"
-        
-        # elif command == 's':
-        #   #  Get State
-        #     with SMBus(1) as bus:
-        #       z1_active = str(not z_1_L.is_lit)
-        #       z2_active = str(not z_2_L.is_lit)
-        #       temp = round(aht20.temperature * (9 / 5) + 32, 1)
-        #       humidity = round(aht20.relative_humidity, 1)
-              
-        #       try:
-        #         block = bus.read_i2c_block_data(slave_nano_addr, 0, 16)
-        #         string = ''.join(chr(x) for x in block)
-
-        #         lights_active = string[string.index('S:')+2:string.index(',A:')]
-        #         animation_index = string[string.index(',A:') + 3:string.index(']')]
-        #         return f"{count}:success-true,z1-{z1_active[0:1]},z2-{z2_active[0:1]},t-{temp},h-{humidity},l-{lights_active},a-{animation_index}"
-              
-        #       except:
-        #         return f"{count}:success-false"
-                  
-
-        #     # return f"{count}:z1-{z1_active[0:1]},z2-{z2_active[0:1]},t-{temp},h-{humidity},l-{lights_active},a-{animation_index}"
-
-        # elif command == 'l':
-        #   # Handle lights
-        #     with SMBus(1) as bus:
-        #       t = bytes(input[4:-1], 'utf-8')
-        #       if(len(t) > 31):
-        #         print(f"String too long to send to arduino slave! (Len: {len(t)})", flush=True)
-
-        #       bus.write_i2c_block_data(slave_nano_addr, 0, t)
-        #     return f"{count}:Success-true"
-        
-
-
-  # New Commands
         if command == 'z': #                                            Get Audio & Temp State    ***** working
-          return f"{count}:z1-{z1}/z2-{z2}/t-{temp}/h-{humidity}"
+          try:
+            with SMBus(1) as bus:
+              zone1, zone2
+              t = bytes(f"getAudio")
+              bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
+              block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
+              string = ''.join(chr(x) for x in block)
+
+              if(string.find("fail") >= 0):
+                zone1 = 0
+                zone2 = 0
+
+              elif(string.find("success") >= 0):               
+                zone1 = string[string.find('z1-') + 3 : string.find('/')]
+                zone2 = string[string.find('z2-') + 3: string.find('z2-') + 4]
+              
+              else: 
+                zone1 = 0
+                zone2 = 0
+          except:
+            zone1 = 0
+            zone2 = 0
+             
+
+          return f"{count}:z1-{zone1}/z2-{zone2}/t-{round(aht20.temperature * (9 / 5) + 32, 1)}/h-{round(aht20.relative_humidity, 1)}"
         
         elif command == 't': #                                          Get Temp State            *****
-          return f"{count}:t-{temp}/h-{humidity},"
+          return f"{count}:t-{round(aht20.temperature * (9 / 5) + 32, 1)}/h-{round(aht20.relative_humidity, 1)}"
         
         elif command == 'a' and action == 's': #                        Get Audio State           *****
           try:
