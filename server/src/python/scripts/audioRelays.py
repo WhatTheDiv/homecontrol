@@ -162,23 +162,8 @@ try:
         
         # [ ] Set Color
         elif command == 'l' and action[:input.find('-')] == 'c': #     Set Color                 *****            #--------- 
-          try:
-            with SMBus(1) as bus:
-              t = bytes("sendCommand", "utf-8")
-
-              bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
-              block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
-
-              # string = ''.join(chr(x) for x in block)
-              # if(string == "success"):
-              #    return f"{count}:success-true"
-              # else:
-              #   return f"{count}:success-false"
-
-              return f"{count}:success-true"
-            
-          except RuntimeError as err:
-             return f"{count}:success-false"
+          print( f'(Python) Incomplete: {input}', flush=True)
+          return f"{count}:success-false"
              
         
         elif command == 'i' and action == 'r': #                       Read Signal            *****
@@ -216,8 +201,23 @@ try:
              return f"{count}:success-false"
 
         elif command == 'i' and action[:input.find('-')] == 'c': #     Send Ir Command           *****
-           print( f'(Python) Incomplete: {input}', flush=True)
-           return f"{count}:success-false"
+          try:
+            with SMBus(1) as bus:
+              t = bytes("sendCommand", "utf-8")
+
+              bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
+              block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
+
+              # string = ''.join(chr(x) for x in block)
+              # if(string == "success"):
+              #    return f"{count}:success-true"
+              # else:
+              #   return f"{count}:success-false"
+
+              return f"{count}:success-true"
+            
+          except RuntimeError as err:
+             return f"{count}:success-false"
         else:
            print( f'(Python) Out of bounds: {input}', flush=True)
            return f"{count}:success-false"

@@ -91,8 +91,8 @@ void requestInput() {
     // Wire.write(commandRequested);
   }
   else if (request.equals("newIr")) {
-    lastIrReceived = 00
-      lookForIr = 1;
+    lastIrReceived = 00;
+    lookForIr = 1;
     Wire.write("success\n");
   }
   else if (request.equals("getIr")) {
