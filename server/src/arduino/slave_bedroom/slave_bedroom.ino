@@ -72,24 +72,26 @@ void lookForIrSignal() {
 
 
 void requestInput() {
-  Serial.print("Response requested ... (");
-  Serial.print(request);
-  Serial.println(")");
+  // Serial.println("");
+  // Serial.print("Response requested ... (");
+  // Serial.print(request);
+  // Serial.println(")");
+  // Serial.flush();
   setDefaultVariables();
 
-  if (request.compareTo("sendCommand") && commandRequested == 00) {
+  if (request.equals("sendCommand") && commandRequested == 00) {
     // Serial.println("Sending IR command but no command given.");
     Wire.write("fail");
   }
-  else if (request.compareTo("sendCommand")) {
+  else if (request.equals("sendCommand")) {
     IrSender.sendNEC(0x0, commandRequested, 3);
     Wire.write(commandRequested);
   }
-  else if (request.compareTo("newIr")) {
+  else if (request.equals("newIr")) {
     lookForIr = 1;
     Wire.write("success\n");
   }
-  else if (request.compareTo("getIr")) {
+  else if (request.equals("getIr")) {
     Wire.write(lastIrReceived);
   }
   else {
@@ -112,12 +114,12 @@ void receiveRequest(uint8_t howMany) {
   }
   str[howMany - 1] = '\0';
 
-  Serial.print("HowMany: ");
-  Serial.print(howMany);
+  // Serial.print("HowMany: ");
+  // Serial.print(howMany);
   if (howMany <= 1) return;
   request = str;
-  Serial.print(" request: ");
-  Serial.println(request);
+  // Serial.print(", request: ");
+  // Serial.println(request);
 
   // processInput(str, howMany);
 }

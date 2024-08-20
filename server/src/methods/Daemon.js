@@ -357,7 +357,6 @@ class DaemonClass {
 
       while (!status.success && !status.failed && !status.daemonErr) {
         status = { ... await Daemon.check({ count: obj.count, duration: Daemon.checkInterval_ms, status }) }
-        console.log(status)
       }
 
       clearTimeout(t)
