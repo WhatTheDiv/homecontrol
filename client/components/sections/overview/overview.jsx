@@ -638,16 +638,22 @@ const render_test = () => {
   return (
     <View>
       <View style={[gs.flex_row]}>
-        <Pressable style={[gs.border_gray]} onPress={() => runTest({learn = true, report = false})}>
-        <Text style={[gs.text_white, gs.text_xlarge, gs.text_center]}>
-          Learn
-        </Text>
-      </Pressable>
-      <Pressable style={[gs.border_gray]} onPress={() => runTest({learn = true, report = false})}>
-        <Text style={[gs.text_white, gs.text_xlarge, gs.text_center]}>
-          Report
-        </Text>
-      </Pressable>
+        <Pressable
+          style={[gs.border_gray]}
+          onPress={() => runTest({ learn: true })}
+        >
+          <Text style={[gs.text_white, gs.text_xlarge, gs.text_center]}>
+            Learn
+          </Text>
+        </Pressable>
+        <Pressable
+          style={[gs.border_gray]}
+          onPress={() => runTest({ report: true })}
+        >
+          <Text style={[gs.text_white, gs.text_xlarge, gs.text_center]}>
+            Report
+          </Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -743,7 +749,7 @@ const updateAppData = async (dispatch) => {
   const response = await RequestServer(dispatch);
 };
 
-const runTest = async ({learn, report}) => {
+const runTest = async ({ learn = false, report = false }) => {
   // console.log(
   //   "Test result: ",
   //   await RequestLights({
@@ -757,7 +763,7 @@ const runTest = async ({learn, report}) => {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({learn, report})
+    body: JSON.stringify({ learn, report }),
   };
 
   const response = await fetch(

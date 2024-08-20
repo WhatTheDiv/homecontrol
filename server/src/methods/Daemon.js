@@ -268,7 +268,7 @@ class DaemonClass {
     // -------------------- Initialize variable object
     const obj = {}
     let output = ''
-    console.log('sending command ... ')
+    console.log('sending command ... ', name)
 
     // -------------------- Send Message Block
     try {
