@@ -144,24 +144,38 @@ void requestInput() {
     char z = char(request[index_zone]);
     char s = char(request[index_state]);
 
-    if (z == "1" && s == "0") {
+    if (z == '1' && s == '0') {
       digitalWrite(AUDIO_Z1_L, audioOff);
       digitalWrite(AUDIO_Z1_R, audioOff);
     }
-    else if (z == "1") {
+    else if (z == '1') {
       digitalWrite(AUDIO_Z1_L, audioOn);
       digitalWrite(AUDIO_Z1_R, audioOn);
     }
-    else if (z == "2" && s == "0") {
+    else if (z == '2' && s == '0') {
       digitalWrite(AUDIO_Z2_L, audioOff);
       digitalWrite(AUDIO_Z2_R, audioOff);
     }
-    else if (z == "2") {
+    else if (z == '2') {
       digitalWrite(AUDIO_Z2_L, audioOn);
       digitalWrite(AUDIO_Z2_R, audioOn);
     }
-    else {
+    else if (z != '1' && z != '2') {
       Wire.write("fail-Zrange\n");
+      delay(1000);
+      Serial.print("z:");
+      Serial.print(z);
+      Serial.print(", s:");
+      Serial.println(s);
+
+      return;
+    }
+    else if (s != '0' && s != '0') {
+      Wire.write("fail-Srange\n");
+      return;
+    }
+    else {
+      Wire.write("fail-nogood\n");
       return;
     }
 
@@ -169,7 +183,7 @@ void requestInput() {
 
   }
   else {
-    Wire.write("OOB!\n");
+    Wire.write("fail-OOB!\n");
   }
 }
 
