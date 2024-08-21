@@ -64,7 +64,7 @@ try:
                 _success = 1  
               elif(string.find("fail") >= 0):
                 _success = 0
-                _err = string[string.find("fail") + 5]    
+                _err = string[string.find("fail") + 5:]    
               else: 
                 _success = 0
                 _err = "unexpectedResponse"
