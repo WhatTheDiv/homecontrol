@@ -21,7 +21,7 @@ class DaemonClass {
       return
     }
     else
-      console.log('pushing input to outputs: ')
+      console.log('pushing input to outputs: ', _d)
 
     const d = _d.indexOf('\n') >= 0 ? _d.slice(0, _d.indexOf('\n')) : _d
 
