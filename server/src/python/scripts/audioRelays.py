@@ -114,7 +114,7 @@ try:
             return f"{count}:success-false/e-{error}"
           
           else:
-            return f"{count}:z{zone}-{state}/e-0"
+            return f"{count}:z{zone}+-{state}/e-0"
 
         
         elif command == 'l' and action == 's': #                        Get Lights State          ***** 
