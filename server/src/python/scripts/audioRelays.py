@@ -23,7 +23,7 @@ try:
 
       try:
         with SMBus(1) as bus:
-            t = bytes(f"getAudio")
+            t = bytes(f"getAudio", "utf-8")
             bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
             block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 20)
             string = ''.join(chr(x) for x in block)
@@ -53,7 +53,7 @@ try:
       else:
         try:
           with SMBus(1) as bus:
-              t = bytes(f"setAudio/z{zone}-{state}")
+              t = bytes(f"setAudio/z{zone}-{state}", "utf-8")
               bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
               block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 20)
               string = ''.join(chr(x) for x in block)
