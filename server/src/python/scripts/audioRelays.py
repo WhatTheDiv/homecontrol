@@ -27,6 +27,7 @@ try:
             bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
             block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 20)
             string = ''.join(chr(x) for x in block)
+            print(f"string from arduino: {string}", flush=True)
 
             if(string.find("success") >= 0):  
               _success = 1  
@@ -41,6 +42,7 @@ try:
       except:
         _success = 0
         _err = "runntimeError"
+
       print(f"Audio state: z1-{_zone1}, z2-{_zone2}, success-{_success}, err-{_err}", flush=True)
       return _zone1, _zone2, _success, _err
     def set_Audio(zone=-1, state=-1):
