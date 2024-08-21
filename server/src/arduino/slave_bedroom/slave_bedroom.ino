@@ -43,8 +43,8 @@ void setup() {
 
   digitalWrite(AUDIO_Z1_L, HIGH);
   digitalWrite(AUDIO_Z1_R, HIGH);
-  digitalWrite(AUDIO_Z2_L, HIGH);
-  digitalWrite(AUDIO_Z2_R, HIGH);
+  digitalWrite(AUDIO_Z2_L, LOW);
+  digitalWrite(AUDIO_Z2_R, LOW);
 
   irrecv.enableIRIn();
   irsend.enableIROut(38);

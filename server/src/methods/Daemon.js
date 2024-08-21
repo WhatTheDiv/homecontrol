@@ -395,16 +395,17 @@ class DaemonClass {
     // -------------------- Parse receipt
     switch (name) {
       case 'audio_State': {
-        const [z1, z2] = sections
-
+        const [z1, z2, e] = sections
+        r.audio.updated = Number(e.slice(e.indexOf('-') + 1)) === 0 ? true : false
         r.audio.z1 = Number(z1.slice(z1.indexOf('-') + 1)) === 0 ? false : true
         r.audio.z2 = Number(z2.slice(z2.indexOf('-') + 1)) === 0 ? false : true
         break;
       }
       case 'audio_Toggle': {
-        const [z] = sections
+        const [z, e] = sections
         // r.audio[z1] = 0 ? false : true
         r.audio[0, z.indexOf('-')] = Number(z.slice(z.indexOf('-') + 1) === 0 ? false : true)
+        r.audio.updated = Number(e.slice(e.indexOf('-') + 1)) === 0 ? true : false
         break;
       }
       case 'temp_State': {
@@ -415,10 +416,11 @@ class DaemonClass {
         break;
       }
       case 'all_State': {
-        const [z1, z2, t, h] = sections
+        const [z1, z2, e, t, h] = sections
 
         r.audio.z1 = Number(z1.slice(z1.indexOf('-') + 1)) === 0 ? false : true
         r.audio.z2 = Number(z2.slice(z2.indexOf('-') + 1)) === 0 ? false : true
+        r.audio.updated = Number(e.slice(e.indexOf('-') + 1)) === 0 ? true : false
         r.temp.indoorTemp = t.slice(t.indexOf('-') + 1)
         r.temp.indoorHumidity = h.slice(h.indexOf('-') + 1)
         break;

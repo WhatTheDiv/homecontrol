@@ -1,12 +1,8 @@
 
-from gpiozero import LED
-import time
 import sys
-import select
 from signal import pause
 import adafruit_ahtx0
 import board
-from array import array
 from smbus2 import SMBus, i2c_msg
 
 
@@ -17,50 +13,65 @@ print(" ", flush=True)
 
 try: 
 
-    z_1_L = LED(pin=18, initial_value=False)
-    z_1_R = LED(pin=19, initial_value=False)
-    z_2_L = LED(pin=20, initial_value=False)
-    z_2_R = LED(pin=21, initial_value=False)
     aht20 = adafruit_ahtx0.AHTx0(board.I2C())
     slave_nano_addr = 0x8
     slave_bedroom_nano = 0x22
 
-    def toggleAudioZone(zone, set_state):
-        if zone == 1:
-            curr_state = not z_1_L.is_lit
-            # print(f"* Zone 1 currently {curr_state}", flush=True)
-            if curr_state == bool(set_state):
-                # print("* New state matches current, do nothing")
-                return True
-            elif bool(set_state):
-                # print("* Setting zone 1 to active")
-                z_1_L.off()
-                z_1_R.off()
-                return True
-            else:
-                # print("* Setting zone 1 to inactive")
-                z_1_L.on()
-                z_1_R.on()
-                return True
-        elif zone == 2:
-            curr_state = not z_2_L.is_lit
-            # print(f"* Zone 2 currently {curr_state}", flush=True)
-            if curr_state == bool(set_state):
-                # print("* New state matches current, do nothing")
-                return True
-            elif bool(set_state):
-                # print("* Setting zone 2 to active")
-                z_2_L.off()
-                z_2_R.off()
-                return True
-            else:
-                # print("* Setting zone 2 to inactive")
-                z_2_L.on()
-                z_2_R.on()
-                return True
-        else:
-            return False
-         
+
+    def get_Audio_State():
+      _zone1, _zone2, _success, _err = 0,0,0,""
+
+      try:
+        with SMBus(1) as bus:
+            t = bytes(f"getAudio")
+            bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
+            block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 20)
+            string = ''.join(chr(x) for x in block)
+
+            if(string.find("success") >= 0):  
+              _success = 1  
+              _zone1 =  string[string.find('z1-') + 3 : string.find('/')]
+              _zone2 =  string[string.find('z2-') + 3: string.find('z2-') + 4]  
+            elif(string.find("fail") >= 0):
+              _success = 0
+              _err = "fail"     
+            else: 
+              _success = 0
+              _err = "unexpectedResponse"
+      except:
+        _success = 0
+        _err = "runntimeError"
+
+      return _zone1, _zone2, _success, _err
+    def set_Audio(zone=-1, state=-1):
+      _success, _err = 0,0,0,""
+      
+      if(zone == -1 or state == -1):
+        _fail = 1
+        _err = "badInput"
+      
+      else:
+        try:
+          with SMBus(1) as bus:
+              t = bytes(f"setAudio/z{zone}-{state}")
+              bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
+              block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 20)
+              string = ''.join(chr(x) for x in block)
+
+              if(string.find("success") >= 0):  
+                _success = 1  
+              elif(string.find("fail") >= 0):
+                _success = 0
+                _err = "fail"     
+              else: 
+                _success = 0
+                _err = "unexpectedResponse"
+        except:
+          _success = 0
+          _err = "runntimeError"
+
+      return _success, _err
+    
 
     def process_input(input):
         count = input[:input.find(':')]
@@ -68,54 +79,25 @@ try:
         action = input[input.find('/') +1]
 
         if command == 'z': #                                            Get Audio & Temp State    ***** working
-          try:
-            with SMBus(1) as bus:
-              zone1, zone2
-              t = bytes(f"getAudio")
-              bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
-              block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
-              string = ''.join(chr(x) for x in block)
+          zone1, zone2, success, error = get_Audio_State()
 
-              if(string.find("fail") >= 0):
-                zone1 = 0
-                zone2 = 0
-
-              elif(string.find("success") >= 0):               
-                zone1 = string[string.find('z1-') + 3 : string.find('/')]
-                zone2 = string[string.find('z2-') + 3: string.find('z2-') + 4]
-              
-              else: 
-                zone1 = 0
-                zone2 = 0
-          except:
-            zone1 = 0
-            zone2 = 0
+          if(not success):
+            return f"{count}:z1-{0}/z2-{0}/e-{error}/t-{round(aht20.temperature * (9 / 5) + 32, 1)}/h-{round(aht20.relative_humidity, 1)}"
              
 
-          return f"{count}:z1-{zone1}/z2-{zone2}/t-{round(aht20.temperature * (9 / 5) + 32, 1)}/h-{round(aht20.relative_humidity, 1)}"
+          return f"{count}:z1-{zone1}/z2-{zone2}/e-0/t-{round(aht20.temperature * (9 / 5) + 32, 1)}/h-{round(aht20.relative_humidity, 1)}"
         
         elif command == 't': #                                          Get Temp State            *****
           return f"{count}:t-{round(aht20.temperature * (9 / 5) + 32, 1)}/h-{round(aht20.relative_humidity, 1)}"
         
         elif command == 'a' and action == 's': #                        Get Audio State           *****
-          try:
-            with SMBus(1) as bus:
-              t = bytes(f"getAudio")
-              bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
-              block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
-              string = ''.join(chr(x) for x in block)
 
-              if(string.find("fail") >= 0):
-                return f"{count}:success-false/r-arduino"
+          zone1, zone2, success, error = get_Audio_State()
 
-              elif(string.find("success") >= 0):               
-                return f"{ count }:z1-{ string[string.find('z1-') + 3 : string.find('/')] }/z2-{ string[string.find('z2-') + 3: string.find('z2-') + 4]}"
-              
-              else: 
-                return f"{count}:success-false/r-unexpectedResponse"
-
-          except:
-            return f"{count}:success-false/r-pythonRuntime" 
+          if(not success):
+            return f"{count}:z1-{0}/z2-{0}/e-{error}"
+             
+          return f"{count}:z1-{zone1}/z2-{zone2}/e-0"
         
         elif command == 'a': #                                          Set Audio                 ***** working  
           zone_index = input.find('z') + 1
@@ -123,24 +105,14 @@ try:
           zone = input[zone_index:state_index - 1]
           state = input[state_index:]
 
-          try:
-            with SMBus(1) as bus:
-              t = bytes(f"setAudio/{zone}-{state}")
-              bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
-              block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
-              string = ''.join(chr(x) for x in block)
+          success, error = set_Audio(zone, state)
 
-              if(string.find("fail") >= 0):
-                return f"{count}:success-false/r-{string[string.find('-') + 1:]}"
+          if(not success):
+            return f"{count}:success-false/e-{error}"
+          
+          else:
+            return f"{count}:z{zone}-{state}/e-0"
 
-              elif(string.find("success") >= 0):               
-                return f"{ count }:z{ zone }-{ state }"
-              
-              else: 
-                return f"{count}:success-false/r-unexpectedResponse"
-
-          except:
-            return f"{count}:success-false/r-pythonRuntime" 
         
         elif command == 'l' and action == 's': #                        Get Lights State          ***** 
           return f"{count}:l-{0}/a-{1}"
@@ -160,8 +132,6 @@ try:
           print( f'(Python) Incomplete: {input}', flush=True)
           return f"{count}:success-false"
              
-        
-
         elif command == 'i' and action == 'r': #                       Read Signal            *****
           try:
             with SMBus(1) as bus:

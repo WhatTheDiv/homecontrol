@@ -11,7 +11,7 @@ server -> python
 
     Get Audio & Temp State *****
           (Message) ------------------------- {count}:z/s
-          (Response - Success) --------------               {count}:  z1-{active?}/ z2-{active?}/ t-{temp}/ h-{humidity}
+          (Response - Success) --------------               {count}:  z1-{active?}/ z2-{active?}/e-{0|error}/ t-{temp}/ h-{humidity}
           (Response - Fail) -----------------                             {count}:success-false
 
 
@@ -23,14 +23,14 @@ server -> python
 
     Get Audio State *****
           (Message) ------------------------- {count}:a/s
-          (Response - Success) --------------               {count}:  z1-{active?}/ z2-{active?}
+          (Response - Success) --------------               {count}:  z1-{active?}/ z2-{active?}/ e-{0|error}
           (Response - Fail) -----------------                             {count}:success-false/r-{reason}
 
 
     Set Audio *****
           (Message) ------------------------- {count}:a/z{zone}-{active?} ----------------- [ zone - state ]
-          (Response - Success) --------------               {count}:z{zone}-{active?}
-          (Response - Fail) -----------------                             {count}:success-false/r-{reason}
+          (Response - Success) --------------               {count}:z{zone}-{active?}/e-{0|error}
+          (Response - Fail) -----------------                             {count}:success-false/e-{error}
       
 
 - lights
