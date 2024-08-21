@@ -115,11 +115,16 @@ void requestInput() {
     Wire.write(lastIrReceived);
   }
   else if (request.indexOf("getAudio") >= 0) {
-    char s[20] = "success/z1-";
-    strcat(s, char(digitalRead(AUDIO_Z1_L)));
-    strcat(s, "/z2-");
-    strcat(s, char(digitalRead(AUDIO_Z2_L)));
-    strcat(s, "\n");
+    String s = "success/z1-";
+    // strcat(s, char(digitalRead(AUDIO_Z1_L)));
+    s.concat(digitalRead(AUDIO_Z1_L));
+    s.concat("/z2-");
+    s.concat(digitalRead(AUDIO_Z2_L));
+    s.concat("\n");
+
+    // strcat(s, "/z2-");
+    // strcat(s, char(digitalRead(AUDIO_Z2_L)));
+    // strcat(s, "\n");
 
     Wire.write(s);
     // z1-0/z2-0
