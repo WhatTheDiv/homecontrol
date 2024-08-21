@@ -122,11 +122,17 @@ void requestInput() {
     s.concat(digitalRead(AUDIO_Z2_L));
     s.concat("\n");
 
+    char b[s.length()];
+
+    s.toCharArray(b, s.length());
+
+
+
     // strcat(s, "/z2-");
     // strcat(s, char(digitalRead(AUDIO_Z2_L)));
     // strcat(s, "\n");
 
-    Wire.write(s);
+    Wire.write(b);
     // z1-0/z2-0
   }
   else if (request.indexOf("setAudio") >= 0) {
