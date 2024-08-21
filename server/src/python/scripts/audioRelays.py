@@ -106,7 +106,7 @@ try:
           zone_index = input.find('z') + 1
           state_index = input.find('-') + 1
           zone = input[zone_index:state_index - 1]
-          state = input[state_index:]
+          state = input[state_index:state_index+1]
 
           success, error = set_Audio(zone, state)
 
@@ -114,7 +114,7 @@ try:
             return f"{count}:success-false/e-{error}"
           
           else:
-            return f"{count}:z{zone}-{state}/f-0"
+            return f"{count}:z{zone}-{state}/e-0"
 
         
         elif command == 'l' and action == 's': #                        Get Lights State          ***** 
