@@ -44,7 +44,7 @@ try:
 
       return _zone1, _zone2, _success, _err
     def set_Audio(zone=-1, state=-1):
-      _success, _err = 0,0,0,""
+      _success, _err = 0,""
       
       if(zone == -1 or state == -1):
         _fail = 1
