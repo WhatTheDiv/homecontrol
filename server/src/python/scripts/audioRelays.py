@@ -66,9 +66,10 @@ try:
               else: 
                 _success = 0
                 _err = "unexpectedResponse"
-        except:
+        except RuntimeError as e:
           _success = 0
           _err = "runntimeError"
+          print(f"error from python: {e}")
 
       return _success, _err
     
