@@ -374,9 +374,7 @@ class DaemonClass {
     // -------------------- Handle Receipt Block
     try {
       // -------------------- Parse Receipt
-      const parsedCommand = Daemon.parseReceipt(name, output)
-
-      return parsedCommand
+      return Daemon.parseReceipt(name, output)
 
     } catch (e) {
       console.error(`(Daemon Parse Receipt) - ${e.message}`)
