@@ -21,16 +21,10 @@ class DaemonClass {
       this.log && console.log('(From Daemon Logging)', _d)
       return
     }
-    if (_d.indexOf('--- errored:') >= 0 || _d.indexOf('--- stderr:') >= 0) {
-      console.error("Error message from python !!! ")
-      e_flag = true
-    }
-    // else
-    // console.log('pushing input to outputs: ', _d)
 
     const d = _d.indexOf('\n') >= 0 ? _d.slice(0, _d.indexOf('\n')) : _d
 
-    console.log('(From Daemon)', d)
+    console.log('(From Daemon) Adding to outputs:', d)
     !e_flag && this.outputs.push(d)
 
     if (this.outputs.length > this.maxCount)
@@ -79,13 +73,7 @@ class DaemonClass {
       this.process = process
       this.active = true
 
-    } catch (e) {
-      console.error('Error in child process: ', e)
-      this.process = null
-      this.active = false
-      console.log('Exiting Daemon')
-      controller.abort()
-    }
+    } catch (e) { this.onDaemonError.bind(this)(e, controller, 'CatchErr'); }
   }
 
   inc = () => {
