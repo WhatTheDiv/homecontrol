@@ -55,14 +55,14 @@ class DaemonClass {
 
       process.on('error', (e) => {
         // throw new Error(`stderr: ${data}`);
-        console.log('--- errored: ', e)
+        console.error('(Daemon) Daemon responded with error: ', e)
         controller.abort()
         this.process = null
         this.active = false
       });
 
       process.on('close', (code) => {
-        console.log(`--- closed: code ${code}`);
+        console.error(`(Daemon) Daemon has been closed: code ${code}`);
         controller.abort()
         this.process = null
         this.active = false
