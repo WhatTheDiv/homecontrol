@@ -37,14 +37,27 @@ class DaemonClass {
       this.outputs.splice(0, 1)
   }
 
+  onDaemonError = (e, controller, type) => {
+    console.error(`(Daemon) Daemon responded with error [${type}]: `)
+    console.log(`(Daemon) Error -> ${e}`)
+    controller.abort()
+    this.process = null
+    this.active = false
+  }
+
+  onDaemonClose = (code, controller) => {
+    console.error(`(Daemon) Daemon has been closed: code(${code})`);
+    controller.abort()
+    this.process = null
+    this.active = false
+  }
+
   init = async () => {
     const controller = new AbortController()
 
     try {
       const { spawn } = require('child_process')
       const process = spawn('python3 ./scripts/audioRelays.py', [], { cwd: './src/python', shell: true, signal: controller.signal })
-
-      // process.stdin.write('hello from node! \n')
 
       process.on('disconnect', (data) => {
         console.log(`--- disconnected: ${data}`);
@@ -53,39 +66,15 @@ class DaemonClass {
         this.active = false
       });
 
-      process.on('error', (e) => {
-        // throw new Error(`stderr: ${data}`);
-        console.error('(Daemon) Daemon responded with error: ', e)
-        controller.abort()
-        this.process = null
-        this.active = false
-      });
+      process.on('error', (e) => this.onDaemonError.bind(this)(e, controller, 'Error'));
 
-      process.on('close', (code) => {
-        console.error(`(Daemon) Daemon has been closed: code ${code}`);
-        controller.abort()
-        this.process = null
-        this.active = false
-      });
+      process.stderr.on('data', e => this.onDaemonError.bind(this)(e, controller, 'Stderr'))
 
-      process.stdout.on('data', data => {
+      process.on('close', (code) => this.onDaemonError.bind(this)(code, controller));
 
+      process.stdout.on('data', data => this.processOutput.bind(this)(data))
 
-        this.processOutput.bind(this)(data)
-
-
-      })
-
-      process.stdin.on('data', data => {
-        console.log('--- stdin data: ', data)
-      })
-
-      process.stderr.on('data', e => {
-        console.log('--- stderr: ', e.toString())
-        controller.abort()
-        this.process = null
-        this.active = false
-      })
+      process.stdin.on('data', data => console.log('--- stdin data: ', data))
 
       this.process = process
       this.active = true
