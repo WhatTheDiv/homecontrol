@@ -44,7 +44,7 @@ try:
         _success = 0
         _err = "runntimeError"
 
-      print(f"Audio state: z1-{_zone1}, z2-{_zone2}, success-{_success}, err-{_err}", flush=True)
+      # print(f"Audio state: z1-{_zone1}, z2-{_zone2}, success-{_success}, err-{_err}", flush=True)
       return _zone1, _zone2, _success, _err
     def set_Audio(zone=-1, state=-1):
       _success, _err = 0,""
