@@ -21,7 +21,7 @@ class DaemonClass {
       this.log && console.log('(From Daemon Logging)', _d)
       return
     }
-    if (_d.indexOf('--- errored:') >= 0) {
+    if (_d.indexOf('--- errored:') >= 0 || _d.indexOf('--- stderr:') >= 0) {
       console.error("Error message from python !!! ")
       e_flag = true
     }
