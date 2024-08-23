@@ -43,8 +43,8 @@ void setup() {
 
   digitalWrite(AUDIO_Z1_L, HIGH);
   digitalWrite(AUDIO_Z1_R, HIGH);
-  digitalWrite(AUDIO_Z2_L, LOW);
-  digitalWrite(AUDIO_Z2_R, LOW);
+  digitalWrite(AUDIO_Z2_L, HIGH);
+  digitalWrite(AUDIO_Z2_R, HIGH);
 
   irrecv.enableIRIn();
   irsend.enableIROut(38);
@@ -124,7 +124,7 @@ void requestInput() {
 
     char b[s.length()];
 
-    s.toCharArray(b, s.length());
+    s.toCharArray(b, s.length() + 1);
 
 
 
@@ -133,6 +133,9 @@ void requestInput() {
     // strcat(s, "\n");
 
     Wire.write(b);
+    delay(500);
+    Serial.print("Audio State:");
+    Serial.println(b);
     // z1-0/z2-0
   }
   else if (request.indexOf("setAudio") >= 0) {
