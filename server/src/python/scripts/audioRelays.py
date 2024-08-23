@@ -27,7 +27,7 @@ try:
             bus.write_i2c_block_data(slave_bedroom_nano, 0, t)
             block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 20)
             string = ''.join(chr(x) for x in block)
-            print(f"string from arduino: {string}", flush=True)
+            # print(f"string from arduino: {string}", flush=True)
 
             if(string.find("success") >= 0):  
               _success = 1  
