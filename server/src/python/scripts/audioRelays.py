@@ -31,9 +31,9 @@ try:
 
             if(string.find("success") >= 0):  
               _success = 1  
-              _zone1 =  string[string.find('z1-') + 3 : string.find('/') + 1]
+              _zone1 =  string[string.find('z1-') + 3 : string.find('z1-') + 4]
               _zone2 =  string[string.find('z2-') + 3: string.find('z2-') + 4]  
-              print(f"zone1: {_zone1}, zone2: {_zone2}", flush=True)
+              print(f"zone1: '{_zone1}', zone2: {_zone2}", flush=True)
             elif(string.find("fail") >= 0):
               _success = 0
               _err = "fail"     
