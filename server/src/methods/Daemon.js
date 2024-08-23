@@ -64,7 +64,7 @@ class DaemonClass {
 
       process.stderr.on('data', e => this.onDaemonError.bind(this)(e, controller, 'Stderr'))
 
-      process.on('close', (code) => this.onDaemonError.bind(this)(code, controller));
+      process.on('close', (code) => this.onDaemonClose.bind(this)(code, controller));
 
       process.stdout.on('data', data => this.processOutput.bind(this)(data))
 
