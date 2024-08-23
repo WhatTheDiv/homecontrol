@@ -80,14 +80,17 @@ try:
         command = input[input.find(':') + 1:input.find(':') + 2]
         action = input[input.find('/') +1]
 
-        if command == 'z': #                                            Get Audio & Temp State    ***** working
+        if command == 'z': #   Get Audio & Temp State    ***** working
+          temp_ =  round(aht20.temperature * (9 / 5) + 32, 1)    
+          humi_ = round(aht20.relative_humidity, 1)               
+          print(f" temp {temp_} and humi {humi_}")             
           zone1, zone2, success, error = get_Audio_State()
 
           if(not success):
-            return f"{count}:z1-{0}/z2-{0}/e-{error}/t-{round(aht20.temperature * (9 / 5) + 32, 1)}/h-{round(aht20.relative_humidity, 1)}"
+            return f"{count}:z1-{0}/z2-{0}/e-{error}/t-{temp_}/h-{humi_}"
              
 
-          return f"{count}:z1-{zone1}/z2-{zone2}/e-0/t-{round(aht20.temperature * (9 / 5) + 32, 1)}/h-{round(aht20.relative_humidity, 1)}"
+          return f"{count}:z1-{zone1}/z2-{zone2}/e-0/t-{temp_}/h-{humi_}"
         
         elif command == 't': #                                          Get Temp State            *****
           return f"{count}:t-{round(aht20.temperature * (9 / 5) + 32, 1)}/h-{round(aht20.relative_humidity, 1)}"
