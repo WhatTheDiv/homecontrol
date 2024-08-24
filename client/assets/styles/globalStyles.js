@@ -153,4 +153,27 @@ export default StyleSheet.create({
   paddingV20: {
     paddingVertical: 20
   },
+
+  margin30: { margin: 30 },
+  marginV30: { marginVertical: 30 },
+  marginH30: { marginHorizontal: 30 },
+  padding30: { padding: 30 },
+  paddingV30: { paddingVertical: 30 },
+  paddingH30: { paddingHorizontal: 30 },
+
+  margin40: { margin: 40 },
+  marginV40: { marginVertical: 40 },
+  marginH40: { marginHorizontal: 40 },
+  padding40: { padding: 40 },
+  paddingV40: { paddingVertical: 40 },
+  paddingH40: { paddingHorizontal: 40 },
+
+  margin50: { margin: 50 },
+  marginV50: { marginVertical: 50 },
+  marginH50: { marginHorizontal: 50 },
+  padding50: { padding: 50 },
+  paddingV50: { paddingVertical: 50 },
+  paddingH50: { paddingHorizontal: 50 },
+
+
 })

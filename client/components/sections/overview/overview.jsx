@@ -641,19 +641,19 @@ const render_loadingIcon = () => {
 };
 const render_test = () => {
   return (
-    <View>
-      <View style={[gs.flex_row]}>
+    <View style={gs.marginV20}>
+      <View style={[gs.flex_row, gs.paddingH5, { gap: 5 }]}>
         <Pressable
           style={[
             gs.border_gray,
             gs.flex1,
             gs.border_rad5,
+            gs.justify_around,
             gs.paddingV5,
-            { margin: 10 },
           ]}
           onPress={() => runTest({ learn: true })}
         >
-          <Text style={[gs.text_white, gs.text_xlarge, gs.text_center]}>
+          <Text style={[gs.text_white, gs.text_large, gs.text_center]}>
             Learn
           </Text>
         </Pressable>
@@ -662,8 +662,8 @@ const render_test = () => {
             gs.border_gray,
             gs.flex1,
             gs.border_rad5,
+            gs.justify_around,
             gs.paddingV5,
-            { margin: 10 },
           ]}
           onPress={() => runTest({ report: true })}
         >
@@ -676,8 +676,8 @@ const render_test = () => {
             gs.border_gray,
             gs.flex1,
             gs.border_rad5,
+            gs.justify_around,
             gs.paddingV5,
-            { margin: 10 },
           ]}
           onPress={() => runTest({ send: true })}
         >
@@ -691,9 +691,16 @@ const render_test = () => {
 };
 const render_ardTest = () => {
   return (
-    <View>
+    <View style={[gs.paddingH5, gs.marginV20]}>
       <Pressable
-        style={[gs.flex_row, gs.flex1, gs.padding10, gs.border_green]}
+        style={[
+          gs.flex_row,
+          gs.flex1,
+          gs.padding10,
+          gs.border_gray,
+          gs.border_rad5,
+          gs.justify_around,
+        ]}
         onPress={() => ardTest()}
       >
         <Text style={[gs.text_white, gs.text_large]}>Touch Arduino</Text>
@@ -829,10 +836,9 @@ const ardTest = async () => {
   };
   const response = await fetch("http://192.168.2.114:3000/espTouch", options);
   if (!response.ok) return console.error("Bad request!");
-  else console.log("Good request to server @ /espTouch");
 
   const data = await response.json();
-  console.log(`data: '${data.response}'`);
+  console.log(`data from ESP8266: '${data.response}'`);
 };
 
 export default overview;

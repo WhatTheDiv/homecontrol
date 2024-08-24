@@ -123,7 +123,8 @@ String prepareResponse() {
     "Content-Type: text/plain\r\n"
     "Connection: close\r\n"  // the connection will be closed after completion of the response
     "\r\n"
-    "Something from ESP8266 !!\r");
+    "Something from ESP8266 !!"
+  );
 
   return htmlPage;
 }

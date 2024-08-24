@@ -155,7 +155,7 @@ app.post('/espTouch', async (req, res) => {
     })
 
 
-    res.send({ response: await ard.text() }).end()
+    res.send({ response: (await ard.text()).trim() }).end()
 
   } catch (e) {
     console.error('problem reaching host')
