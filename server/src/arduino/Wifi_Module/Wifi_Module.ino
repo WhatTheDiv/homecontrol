@@ -38,7 +38,7 @@ void setup() {
 }
 
 void loop() {
-  delay(5000);
+  delay(6000);
 
   Serial.print("connecting to ");
   Serial.println(host);
@@ -63,10 +63,10 @@ void loop() {
   delay(500);
 
   // Read all the lines of the reply from server and print them to Serial
-  // while(client.available()){
-  //   String line = client.readStringUntil('\r');
-  //   Serial.print(line);
-  // }
+  while (client.available()) {
+    String line = client.readStringUntil('\r');
+    Serial.print(line);
+  }
 
   Serial.println();
   Serial.println("closing connection");
