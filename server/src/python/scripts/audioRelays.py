@@ -84,8 +84,8 @@ try:
           temp_ =  round(aht20.temperature * (9 / 5) + 32, 1)    
           humi_ = round(aht20.relative_humidity, 1)               
           print(f" temp {temp_} and humi {humi_}")             
-          # zone1, zone2, success, error = get_Audio_State()
-          zone1, zone2, success, error = 0, 0, True, False
+          zone1, zone2, success, error = get_Audio_State()
+          # zone1, zone2, success, error = 0, 0, True, False
 
           if(not success):
             return f"{count}:z1-{0}/z2-{0}/e-{error}/t-{temp_}/h-{humi_}"
