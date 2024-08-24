@@ -147,7 +147,7 @@ app.post('/espTouch', async (req, res) => {
 
   try {
     const ard = await fetch("http://192.168.2.116:80", {
-      method: "GET",
+      method: "POST",
       headers: {
         "Content-Type": "text/plain"
       },
