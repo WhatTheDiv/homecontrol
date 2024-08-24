@@ -832,6 +832,7 @@ const ardTest = async () => {
   else console.log("Good request to server @ /espTouch");
 
   const data = await response.json();
+  console.log(`data: '${data.response}'`);
 };
 
 export default overview;

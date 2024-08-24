@@ -76,6 +76,10 @@ void loop() {
     client.stop();
     Serial.println("\n[Client disconnected]");
   }
+  else {
+    Serial.println("No requests");
+    delay(1000);
+  }
 }
 
 // void loop() {
@@ -118,8 +122,7 @@ String prepareResponse() {
     "Content-Type: text/plain\r\n"
     "Connection: close\r\n"  // the connection will be closed after completion of the response
     "\r\n"
-    "Something from ESP8266 !!\r\n"
-    "\r\n");
+    "Something from ESP8266 !!\r");
 
   return htmlPage;
 }
