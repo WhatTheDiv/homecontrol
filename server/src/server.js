@@ -146,7 +146,12 @@ app.post('/espTouch', async (req, res) => {
   console.log("Touching /espTouch")
 
   try {
-    const ard = await fetch("http://192.168.2.116:80")
+    const ard = await fetch("http://192.168.2.116:80", {
+      method: "GET",
+      headers: {
+        "Content-Type": "text/html"
+      }
+    })
     console.log('ard: ', ard)
 
     const d = ard.json()
