@@ -687,6 +687,18 @@ const render_test = () => {
     </View>
   );
 };
+const render_ardTest = () => {
+  return (
+    <View>
+      <Pressable
+        style={[gs.flex_row, gs.flex1, gs.padding10, gs.border_green]}
+        onClick={() => ArdTest()}
+      >
+        <Text style={[gs.text_white, gs.text_large]}>Touch Arduino</Text>
+      </Pressable>
+    </View>
+  );
+};
 
 const tv_pressButton = async (button, { dispatch, AnimatedFlash }) => {
   console.log("pressing button ... ");
@@ -803,6 +815,19 @@ const runTest = async ({ learn = false, report = false, send = false }) => {
   const data = await response.json();
 
   console.log(data);
+};
+
+const ardTest = async () => {
+  console.log("running arduino test");
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  const response = await fetch("192.168.2.114:3000/espTouch", options);
+  if (!response.ok) console.error("Bad request!");
+  else console.log("Good request to server @ /espTouch");
 };
 
 export default overview;
