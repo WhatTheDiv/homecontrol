@@ -828,8 +828,10 @@ const ardTest = async () => {
     },
   };
   const response = await fetch("http://192.168.2.114:3000/espTouch", options);
-  if (!response.ok) console.error("Bad request!");
+  if (!response.ok) return console.error("Bad request!");
   else console.log("Good request to server @ /espTouch");
+
+  const data = await response.json();
 };
 
 export default overview;
