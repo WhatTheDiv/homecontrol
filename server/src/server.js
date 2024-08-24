@@ -137,7 +137,9 @@ app.post('/test', async (req, res) => {
 app.get('/espTest', async (req, res) => {
   const { item } = req.body
 
-  res.send(200).end();
+  console.log('touch')
+
+  res.sendStatus(200).end();
 })
 
 app.post('/toggleAudioZones', async (req, res) => {
