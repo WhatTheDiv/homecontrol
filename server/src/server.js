@@ -156,9 +156,6 @@ app.post('/espTouch', async (req, res) => {
 
     console.log('ard: ', ard)
 
-    const d = ard.json()
-
-    console.log('d: ', d)
   } catch (e) {
     console.error('problem reaching host')
     console.log(e)
