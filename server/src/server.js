@@ -155,8 +155,6 @@ app.post('/espTouch', async (req, res) => {
     })
 
 
-
-    console.log('---> ', await ard.text())
     res.send(await ard.text()).end()
 
   } catch (e) {
