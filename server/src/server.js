@@ -139,7 +139,7 @@ app.get('/espTest', async (req, res) => {
 
   console.log('touch')
 
-  res.sendStatus(200).send('Something from the server!');
+  res.status(200).send('Something from the server!');
 })
 
 app.post('/toggleAudioZones', async (req, res) => {
