@@ -150,8 +150,10 @@ app.post('/espTouch', async (req, res) => {
       method: "GET",
       headers: {
         "Content-Type": "text/plain"
-      }
+      },
+      body: JSON.stringify("Something from the server!\n\r\r")
     })
+
     console.log('ard: ', ard)
 
     const d = ard.json()

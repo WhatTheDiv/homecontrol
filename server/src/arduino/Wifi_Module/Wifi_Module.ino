@@ -53,31 +53,76 @@ void setup() {
 }
 
 void loop() {
+  client = server.accept();
 
-  if (!establishedClient) {
-    Serial.println("Checking for clients ... ");
-    client = server.accept();
-    flashLED(2, 2000);
+  if (client) {
+    Serial.println("\n[Client Connected]");
+    while (client.connected()) {
+      if (client.available()) {
+        String line = client.readStringUntil('\r');
 
-    if (client && client.connected()) {
-      client.write("checkpoint");
-        Serial.println("Made connection with client...");
-      flashLED(2, 100);
-      digitalWrite(ONBOARD_LED, LOW);
-      establishedClient = 1;
+        Serial.print(line);
+        if (line.length() == 1 && line[0] == '\n') {
+          client.println(prepareResponse());
+          break;
+        }
+      }
     }
-    else if (client) {
-      Serial.println("Failed to connect to client.");
-      flashLED(4, 4000);
-    }
-  }
-  else {
-    Serial.println("Connection with client established");
-    delay(5000);
-  }
 
+    while (client.available()) {
+      client.read();
+    }
+
+    client.stop();
+    Serial.println("\n[Client disconnected]");
+  }
 }
 
+// void loop() {
+
+//   if (!establishedClient) {
+//     Serial.println("Checking for clients ... ");
+//     client = server.accept();
+//     flashLED(2, 2000);
+
+//     if (client && client.connected()) {
+//       Serial.println("Made connection with client...");
+//       flashLED(2, 100);
+//       digitalWrite(ONBOARD_LED, LOW);
+//       establishedClient = 1;
+//     }
+//     else if (client) {
+//       Serial.println("Failed to connect to client.");
+//       flashLED(4, 4000);
+//     }
+//   }
+//   else {
+//     while (client.connected()) {
+//       if (client.available()) {
+//         client.read();
+
+//         String line = client.readStringUntil('\r');
+//         Serial.print("From server : '");
+//         Serial.print(line);
+//         Serial.println("'");
+//       }
+//     }
+//   }
+
+// }
+
+String prepareResponse() {
+  String htmlPage;
+  htmlPage.reserve(1024);               // prevent ram fragmentation
+  htmlPage = F("HTTP/1.1 200 OK\r\n"
+    "Content-Type: text/plain\r\n"
+    "Connection: close\r\n"  // the connection will be closed after completion of the response
+    "\r\n"
+    "Something from ESP8266 !!\r\n"
+    "\r\n");
+
+  return htmlPage;
+}
 void flashLED(unsigned long duration_seconds, uint16_t perFlashCycle_millis) {
   uint16_t _dur;
   uint16_t _perFlash;
