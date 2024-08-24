@@ -61,7 +61,8 @@ void loop() {
       if (client.available()) {
         String line = client.readStringUntil('\r');
 
-        Serial.print(line);
+        Serial.print(" --- ");
+        Serial.println(line);
         if (line.length() == 1 && line[0] == '\n') {
           client.println(prepareResponse());
           break;

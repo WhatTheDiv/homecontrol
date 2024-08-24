@@ -151,7 +151,7 @@ app.post('/espTouch', async (req, res) => {
       headers: {
         "Content-Type": "text/plain"
       },
-      body: JSON.stringify("Something from the server!\n")
+      body: ("Something from the server!\n")
     })
 
 
