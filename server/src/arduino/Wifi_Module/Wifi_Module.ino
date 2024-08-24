@@ -56,6 +56,7 @@ void loop() {
   client = server.accept();
 
   if (client) {
+    uint8_t len;
     Serial.println("\n[Client Connected]");
     while (client.connected()) {
       if (client.available()) {
@@ -63,16 +64,24 @@ void loop() {
 
         Serial.print(" --- ");
         Serial.println(line);
-        if (line.length() == 1 && line[0] == '\n') {
-          client.println(prepareResponse());
-          break;
+        if (line.indexOf("content-length") >= 0) {
+          Serial.print("Length: ");
+          Serial.println(line);
         }
+
+        if (line.length() == 1 && line[0] == '\n') break;
       }
     }
 
     while (client.available()) {
       client.read();
+      // String str = client.readString();
+      // Serial.println(str);
     }
+
+
+
+    client.println(prepareResponse());
 
     client.stop();
     Serial.println("\n[Client disconnected]");
