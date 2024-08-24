@@ -154,14 +154,18 @@ app.post('/espTouch', async (req, res) => {
       body: JSON.stringify("Something from the server!\n\r\r")
     })
 
+
+
     console.log('---> ', await ard.text())
+    res.send(await ard.text()).end()
 
   } catch (e) {
     console.error('problem reaching host')
     console.log(e)
+    res.sendStatus(502).end()
   }
 
-  res.sendStatus(200).end()
+
 })
 
 app.post('/toggleAudioZones', async (req, res) => {
