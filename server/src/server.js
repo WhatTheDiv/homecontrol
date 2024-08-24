@@ -142,6 +142,23 @@ app.get('/espTest', async (req, res) => {
   res.status(200).send('Something from the server!');
 })
 
+app.post('/espTouch', async (req, res) => {
+
+  try {
+    const ard = await fetch("http://192.168.2.116:80")
+    console.log('ard: ', ard)
+
+    const d = ard.json()
+
+    console.log('d: ', d)
+  } catch (e) {
+    console.error('problem reaching host')
+    console.log(e)
+  }
+
+  res.sendStatus(200).end()
+})
+
 app.post('/toggleAudioZones', async (req, res) => {
   const { zone, newState } = req.body
 

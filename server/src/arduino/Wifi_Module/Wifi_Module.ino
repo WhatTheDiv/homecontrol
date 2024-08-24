@@ -1,17 +1,20 @@
-/*
- *  Simple HTTP get webclient test
- */
-
 #include <ESP8266WiFi.h>
 
 const char* ssid = "The Internet";
 const char* password = "Patcannon1!";
 
+IPAddress staticIP(192, 168, 2, 116);
+IPAddress gateway(192, 168, 2, 1);
+IPAddress subnet(255, 255, 255, 0);
+
 const char* host = "192.168.2.114";
 
+WiFiServer server(80);
+
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   delay(100);
+  pinMode(0, OUTPUT);
 
   // We start by connecting to a WiFi network
 
@@ -20,13 +23,19 @@ void setup() {
   Serial.print("Connecting to ");
   Serial.println(ssid);
 
+  Wifi.config(staticIP, gateway, subnet);
+  WiFi.hostname("IoTModule");
   WiFi.begin(ssid, password);
 
   while (WiFi.status() != WL_CONNECTED) {
+    digitalWrite(0, HIGH);
     delay(500);
+    digitalWrite(0, LOW);
     Serial.print(".");
+    delay(500);
   }
 
+  digitalWrite(0, HIGH);
   Serial.println("");
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
@@ -35,9 +44,27 @@ void setup() {
   Serial.println(WiFi.subnetMask());
   Serial.print("Gateway: ");
   Serial.println(WiFi.gatewayIP());
+
+
+
+  server.begin();
+
+  Serial.print("");
+  Serial.print("Ready to accept clients ... ");
+
 }
 
 void loop() {
+  WiFiClient client = server.accept();
+
+  if (!client) {
+    Serial.println("No clients available ... ");
+  }
+  delay(2000);
+}
+
+
+void _loop() {
   delay(6000);
 
   Serial.print("connecting to ");
@@ -71,3 +98,4 @@ void loop() {
   Serial.println();
   Serial.println("closing connection");
 }
+
