@@ -122,6 +122,8 @@ const overview = () => {
       {render_audio(bus)}
       {/* Test */}
       {render_test(bus)}
+      {/* ardTest */}
+      {render_ardTest(bus)}
     </ScrollView>
   );
 };
@@ -692,7 +694,7 @@ const render_ardTest = () => {
     <View>
       <Pressable
         style={[gs.flex_row, gs.flex1, gs.padding10, gs.border_green]}
-        onClick={() => ArdTest()}
+        onPress={() => ardTest()}
       >
         <Text style={[gs.text_white, gs.text_large]}>Touch Arduino</Text>
       </Pressable>
