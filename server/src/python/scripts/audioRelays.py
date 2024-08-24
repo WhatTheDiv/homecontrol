@@ -83,7 +83,7 @@ try:
         if command == 'z': #   Get Audio & Temp State    ***** working
           temp_ =  round(aht20.temperature * (9 / 5) + 32, 1)    
           humi_ = round(aht20.relative_humidity, 1)               
-          print(f" temp {temp_} and humi {humi_}")             
+          # print(f" temp {temp_} and humi {humi_}")             
           zone1, zone2, success, error = get_Audio_State()
           # zone1, zone2, success, error = 0, 0, True, False
 

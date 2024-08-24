@@ -28,7 +28,7 @@ void setup() {
   Serial.begin(9600);
   Serial.write("Startup ...");
   Wire.begin(i2c_addr);
-  Wire.setSpeed(100000);
+  Wire.setClock(100000);
 
   Wire.onRequest(requestInput);
   Wire.onReceive(receiveRequest);
