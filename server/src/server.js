@@ -134,6 +134,10 @@ app.post('/test', async (req, res) => {
   res.status(200).send({ success: true })
 })
 
+app.get('/espTest', async (req, res) => {
+  const { item } = req.body
+})
+
 app.post('/toggleAudioZones', async (req, res) => {
   const { zone, newState } = req.body
 
