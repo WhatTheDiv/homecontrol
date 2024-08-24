@@ -154,7 +154,7 @@ app.post('/espTouch', async (req, res) => {
       body: JSON.stringify("Something from the server!\n\r\r")
     })
 
-    console.log('---> ', ard.text())
+    console.log('---> ', await ard.text())
 
   } catch (e) {
     console.error('problem reaching host')
