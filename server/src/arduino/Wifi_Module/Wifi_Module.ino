@@ -1,10 +1,15 @@
 #include <ESP8266WiFi.h>
+#include <Wire.h>
+#include <Arduino.h>
 #define ONBOARD_LED 0
+#define i2c_addr 0x24
+#define i2c_bedroom_slave 0x22
 
 const char* ssid = "The Internet";
 const char* password = "Patcannon1!";
 const uint16_t port = 80;
 bool establishedClient = 0;
+String request = "";
 
 IPAddress staticIP(192, 168, 2, 116);
 IPAddress gateway(192, 168, 2, 1);
@@ -18,13 +23,15 @@ void setup() {
   delay(100);
   pinMode(ONBOARD_LED, OUTPUT);
 
-  // We start by connecting to a WiFi network
+  while (!Serial)
+    ;
 
   Serial.println();
   Serial.println();
   Serial.print("Connecting to ");
   Serial.println(ssid);
 
+  Wire.begin(i2c_addr);
   WiFi.config(staticIP, gateway, subnet);
   WiFi.hostname("IoTModule");
   WiFi.begin(ssid, password);
@@ -57,38 +64,71 @@ void loop() {
 
   if (client) {
     uint8_t len;
-    Serial.println("\n[Client Connected]");
+
     while (client.connected()) {
       if (client.available()) {
         String line = client.readStringUntil('\r');
 
-        Serial.print(" --- ");
-        Serial.println(line);
         if (line.indexOf("content-length") >= 0) {
-          Serial.print("Length: ");
-          Serial.println(line);
-        }
+          char length[2];
+          int start = line.indexOf(":");
 
+          length[0] = line[start += 2];
+          length[1] = line[start += 1];
+
+          if (length[1] == ' ') len = length[0];
+          else len = atol(length);
+        }
         if (line.length() == 1 && line[0] == '\n') break;
       }
     }
 
+    char str[len - 1];
+
+    client.read();
+    uint8_t i = 0;
+
     while (client.available()) {
-      client.read();
-      // String str = client.readString();
-      // Serial.println(str);
+      char c = client.read();
+      if (c != '"') {
+        str[i] = c;
+        i++;
+      }
     }
 
+    client.read();
+    str[len - 2] = '\0';
 
+    Wire.beginTransmission(i2c_bedroom_slave);
+    Wire.write(str, len - 1);
+    Wire.endTransmission(0);
+    Wire.requestFrom(i2c_bedroom_slave, 30);
+    while (!Wire.available())
+      ;
+
+    int avail = Wire.available();
+    char rcv[avail];
+    uint8_t j = 0;
+    while (Wire.available() > 0) {
+      rcv[j] = Wire.read();
+      j++;
+    }
+    Wire.endTransmission();
+
+    Serial.print("From Arduino: ");
+    Serial.print(rcv);
+
+
+
+    Serial.print("From server: ");
+    Serial.println(str);
 
     client.println(prepareResponse());
 
     client.stop();
-    Serial.println("\n[Client disconnected]");
   }
   else {
-    Serial.println("No requests");
-    delay(1000);
+    delay(200);
   }
 }
 

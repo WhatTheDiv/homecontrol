@@ -28,7 +28,6 @@ void setup() {
   Serial.begin(9600);
   Serial.write("Startup ...");
   Wire.begin(i2c_addr);
-  Wire.setClock(100000);
 
   Wire.onRequest(requestInput);
   Wire.onReceive(receiveRequest);
@@ -121,7 +120,7 @@ void requestInput() {
     s.concat(digitalRead(AUDIO_Z1_L));
     s.concat("/z2-");
     s.concat(digitalRead(AUDIO_Z2_L));
-    s.concat("\n");
+    s.concat("\0");
 
     char b[s.length()];
 
