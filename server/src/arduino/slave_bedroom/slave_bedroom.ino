@@ -7,7 +7,7 @@
 #define AUDIO_Z1_R 11
 #define AUDIO_Z2_L 10
 #define AUDIO_Z2_R 9
-#define i2c_addr 0x22
+#define i2c_addr 0x8
 #define IR_RECEIVE_PIN 2
 #define IR_SEND_PIN 3
 
@@ -26,7 +26,9 @@ IRsend irsend(IR_SEND_PIN);
 
 void setup() {
   Serial.begin(9600);
+
   Serial.write("Startup ...");
+  Wire.setClock(100000);
   Wire.begin(i2c_addr);
 
   Wire.onRequest(requestInput);
@@ -67,49 +69,22 @@ void loop() {
   delay(200);
 }
 
-void lookForIrSignal() {
 
-  while (lookForIr) {
-    if (IrReceiver.decode()) {
-      if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
-        Serial.println(F("Received noise or an unknown (or not yet enabled) protocol"));
-        // We have an unknown protocol here, print extended info
-        IrReceiver.printIRResultRawFormatted(&Serial, true);
-        IrReceiver.resume(); // Do it here, to preserve raw data for printing with printIRResultRawFormatted()  
-        lookForIr = 0;
-      }
-      else {
-        IrReceiver.resume(); // Early enable receiving of the next IR frame
-
-        Serial.print("Received signal - ");
-        Serial.println(IrReceiver.decodedIRData.command);
-
-        lastIrReceived = IrReceiver.decodedIRData.command;
-        lookForIr = 0;
-      }
-    }
-    else {
-      Serial.println("Waiting for IR...");
-    }
-    delay(500);
-  }
-
-}
 
 
 void requestInput() {
   if (request.equals("sendCommand") && lastIrReceived == 00) {
     // Serial.println("Sending IR command but no command given.");
-    Wire.write("fail\n");
+    Wire.write("fail\0");
   }
   else if (request.indexOf("sendCommand") >= 0) {
     sendIrOnce = 1;
-    Wire.write("success\n");
+    Wire.write("success\0");
   }
   else if (request.indexOf("newIr") >= 0) {
     lastIrReceived = 00;
     lookForIr = 1;
-    Wire.write("success\n");
+    Wire.write("success\0");
   }
   else if (request.indexOf("getIr") >= 0) {
     Wire.write(lastIrReceived);
@@ -120,7 +95,7 @@ void requestInput() {
     s.concat(digitalRead(AUDIO_Z1_L));
     s.concat("/z2-");
     s.concat(digitalRead(AUDIO_Z2_L));
-    s.concat("\0");
+    s.concat("\n");
 
     char b[s.length()];
 
@@ -133,9 +108,6 @@ void requestInput() {
     // strcat(s, "\n");
 
     Wire.write(b);
-    delay(500);
-    Serial.print("Audio State:");
-    Serial.println(b);
     // z1-0/z2-0
   }
   else if (request.indexOf("setAudio") >= 0) {
@@ -164,7 +136,7 @@ void requestInput() {
       digitalWrite(AUDIO_Z2_R, audioOn);
     }
     else if (z != '1' && z != '2') {
-      Wire.write("fail-Zrange\n");
+      Wire.write("fail-Zrange\0");
       delay(1000);
       Serial.print("z:");
       Serial.print(z);
@@ -174,19 +146,19 @@ void requestInput() {
       return;
     }
     else if (s != '0' && s != '0') {
-      Wire.write("fail-Srange\n");
+      Wire.write("fail-Srange\0");
       return;
     }
     else {
-      Wire.write("fail-nogood\n");
+      Wire.write("fail-nogood\0");
       return;
     }
 
-    Wire.write("success\n");
+    Wire.write("success\0");
 
   }
   else {
-    Wire.write("fail-OOB!\n");
+    Wire.write("fail-OOB!\0");
   }
 }
 
@@ -196,21 +168,27 @@ void receiveRequest(uint8_t howMany) {
 
   while (Wire.available()) {
     byte l = Wire.read();
-
-    if (count != 0) {
-      str[count - 1] = char(l);
-    }
-
+    // Serial.println(char(l));
+    str[count] = char(l);
     count++;
   }
-  str[howMany - 1] = '\0';
+  str[count] = '\0';
 
   // Serial.print("HowMany: ");
   // Serial.print(howMany);
-  if (howMany <= 1) return;
+  Serial.print("Receive requets ( ");
+  Serial.print(howMany);
+  Serial.print(" )");
+
+  if (howMany <= 1) {
+    Serial.println("");
+    return;
+  };
   request = str;
-  // Serial.print(", request: ");
-  // Serial.println(request);
+
+  Serial.print(" from esp2866: ");
+  Serial.println(request);
+  Serial.println("");
 
   // processInput(str, howMany);
 }

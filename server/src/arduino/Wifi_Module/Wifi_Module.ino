@@ -1,13 +1,15 @@
 #include <ESP8266WiFi.h>
 #include <Wire.h>
 #include <Arduino.h>
-#define ONBOARD_LED 0
+#define ONBOARD_RED_LED 0
+#define ONBOARD_BLUE_LED 2
 #define i2c_addr 0x24
-#define i2c_bedroom_slave 0x22
+#define i2c_bedroom_slave 0x8
 
 const char* ssid = "The Internet";
 const char* password = "Patcannon1!";
 const uint16_t port = 80;
+
 bool establishedClient = 0;
 String request = "";
 
@@ -21,7 +23,12 @@ WiFiClient client;
 void setup() {
   Serial.begin(9600);
   delay(100);
-  pinMode(ONBOARD_LED, OUTPUT);
+
+  pinMode(ONBOARD_RED_LED, OUTPUT);
+  digitalWrite(ONBOARD_RED_LED, HIGH);
+
+  pinMode(ONBOARD_BLUE_LED, OUTPUT);
+  digitalWrite(ONBOARD_BLUE_LED, HIGH);
 
   while (!Serial)
     ;
@@ -31,16 +38,18 @@ void setup() {
   Serial.print("Connecting to ");
   Serial.println(ssid);
 
-  Wire.begin(i2c_addr);
+  Wire.setClock(100000);
+  Wire.begin();
   WiFi.config(staticIP, gateway, subnet);
   WiFi.hostname("IoTModule");
   WiFi.begin(ssid, password);
 
   while (WiFi.status() != WL_CONNECTED) {
-    flashLED(1, 200);
+    flashLED(200, 100, ONBOARD_RED_LED);
   }
 
-  digitalWrite(0, LOW);
+  digitalWrite(ONBOARD_BLUE_LED, HIGH);
+  digitalWrite(ONBOARD_RED_LED, LOW);
   Serial.println("");
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
@@ -64,7 +73,7 @@ void loop() {
 
   if (client) {
     uint8_t len;
-
+    flashLED(50, 50, ONBOARD_BLUE_LED);
     while (client.connected()) {
       if (client.available()) {
         String line = client.readStringUntil('\r');
@@ -96,99 +105,80 @@ void loop() {
       }
     }
 
+    str[i] = '\0';
+
     client.read();
-    str[len - 2] = '\0';
 
     Wire.beginTransmission(i2c_bedroom_slave);
     Wire.write(str, len - 1);
     Wire.endTransmission(0);
     Wire.requestFrom(i2c_bedroom_slave, 30);
+
     while (!Wire.available())
-      ;
+      delay(50);
 
-    int avail = Wire.available();
-    char rcv[avail];
+    char rcv[Wire.available()];
     uint8_t j = 0;
+
     while (Wire.available() > 0) {
-      rcv[j] = Wire.read();
-      j++;
+      byte l = Wire.read();
+      if (l != 255) {
+        rcv[j] = l;
+        j++;
+      }
+      else {
+        rcv[j] = '\0';
+        break;
+      }
     }
+
+    // Clear empty bytes remaining
+    while (Wire.available() > 0) { Wire.read(); }
+
     Wire.endTransmission();
-
-    Serial.print("From Arduino: ");
-    Serial.print(rcv);
-
-
-
-    Serial.print("From server: ");
-    Serial.println(str);
-
-    client.println(prepareResponse());
-
+    client.println(prepareResponse(rcv, j + 1));
     client.stop();
+
+    flashLED(100, 50, ONBOARD_BLUE_LED);
+    Serial.print("From arduino: ");
+    Serial.print(rcv);
+    Serial.println("");
   }
   else {
-    delay(200);
+    delay(50);
   }
 }
 
-// void loop() {
+String prepareResponse(char _rcv[], int len) {
+  char rcv[len];
 
-//   if (!establishedClient) {
-//     Serial.println("Checking for clients ... ");
-//     client = server.accept();
-//     flashLED(2, 2000);
+  for (int i = 0; i < len; i++) {
+    if (_rcv[i] == '\0') {
+      rcv[i] = '\0';
+      break;
+    }
+    rcv[i] = _rcv[i];
+  }
 
-//     if (client && client.connected()) {
-//       Serial.println("Made connection with client...");
-//       flashLED(2, 100);
-//       digitalWrite(ONBOARD_LED, LOW);
-//       establishedClient = 1;
-//     }
-//     else if (client) {
-//       Serial.println("Failed to connect to client.");
-//       flashLED(4, 4000);
-//     }
-//   }
-//   else {
-//     while (client.connected()) {
-//       if (client.available()) {
-//         client.read();
-
-//         String line = client.readStringUntil('\r');
-//         Serial.print("From server : '");
-//         Serial.print(line);
-//         Serial.println("'");
-//       }
-//     }
-//   }
-
-// }
-
-String prepareResponse() {
   String htmlPage;
   htmlPage.reserve(1024);               // prevent ram fragmentation
   htmlPage = F("HTTP/1.1 200 OK\r\n"
     "Content-Type: text/plain\r\n"
     "Connection: close\r\n"  // the connection will be closed after completion of the response
     "\r\n"
-    "Something from ESP8266 !!"
   );
+
+  htmlPage += String(_rcv);
 
   return htmlPage;
 }
-void flashLED(unsigned long duration_seconds, uint16_t perFlashCycle_millis) {
-  uint16_t _dur;
+void flashLED(uint32_t duration_millis, uint16_t perFlashCycle_millis, uint8_t led) {
+  uint32_t _dur = duration_millis;
   uint16_t _perFlash;
   uint16_t _stateChangeInterval;
+  bool _originalState = digitalRead(led);
 
-
-  if (perFlashCycle_millis > (duration_seconds * 1000)) {
-    _dur = perFlashCycle_millis;
-  }
-  else {
-    _dur = duration_seconds * 1000;
-  }
+  if (perFlashCycle_millis > _dur) _dur = perFlashCycle_millis;
 
   _perFlash = round(perFlashCycle_millis * .5);
 
@@ -196,10 +186,12 @@ void flashLED(unsigned long duration_seconds, uint16_t perFlashCycle_millis) {
   unsigned _finished = _now + _dur;
 
   while (_now < _finished) {
-    digitalWrite(ONBOARD_LED, HIGH);
+    digitalWrite(led, HIGH);
     delay(_perFlash);
-    digitalWrite(ONBOARD_LED, LOW);
+    digitalWrite(led, LOW);
     delay(_perFlash);
     _now = millis();
   }
+
+  digitalWrite(led, _originalState);
 }
