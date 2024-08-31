@@ -46,7 +46,10 @@ import Animated, {
   withSequence,
   withRepeat,
 } from "react-native-reanimated";
-import { requestIr } from "../../../js/serverRequests/request_ir.js";
+import {
+  requestIr_learn,
+  requestIr_emit,
+} from "../../../js/serverRequests/request_ir.js";
 
 const overview = () => {
   // @ts-ignore
@@ -713,15 +716,14 @@ const render_ir_emit = (
     key: index,
     value: item,
   }));
-  const formatted_commands = cmds.map((item, index) => {
-    if (item.source === srcs[sel_source])
-      return {
-        key: index,
-        value: item.name,
-      };
-  });
+  const formatted_commands = cmds
+    .filter((item) => item.source === srcs[sel_source])
+    .map((item, index) => ({
+      key: index,
+      value: item.name,
+    }));
 
-  console.log({ formatted_commands, formatted_sources });
+  console.log({ formatted_commands, formatted_sources, srcs, cmds });
 
   return (
     <View
@@ -806,7 +808,7 @@ const render_ir_emit = (
           gs.flex_row,
           { padding: 1, width: "30%", flexGrow: 1 },
         ]}
-        onPress={() => emitIr(cmds[sel_command], dispatch)}
+        onPress={() => emitIr({ commandIndex: sel_command, cmds, dispatch })}
       >
         <View
           style={[
@@ -1089,13 +1091,16 @@ const ardTest = async () => {
 };
 
 const learnIr = async (vars, dispatch) => {
-  const success = await requestIr(vars, dispatch);
+  const success = await requestIr_learn(vars, dispatch);
 };
 
-const emitIr = async (command, dispatch) => {
+const emitIr = async ({ commandIndex, cmds, dispatch }) => {
+  const command = cmds[commandIndex];
   console.log(`Emitting with command `, command);
 
-  const success = await emitIr(command, dispatch);
+  const success = await requestIr_emit(command, dispatch);
+
+  if (success) console.log("Ir Emitted!");
 };
 
 export default overview;

@@ -98,6 +98,13 @@ class wifiModule {
       })
 
     }
+    const delay = async (T_millis) => {
+      return await new Promise(res => {
+        setTimeout(() => {
+          res(true)
+        }, T_millis);
+      })
+    }
 
     if (commands.find(item => item.name === name)) {
       console.error(`naming conflict, ${name} already exists`)
@@ -128,6 +135,7 @@ class wifiModule {
     }
 
     try {
+      await delay(1000)
       setTimeout(() => {
         receipt_getIr.fail = true
         receipt_getIr.error = 'timeout'

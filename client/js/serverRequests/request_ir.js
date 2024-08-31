@@ -1,6 +1,6 @@
 import { addCommands, setLastCommand } from '../store/ir_slice'
 
-export async function requestIr({ source, command }, dispatch) {
+export async function requestIr_learn({ source, command }, dispatch) {
   try {
     const options = {
       method: "POST",
@@ -31,7 +31,8 @@ export async function requestIr({ source, command }, dispatch) {
   }
 }
 
-export async function emitIr(command, dispatch) {
+export async function requestIr_emit(command, dispatch) {
+  console.log('checkpoint')
   try {
     const options = {
       method: "POST",
@@ -46,7 +47,7 @@ export async function emitIr(command, dispatch) {
       options
     );
 
-    const { success } = await response.json();
+    const { success, error, ir } = await response.json();
 
     dispatch(setLastCommand({ lastCommand: command }))
 
