@@ -75,8 +75,7 @@ class wifiModule {
   // returns index of new command in commands or -1 for fail
   async createCommand({ name, source, commands, timeout_seconds = 10 }) {
     const verifyReceiptOfIr = async (receipt) => {
-
-      return new Promise(async res => {
+      return await new Promise(async res => {
         const url = `http://${this.ip}:${this.port}`
         const options = {
           method: "POST",
