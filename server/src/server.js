@@ -238,7 +238,7 @@ app.post('/epsIr', async (req, res) => {
   }
   else throw new Error('Malformed request')
 
-  const index = await WifiModule.createCommand({ name: command, source, commands: HomeState.ir.commands })
+  const index = (await WifiModule.createCommand({ name: command, source, commands: HomeState.ir.commands })) - 1
 
   console.log('Index from create command: ', index)
 
