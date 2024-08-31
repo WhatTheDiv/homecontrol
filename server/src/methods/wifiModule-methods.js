@@ -125,6 +125,7 @@ class wifiModule {
     }
 
     try {
+      console.log("------ Beginning Learn ----------")
       const _arduinoResponse = await fetch(url, options)
       const arduinoResponse = (await _arduinoResponse.text()).trim()
 
@@ -143,7 +144,7 @@ class wifiModule {
         receipt_getIr.error = 'timeout'
       }, timeout_seconds * 1000);
 
-      console.group("Ir rcv", 'color:yellow')
+      console.group("Ir rcv")
       while (!receipt_getIr.success && !receipt_getIr.fail && !receipt_getIr.error && !receipt_getIr.code) {
         receipt_getIr.success = await verifyReceiptOfIr(receipt_getIr)
         await delay(1000);
