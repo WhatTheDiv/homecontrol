@@ -815,19 +815,22 @@ const render_ir_emit = ({
     </View>
   );
 };
-const render_ir_learn = ({
-  cmds,
-  srcs,
-  lastCommand,
-  sel_source,
-  sel_command,
-  setSel_source,
-  setSel_command,
-  irAction,
-  setIrAction,
-  irLearnVars,
-  setIrLearnVars,
-}) => {
+const render_ir_learn = (
+  {
+    cmds,
+    srcs,
+    lastCommand,
+    sel_source,
+    sel_command,
+    setSel_source,
+    setSel_command,
+    irAction,
+    setIrAction,
+    irLearnVars,
+    setIrLearnVars,
+  },
+  dispatch
+) => {
   return (
     <View
       style={[
