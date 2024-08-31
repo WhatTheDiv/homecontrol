@@ -11,7 +11,7 @@ export default async function request_audio({ zone, newState }) {
       body: JSON.stringify({ zone, newState })
     }
     console.log('server url: ', process.env.EXPO_PUBLIC_SERVER_URL)
-    const url = `${process.env.EXPO_PUBLIC_SERVER_URL}/toggleAudioZones`
+    const url = `${process.env.EXPO_PUBLIC_SERVER_URL}/espAudio_set`
     const result = await fetch(url, options)
     console.log('result: ', result)
     const parsed = await result.json()

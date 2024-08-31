@@ -5,7 +5,7 @@ const port = 3000 //process.argv[2] === 'live' ? 3000 : 3001
 const { handleButtonPress, getTvState, test } = require('./methods/tv-methods.js')
 const { getIndoorTempReading } = require('./methods/gpio-methods.js')
 const { DaemonClass } = require('./methods/Daemon')
-const localMethods = require('./methods/server-methods.js')
+const { wifiModule } = require('./methods/wifiModule-methods.js')
 
 app.use(cors())
 app.use(express.json())
@@ -70,45 +70,59 @@ const HomeState = {
 }
 
 const Daemon = new DaemonClass()
+const WifiModule = new wifiModule({ ip: '192.168.2.116', port: 80 }).activate()
 
 app.get('/initialState', async (req, res) => {
   // Get tv state // 
   HomeState.tv = { ...HomeState.tv, ... await getTvState(HomeState.tv) }
 
-  const tempAndAudio = await Daemon.sendCommand({ name: 'all_State', Daemon })
-  const lightsState = await Daemon.sendCommand({ name: 'lights_State', Daemon })
+  // Get temp state // 
+  await Daemon.sendCommand({ name: "temp_State", Daemon }).then(response => {
+    const { err, message, temp } = response
+    if (!err) {
+      HomeState.temp = { ...HomeState.temp, indoor_humidity: temp.indoorHumidity, indoor_temp: temp.indoorTemp, updated: true }
+    }
+    else console.error(`Temp_State failed: ${message}`)
+  })
 
-  const { audio, temp } = tempAndAudio
-  const { lights } = lightsState
+  // Get lights state // 
+  await Daemon.sendCommand({ name: 'lights_State', Daemon }).then(response => {
+    const { lights, err } = response
 
-  if (tempAndAudio.err) {
-    HomeState.audio.zone_1.updated = false
-    HomeState.audio.zone_2.updated = false
-    HomeState.temp.updated = false
-  } else {
+    if (!err) {
+      HomeState.lights.state.updated = true
+      HomeState.lights.state.lights_active = lights.active
+
+      const a = HomeState.lights.Animations
+      HomeState.lights.state.animation = (Object.keys(a)).find(animName => a[animName] === lights.animation) || 'walk'
+      HomeState.lights.state.animation_active = HomeState.lights.ActiveAnimations.indexOf(HomeState.lights.state.animation) >= 0 ? true : false
+    } else {
+      HomeState.lights.state.updated = false
+    }
+  })
+
+  // Get audio state //
+  const passed_audio = await WifiModule.sendCommand_audio({ command: 'getAudio' }).then(response => {
+    const { success, fail, error, state } = response
+
+    if (!success || fail) {
+      HomeState.audio.zone_1.updated = false
+      HomeState.audio.zone_2.updated = false
+
+      console.error(`Audio state failed: ${error}`)
+      return false
+    }
+
     HomeState.audio.zone_1.updated = true
-    HomeState.audio.zone_1.active = audio.z1
+    HomeState.audio.zone_1.active = state.z1
 
     HomeState.audio.zone_2.updated = true
-    HomeState.audio.zone_2.active = audio.z2
+    HomeState.audio.zone_2.active = state.z2
 
-    HomeState.temp.updated = true
-    HomeState.temp.indoor_temp = temp.indoorTemp
-    HomeState.temp.indoor_humidity = temp.indoorHumidity
-  }
+    return true
+  })
 
-  if (lightsState.err) {
-    HomeState.lights.state.updated = false
-  } else {
-    HomeState.lights.state.updated = true
-    HomeState.lights.state.lights_active = lights.active
-
-    const a = HomeState.lights.Animations
-    HomeState.lights.state.animation = (Object.keys(a)).find(animName => a[animName] === lights.animation) || 'walk'
-    HomeState.lights.state.animation_active = HomeState.lights.ActiveAnimations.indexOf(HomeState.lights.state.animation) >= 0 ? true : false
-  }
-
-  res.status(200).send({ ...HomeState })
+  res.status(200).send(HomeState).end();
 })
 
 app.post('/test', async (req, res) => {
@@ -163,6 +177,80 @@ app.post('/espTouch', async (req, res) => {
     console.log(e)
     res.sendStatus(502).end()
   }
+
+
+})
+
+app.post('/espAudio_set', async (req, res) => {
+  const { zone, newState } = req.body
+
+  const { success, fail, error } = await WifiModule.sendCommand_audio({ command: 'setAudio', zone, state: newState })
+
+  if (!success || fail) {
+    HomeState.audio.zone_1.updated = false
+    HomeState.audio.zone_2.updated = false
+
+    return res.status(502).send({ success: false, error }).end()
+  }
+
+  HomeState.audio["zone_" + zone].updated = true
+  HomeState.audio["zone_" + zone].active = newState ? true : false
+
+  res.status(200).send({ success: true, audio: HomeState.audio })
+
+})
+
+app.post('/espAudio_get', async (req, res) => {
+  const { success, fail, error, state } = await WifiModule.sendCommand_audio({ command: 'getAudio' })
+
+  if (!success || fail) {
+    HomeState.audio.zone_1.updated = false
+    HomeState.audio.zone_2.updated = false
+
+    return res.status(502).send({ success: false, error }).end()
+  }
+
+  HomeState.audio.zone_1.updated = true
+  HomeState.audio.zone_1.active = state.z1
+
+  HomeState.audio.zone_2.updated = true
+  HomeState.audio.zone_2.active = state.z2
+
+  res.status(200).send({ success: true, audio: HomeState.audio })
+
+})
+
+app.post('/epsIr', async (req, res) => {
+  const { learn, report, send } = req.body
+  const body = {}
+
+  if (learn) {
+    body.command = 'newIr'
+  }
+  else if (report) {
+    body.command = 'getIr'
+  }
+  else if (send) {
+    body.command = 'sendCommand'
+  }
+  else throw new Error('Malformed request')
+
+  try {
+
+    const ard = await fetch("http://192.168.2.116:80", {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain"
+      },
+      body: JSON.stringify(body)
+    })
+  } catch (e) {
+    console.error('problem reaching host')
+    console.log(e)
+    res.sendStatus(502).end()
+  }
+
+  res.status(200).send({ success: true })
 
 
 })

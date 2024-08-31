@@ -817,7 +817,7 @@ const runTest = async ({ learn = false, report = false, send = false }) => {
   };
 
   const response = await fetch(
-    `${process.env.EXPO_PUBLIC_SERVER_URL}/test`,
+    `${process.env.EXPO_PUBLIC_SERVER_URL}/epsIr`,
     options
   );
   console.log(response);

@@ -59,7 +59,11 @@ void setup() {
 
 void loop() {
   if (lookForIr) lookForIrSignal();
-  delay(1000);
+  else if (sendIrOnce) {
+    sendIrOnce = 0;
+    irsend.sendNEC(0x0, lastIrReceived, 10);
+  }
+  delay(50);
 }
 
 // Script Functions
@@ -104,13 +108,8 @@ void MasterRequestingInput() {
     response.concat("\0");
   }
   else if (strstr(req, "setAudio")) {
-    char index_zone = request.indexOf("/") + 2;
-    char index_state = request.indexOf("-") + 1;
-
-    if (index_zone == -1 || index_state == -1) Wire.write("fail-noData\0");
-
-    char z = char(request[index_zone]);
-    char s = char(request[index_state]);
+    char z = *((strchr(req, '/') + 2));
+    char s = *((strchr(req, '-') + 1));
 
     if (z == '1' && s == '0') {
       digitalWrite(AUDIO_Z1_L, audioOff);
@@ -141,16 +140,27 @@ void MasterRequestingInput() {
     else {
       response = "fail-nogood\0";
     }
+
+  }
+  else if (strstr(req, "newIr")) {
+    lastIrReceived = NULL;
+    lookForIr = 1;
+    response = "success\0";
+  }
+  else if (strstr(req, "getIr")) {
+    if (lastIrReceived == NULL)
+      response = "fail\0";
+    else
+      response = lastIrReceived;
+  }
+  else if (strstr(req, "sendCommand") && lastIrReceived == NULL) {
+    Wire.write("fail\0");
+  }
+  else if (strstr(req, "sendCommand")) {
+    sendIrOnce = 1;
+    response = "success\0";
   }
   else response = "fail-OOB!\0";
-
-
-
-
-
-
-
-
 
   // convert string to char array
   int resLen = response.length();
