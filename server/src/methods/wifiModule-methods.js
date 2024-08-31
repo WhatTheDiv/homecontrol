@@ -136,7 +136,7 @@ class wifiModule {
 
       while (!receipt_getIr.success || !receipt_getIr.fail || !receipt_getIr.error || !receipt_getIr.code) {
         receipt_getIr.success = await verifyReceiptOfIr(receipt_getIr)
-        console.log(`receipt after wait: ${receipt_getIr}`)
+        console.log(`receipt after wait: `, receipt_getIr)
       }
 
       if (receipt_getIr.error) throw new Error(receipt_getIr.error)
