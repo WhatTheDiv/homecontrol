@@ -1,5 +1,12 @@
 // @ts-nocheck
-import { StyleSheet, Text, View, ScrollView, Pressable } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Pressable,
+  TextInput,
+} from "react-native";
 import gs, {
   greenColor,
   hot_coldColor,
@@ -39,6 +46,7 @@ import Animated, {
   withSequence,
   withRepeat,
 } from "react-native-reanimated";
+import { requestIr } from "../../../js/serverRequests/request_ir.js";
 
 const overview = () => {
   // @ts-ignore
@@ -68,6 +76,12 @@ const overview = () => {
       ? ir.cmds.findIndex((item) => item.source === sel_source)
       : -1
   );
+  const [irLearnVars, setIrLearnVars] = useState({
+    source: "Audio Switch",
+    command: "Power",
+    code: null,
+  });
+  const [irAction, setIrAction] = useState("learn");
 
   const AnimatedFlash = useSharedValue(false);
   const AnimatedFlash_style = useAnimatedStyle(() => ({
@@ -132,6 +146,10 @@ const overview = () => {
       setSel_source,
       sel_command,
       setSel_command,
+      irAction,
+      setIrAction,
+      irLearnVars,
+      setIrLearnVars,
     },
   };
 
@@ -664,17 +682,30 @@ const render_loadingIcon = () => {
     </View>
   );
 };
-const render_ir = ({ ir }) => {
-  const {
-    cmds,
-    srcs,
-    lastCommand,
-    sel_source,
-    sel_command,
-    setSel_source,
-    setSel_command,
-  } = ir;
-
+const render_ir = ({ ir, dispatch }) => {
+  return (
+    <View style={[gs.marginV20]}>
+      <Text
+        style={[gs.text_medium, gs.text_gray, gs.text_center, gs.paddingV5]}
+      >
+        Ir Commands
+      </Text>
+      {ir.irAction === "emit" && render_ir_emit(ir)}
+      {ir.irAction === "learn" && render_ir_learn(ir)}
+    </View>
+  );
+};
+const render_ir_emit = ({
+  cmds,
+  srcs,
+  lastCommand,
+  sel_source,
+  sel_command,
+  setSel_source,
+  setSel_command,
+  irAction,
+  setIrAction,
+}) => {
   const formatted_sources = srcs.map((item, index) => ({
     key: item,
     value: index,
@@ -683,16 +714,29 @@ const render_ir = ({ ir }) => {
     key: item.name,
     value: index,
   }));
+
+  console.log({ formatted_commands, formatted_sources });
+
   return (
     <View
       style={[
-        gs.marginV20,
         gs.flex_row,
         gs.marginH5,
         gs.justify_between,
-        { gap: 10 },
+        { gap: 10, height: 60, flexWrap: "wrap" },
       ]}
     >
+      <Pressable
+        style={[
+          gs.border_cyan,
+          gs.align_center,
+          gs.justify_center,
+          gs.paddingH5,
+        ]}
+        onPress={() => setIrAction("learn")}
+      >
+        <Text style={[gs.text_white, gs.text_medium]}>Learn</Text>
+      </Pressable>
       <SelectList
         defaultOption={() =>
           sel_source < 0
@@ -701,10 +745,17 @@ const render_ir = ({ ir }) => {
         }
         setSelected={(val) => {
           console.log(`Assigning val to setSel_source: ${val}`);
-          setSel_source(val);
+          setSel_source(val.value);
         }}
-        boxStyles={[gs.border_gray, gs.border_rad5, gs.flex1, gs.paddingH10]}
-        inputStyles={[gs.text_gray, gs.text_xlarge]}
+        boxStyles={[
+          gs.border_gray,
+          gs.border_rad5,
+          gs.flex1,
+          gs.paddingH10,
+          gs.align_center,
+          { paddingVertical: 2 },
+        ]}
+        inputStyles={[gs.text_gray, gs.text_medium]}
         dropdownStyles={[]}
         dropdownTextStyles={[]}
         arrowicon={<View style={[{ width: 0 }]} />}
@@ -718,10 +769,17 @@ const render_ir = ({ ir }) => {
         }
         setSelected={(val) => {
           console.log(`Assigning val to setSel_command: ${val}`);
-          setSel_command(val);
+          setSel_command(val.value);
         }}
-        boxStyles={[gs.border_gray, gs.border_rad5, gs.flex1, gs.paddingH10]}
-        inputStyles={[gs.text_gray, gs.text_xlarge]}
+        boxStyles={[
+          gs.border_gray,
+          gs.border_rad5,
+          gs.flex1,
+          gs.paddingH10,
+          gs.align_center,
+          { paddingVertical: 2 },
+        ]}
+        inputStyles={[gs.text_gray, gs.text_medium]}
         dropdownStyles={[]}
         dropdownTextStyles={[]}
         arrowicon={<View style={[{ width: 0 }]} />}
@@ -751,7 +809,109 @@ const render_ir = ({ ir }) => {
             },
           ]}
         >
-          <Text style={[gs.text_xlarge, gs.text_bold]}>Send</Text>
+          <Text style={[gs.text_medium, gs.text_bold]}>Send</Text>
+        </View>
+      </Pressable>
+    </View>
+  );
+};
+const render_ir_learn = ({
+  cmds,
+  srcs,
+  lastCommand,
+  sel_source,
+  sel_command,
+  setSel_source,
+  setSel_command,
+  irAction,
+  setIrAction,
+  irLearnVars,
+  setIrLearnVars,
+}) => {
+  return (
+    <View
+      style={[
+        gs.flex_row,
+        gs.marginH5,
+        gs.justify_between,
+        { gap: 10, height: 60, flexWrap: "wrap" },
+      ]}
+    >
+      <Pressable
+        style={[
+          gs.border_gray,
+          gs.border_rad5,
+          gs.align_center,
+          gs.justify_center,
+          gs.paddingH10,
+        ]}
+        onPress={() => setIrAction("emit")}
+      >
+        <Text style={[gs.text_white, gs.text_medium]}>Emit</Text>
+      </Pressable>
+      <TextInput
+        style={[
+          gs.marginH10,
+          gs.text_orange,
+          gs.text_center,
+          gs.text_medium,
+          gs.border_none,
+          gs.height100,
+          { borderBottomWidth: 1, borderColor: "gray" },
+        ]}
+        value={irLearnVars.source}
+        onChange={(v) =>
+          setIrLearnVars({ ...irLearnVars, source: v.target.value })
+        }
+        placeholder="Source"
+        placeholderTextColor={"gray"}
+      />
+      <TextInput
+        style={[
+          gs.marginH10,
+          gs.text_orange,
+          gs.text_center,
+          gs.text_medium,
+          gs.border_none,
+          gs.height100,
+          { borderBottomWidth: 1, borderColor: "gray" },
+        ]}
+        value={irLearnVars.command}
+        onChange={(v) =>
+          setIrLearnVars({ ...irLearnVars, command: v.target.value })
+        }
+        placeholder="Command"
+        placeholderTextColor={"gray"}
+      />
+      <Pressable
+        style={[
+          gs.background_green,
+          gs.border_rad5,
+          gs.flex1,
+          gs.justify_center,
+          gs.align_center,
+          gs.flex_row,
+          { padding: 1 },
+        ]}
+        onPress={() => {
+          learnIr(irLearnVars, dispatch);
+        }}
+      >
+        <View
+          style={[
+            gs.border_rad5,
+            gs.flex1,
+            gs.align_center,
+            gs.justify_center,
+            gs.height100,
+            {
+              borderWidth: 3,
+            },
+          ]}
+        >
+          <Text style={[gs.text_medium, gs.text_bold, gs.flex_wrap]}>
+            Begin Receiver
+          </Text>
         </View>
       </Pressable>
     </View>
@@ -908,6 +1068,12 @@ const ardTest = async () => {
 
   const data = await response.json();
   console.log(`data from ESP8266: '${data.response}'`);
+};
+
+const learnIr = async (vars, dispatch) => {
+  const success = await requestIr(vars, dispatch);
+
+  if (success) alert("Successfully created command");
 };
 
 export default overview;

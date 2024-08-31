@@ -35,7 +35,7 @@ export default StyleSheet.create({
   background_coldCold: { backgroundColor: cold_coldColor },
   background_hotCold: { backgroundColor: hot_coldColor },
 
-  border1: { borderWidth: 1, borderColor: "cyan" },
+  border_none: { borderWidth: 0 },
   border_red: { borderWidth: 1, borderColor: "red" },
   border_green: { borderWidth: 1, borderColor: greenColor },
   border_yellow: { borderWidth: 1, borderColor: "yellow" },
@@ -48,6 +48,7 @@ export default StyleSheet.create({
   border_rad5: { borderRadius: 5 },
   border_rad10: { borderRadius: 10 },
   border_rad20: { borderRadius: 20 },
+
 
   text_red: { color: 'red' },
   text_black: { color: 'black' },
@@ -69,6 +70,7 @@ export default StyleSheet.create({
 
   flex_row: { flexDirection: 'row' },
   flex1: { flex: 1 },
+  flex_wrap: { flexWrap: 'wrap' },
   justify_center: { justifyContent: 'center' },
   justify_around: { justifyContent: 'space-around' },
   justify_between: { justifyContent: 'space-between' },

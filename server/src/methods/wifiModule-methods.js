@@ -72,8 +72,8 @@ class wifiModule {
 
   }
 
-  // returns index of new command in this.irCommands or -1 for fail
-  async createCommand({ name, timeout_seconds = 10 }) {
+  // returns index of new command in commands or -1 for fail
+  async createCommand({ name, source, commands, timeout_seconds = 10 }) {
     const verifyReceiptOfIr = async (receipt) => {
 
       return new Promise(async res => {
@@ -100,12 +100,12 @@ class wifiModule {
 
     }
 
-    if (this.irCommands.find(item => item.name === name)) {
+    if (commands.find(item => item.name === name)) {
       console.error(`naming conflict, ${name} already exists`)
       return -1
     }
 
-    const cmd = { name }
+    const cmd = { name, source }
     const receipt_getIr = { success: false, fail: false, error: '', code: false }
     const url = `http://${this.ip}:${this.port}`
     const options = {
@@ -151,19 +151,19 @@ class wifiModule {
     const code = receipt_getIr.code
     cmd.command = code
 
-    // returns index in this.irCommands
-    return this.irCommands.push(cmd)
+    // returns index in commands
+    return commands.push(cmd)
   }
 
   // returns status { success, fail, error }
-  async sendCommand_ir({ name = false, index = -1 }) {
+  async sendCommand_ir({ name = false, index = -1, commands }) {
     const status = { success: false, fail: false, error: "" }
     if (!name && index < 0) {
       status.fail = true
       status.error = 'No command reference given'
       return status
     }
-    const cmd = name ? this.irCommands.find(item => item.name === name) : this.irCommands[index]
+    const cmd = name ? commands.find(item => item.name === name) : commands[index]
     if (!cmd) {
       status.fail = true
       status.error = 'Command not found'

@@ -227,36 +227,30 @@ app.post('/espAudio_get', async (req, res) => {
 })
 
 app.post('/epsIr', async (req, res) => {
-  const { learn, report, send } = req.body
+  const { learn, send, source, command } = req.body
   const body = {}
 
   if (learn) {
     body.command = 'newIr'
-  }
-  else if (report) {
-    body.command = 'getIr'
   }
   else if (send) {
     body.command = 'sendCommand'
   }
   else throw new Error('Malformed request')
 
-  try {
+  const index = await WifiModule.createCommand({ name: command, source, commands: HomeState.ir.commands })
 
-    const ard = await fetch("http://192.168.2.116:80", {
-      method: "POST",
-      headers: {
-        "Content-Type": "text/plain"
-      },
-      body: JSON.stringify(body)
-    })
-  } catch (e) {
-    console.error('problem reaching host')
-    console.log(e)
-    res.sendStatus(502).end()
+  console.log('Index from create command: ', index)
+
+  if (index < 0) {
+    return res.status(502).send({ success: false })
   }
 
-  res.status(200).send({ success: true })
+  console.log("Command created: ", HomeState.ir.commands[index])
+
+
+
+  res.status(200).send({ success: true, commands: HomeState.ir.commands })
 
 
 })
