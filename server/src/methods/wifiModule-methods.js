@@ -1,4 +1,4 @@
-const { f_hlt } = require("../../../client/assets/styles/globalStyles")
+
 
 class wifiModule {
   constructor({ ip, port, commands = [] }) {
@@ -163,7 +163,7 @@ class wifiModule {
     const code = receipt_getIr.code
     cmd.command = code
 
-    console.log(`%cSuccessfully saved command: ${JSON.stringify(cmd)}`, f_hlt)
+    console.log(`Successfully saved command: ${JSON.stringify(cmd)}`)
 
     // returns index in commands
     return commands.push(cmd)
