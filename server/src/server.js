@@ -71,7 +71,10 @@ const HomeState = {
     commands: [
       // { name, command, source }
     ],
-    lastCommand: {}
+    lastCommand: {},
+    sources: [
+      "Audio Switch", "Tv", "Hdmi Switch"
+    ]
   }
 
 }
@@ -229,8 +232,9 @@ app.post('/espAudio_get', async (req, res) => {
 
 app.post('/epsIr_emit', async (req, res) => {
   const { source, commandName } = req.body
+  const sourceId = HomeState.ir.sources.findIndex(item => item === source)
 
-  const { success, fail, error } = await WifiModule.sendCommand_ir({ name: commandName, commands: HomeState.ir.commands })
+  const { success, fail, error } = await WifiModule.sendCommand_ir({ name: commandName, sourceId, commands: HomeState.ir.commands })
 
 
 

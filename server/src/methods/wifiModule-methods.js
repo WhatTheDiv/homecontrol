@@ -171,19 +171,24 @@ class wifiModule {
   }
 
   // returns status { success, fail, error }
-  async sendCommand_ir({ name = false, index = -1, commands }) {
+  async sendCommand_ir({ name = false, index = -1, commands, sourceId }) {
     const status = { success: false, fail: false, error: "" }
     if (!name && index < 0) {
       status.fail = true
       status.error = 'No command reference given'
       return status
     }
+    else if (sourceId < 0) {
+      status.fail = true
+      status.error = 'No source given for command'
+      return status
+    }
+
     const cmd = name ? commands.find(item => item.name === name) : commands[index]
     if (!cmd) {
       status.fail = true
       status.error = 'Command not found'
       return status
-
     }
 
     const url = `http://${this.ip}:${this.port}`
@@ -192,7 +197,7 @@ class wifiModule {
       headers: {
         "Content-Type": "text/plain"
       },
-      body: JSON.stringify(`sendCommand/${cmd.command}`)
+      body: JSON.stringify(`sendCommand/s${sourceId}-${cmd.command}`)
     }
 
     const _arduinoResponse = await fetch(url, options)

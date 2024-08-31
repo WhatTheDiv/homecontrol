@@ -83,7 +83,7 @@ server -> python
 
 - IR
     Send Command *****
-          (Message) ------------------------- "sendCommand" --> "send
+          (Message) ------------------------- "sendCommand/s1-70"
           (Response - Success) --------------               "success"
           (Response - Fail) -----------------                             "fail"
 

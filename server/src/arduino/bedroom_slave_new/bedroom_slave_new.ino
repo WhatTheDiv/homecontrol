@@ -9,10 +9,17 @@
 #define AUDIO_Z2_R 9
 #define i2c_addr 0x8
 #define IR_RECEIVE_PIN 2
-#define IR_SEND_PIN 3
+#define IR_SEND_AUDIO_PIN 3
+#define IR_SEND_TV_PIN 4
 
 char request[30];
-byte lastIrReceived = NULL;
+int lastIrReceived = NULL;
+int sendCode = NULL;
+int sendCode_source = 0;
+
+int AudioSwitchIdentifier = 0;
+int TvIdentifier = 1;
+int HdmiSwitch = 2;
 
 bool lookForIr = 0;
 bool sendIrOnce = 0;
@@ -21,7 +28,8 @@ bool audioOn = 1;
 bool audioOff = 0;
 
 IRrecv irrecv(IR_RECEIVE_PIN);
-IRsend irsend(IR_SEND_PIN);
+IRsend irsend_audio(IR_SEND_AUDIO_PIN);
+IRsend irsend_tv(IR_SEND_TV_PIN);
 
 void setup() {
   Serial.begin(9600);
@@ -47,7 +55,8 @@ void setup() {
   digitalWrite(AUDIO_Z2_R, HIGH);
 
   irrecv.enableIRIn();
-  irsend.enableIROut(38);
+  irsend_audio.enableIROut(38);
+  irsend_tv.enableIROut(38);
 
   delay(100);
   Serial.println("");
@@ -61,7 +70,23 @@ void loop() {
   if (lookForIr) lookForIrSignal();
   else if (sendIrOnce) {
     sendIrOnce = 0;
-    irsend.sendNEC(0x0, lastIrReceived, 10);
+    if (sendCode != NULL) {
+      switch (sendCode_source) {
+      case 0:
+        irsend_audio.sendNEC(0x0, sendCode, 10);
+        break;
+      case 1:
+        irsend_tv.sendNEC(0x0, sendCode, 10);
+        break;
+      case 2:
+        Serial.println("Nothing for this yet");
+        break;
+      default:
+        Serial.print("Out of bounds - SendIr - source: ");
+        Serial.println(sendCode_source);
+        break;
+      }
+    }
   }
   delay(50);
 }
@@ -153,12 +178,37 @@ void MasterRequestingInput() {
     else
       response = lastIrReceived;
   }
-  else if (strstr(req, "sendCommand") && lastIrReceived == NULL) {
-    Wire.write("fail\0");
-  }
   else if (strstr(req, "sendCommand")) {
-    sendIrOnce = 1;
-    response = "success\0";
+    sendCode = NULL;
+    char cmd[3];
+    int flag_cmd = -1;
+    int flag_source = 0;
+
+    for (int i = 0; i < strlen(req); i++) {
+      if (flag_cmd >= 0) {
+        cmd[flag_cmd] = req[i];
+        flag_cmd++;
+      }
+      else if (flag_source >= 1) {
+        if (flag_source >= 3) {
+          sendCode_source = atoi(req[i]);
+          flag_source = 0;
+        }
+        flag_source++;
+      }
+      else if (req[i] == '/') flag_source++;
+      else if (req[i] == '-') flag_cmd++;
+    }
+    cmd[flag_cmd] = '\0';
+
+    if (strlen(cmd) <= 0)
+      response = "fail\0";
+
+    else {
+      sendCode = atoi(cmd);
+      sendIrOnce = 1;
+      response = "success\0";
+    }
   }
   else response = "fail-OOB!\0";
 
