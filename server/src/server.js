@@ -1,3 +1,4 @@
+// @ts-nocheck
 const express = require('express')
 const cors = require('cors')
 const app = express()
@@ -228,45 +229,23 @@ app.post('/espAudio_get', async (req, res) => {
 
 app.post('/epsIr_emit', async (req, res) => {
   const { source, commandName } = req.body
-  const body = {}
 
-  if (learn) {
-    body.command = 'newIr'
-  }
-  else if (send) {
-    body.command = 'sendCommand'
-  }
-  else throw new Error('Malformed request')
+  const { success, fail, error } = await WifiModule.sendCommand_ir({ name: commandName, commands: HomeState.ir.commands })
 
-  const index = (await WifiModule.createCommand({ name: commandName, source, commands: HomeState.ir.commands })) - 1
 
-  console.log('Index from create command: ', index)
 
-  if (index < 0) {
-    return res.status(502).send({ success: false, ir: HomeState.ir })
+  if (!success || fail) {
+    return res.status(502).send({ success: false, error })
   }
 
-  console.log("Command created: ", HomeState.ir.commands[index])
-  HomeState.ir.lastCommand = HomeState.ir.commands[index]
-
-
+  HomeState.ir.lastCommand = HomeState.ir.commands.find(item => item.name === commandName)
+  console.log("Command sent: ", HomeState.ir.lastCommand)
 
   res.status(200).send({ success: true, ir: HomeState.ir })
-
-
 })
 
 app.post('/epsIr_learn', async (req, res) => {
-  const { learn, send, source, command } = req.body
-  const body = {}
-
-  if (learn) {
-    body.command = 'newIr'
-  }
-  else if (send) {
-    body.command = 'sendCommand'
-  }
-  else throw new Error('Malformed request')
+  const { source, command } = req.body
 
   const index = (await WifiModule.createCommand({ name: command, source, commands: HomeState.ir.commands })) - 1
 
@@ -278,8 +257,6 @@ app.post('/epsIr_learn', async (req, res) => {
 
   console.log("Command created: ", HomeState.ir.commands[index])
   HomeState.ir.lastCommand = HomeState.ir.commands[index]
-
-
 
   res.status(200).send({ success: true, ir: HomeState.ir })
 
