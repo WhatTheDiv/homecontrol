@@ -19,8 +19,6 @@ const ir = createSlice({
             if (!state.sources.find(item => item === cmdObj.source))
               state.sources.push(cmdObj.source)
           }
-
-
         });
     },
     setLastCommand: (state, action) => {

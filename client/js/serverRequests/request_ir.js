@@ -24,6 +24,8 @@ export async function requestIr_learn({ source, command }, dispatch) {
 
     dispatch(addCommands({ commands: ir.commands }))
     dispatch(setLastCommand({ lastCommand: ir.lastCommand }))
+    console.log(`%cSuccessfully created command: `)
+    console.log(ir)
 
     return success
   } catch (e) {

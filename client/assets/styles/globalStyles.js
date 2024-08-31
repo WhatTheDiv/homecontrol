@@ -17,6 +17,9 @@ export const text_small = 12
 export const text_medium = 16
 export const text_large = 24
 export const text_xlarge = 30
+export const f_err = 'background-color: brown; padding: 5px 20px 5px 20px; border-radius: 5px; color: black; font-weight:bold'
+export const f_gTitle = 'color: orange'
+export const f_hlt = 'color:green'
 
 export default StyleSheet.create({
   appBackground: { backgroundColor: appBackground },

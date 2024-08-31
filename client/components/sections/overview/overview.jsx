@@ -18,6 +18,8 @@ import gs, {
   text_large,
   text_medium,
   text_xlarge,
+  f_err,
+  f_gTitle,
 } from "../../../assets/styles/globalStyles";
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -169,7 +171,7 @@ const overview = () => {
       {/* Ir Commands */}
       {render_ir(bus)}
       {/* ardTest */}
-      {render_ardTest(bus)}
+      {/* {render_ardTest(bus)} */}
     </ScrollView>
   );
 };
@@ -717,7 +719,20 @@ const render_ir_emit = (
     value: item,
   }));
   const formatted_commands = cmds
-    .filter((item) => item.source === srcs[sel_source])
+    .filter((item, index) => {
+      if (item.source === srcs[sel_source])
+        if (item.name === undefined) {
+          console.group("%cFormatted_commands", f_gTitle);
+          console.log("%cServer error --- Saved incomplete command", f_err);
+          console.log(`%ccmds[${index}] - ${JSON.stringify(item)}`, f_err);
+          console.log("cmds", cmds);
+          console.log("%cCommand not added.", f_err);
+          console.groupEnd();
+          return false;
+        } else {
+          return true;
+        }
+    })
     .map((item, index) => ({
       key: index,
       value: item.name,

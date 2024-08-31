@@ -1,3 +1,5 @@
+const { f_hlt } = require("../../../client/assets/styles/globalStyles")
+
 class wifiModule {
   constructor({ ip, port, commands = [] }) {
     this.isAlive = false
@@ -141,10 +143,13 @@ class wifiModule {
         receipt_getIr.error = 'timeout'
       }, timeout_seconds * 1000);
 
+      console.group("Ir rcv", 'color:yellow')
       while (!receipt_getIr.success && !receipt_getIr.fail && !receipt_getIr.error && !receipt_getIr.code) {
         receipt_getIr.success = await verifyReceiptOfIr(receipt_getIr)
-        console.log(`receipt after wait: `, receipt_getIr)
+        await delay(1000);
+        console.log(receipt_getIr)
       }
+      console.groupEnd();
 
       if (receipt_getIr.error) throw new Error(receipt_getIr.error)
       else if (!receipt_getIr.code) throw new Error("No code returned")
@@ -157,6 +162,8 @@ class wifiModule {
 
     const code = receipt_getIr.code
     cmd.command = code
+
+    console.log(`%cSuccessfully saved command: ${JSON.stringify(cmd)}`, f_hlt)
 
     // returns index in commands
     return commands.push(cmd)

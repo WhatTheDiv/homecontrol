@@ -256,6 +256,7 @@ app.post('/epsIr_learn', async (req, res) => {
   }
 
   console.log("Command created: ", HomeState.ir.commands[index])
+  console.log('All commands: ', HomeState.ir.commands)
   HomeState.ir.lastCommand = HomeState.ir.commands[index]
 
   res.status(200).send({ success: true, ir: HomeState.ir })
