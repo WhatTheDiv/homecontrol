@@ -3,7 +3,8 @@ import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
   commands: [],
-  sources: []
+  sources: [],
+  lastCommand: {}
 }
 
 const ir = createSlice({
@@ -22,9 +23,14 @@ const ir = createSlice({
 
         });
     },
+    setLastCommand: (state, action) => {
+      if (action.payload.lastCommand !== undefined) {
+        state.lastCommand = state.commands.find(item => item.name === action.payload.lastCommand.name) || {}
+      }
+    }
   }
 })
 
 export default ir.reducer
 
-export const { addCommands } = ir.actions
+export const { addCommands, setLastCommand } = ir.actions

@@ -4,7 +4,7 @@ import { setLoaded, setFailMessage } from '../store/ui_slice'
 import { setRGB, lights_setInitial, lights_setDefaults } from "../store/lights_slice";
 import { setActive, setName } from "../store/audio_slice";
 import { setTvState } from '../store/tv_slice'
-import { addCommands } from '../store/ir_slice'
+import { addCommands, setLastCommand } from '../store/ir_slice'
 const loadDelay = 0
 
 //XXX KEEP DEFAULTS UPDATED !!!
@@ -77,6 +77,7 @@ export default async function request_initial(dispatch) {
         dispatch(setName({ zone1_newName: audio.zone_1.name, zone2_newName: audio.zone_2.name }))
         dispatch(updateWeather({ outdoorTemp, outdoorHumidity, indoorTemp, indoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low }))
         dispatch(addCommands({ commands: ir.commands }))
+        dispatch(setLastCommand({ lastCommand: ir.lastCommand }))
         dispatch(lights_setInitial({ ...lights }))
         dispatch(lights_setDefaults({
           defaultAnimation: lights.defaultAnimation,

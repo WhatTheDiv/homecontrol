@@ -69,7 +69,8 @@ const HomeState = {
   ir: {
     commands: [
       // { name, command, source }
-    ]
+    ],
+    lastCommand: {}
   }
 
 }

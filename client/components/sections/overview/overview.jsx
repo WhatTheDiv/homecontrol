@@ -47,20 +47,27 @@ const overview = () => {
   const tvPower = useSelector((state) => state.tv.power);
   const tvInput = useSelector((state) => state.tv.input);
   const audio = useSelector((state) => state.audio);
-  const ir_commands = useSelector((state) => state.ir.commands);
-  const ir_sources = useSelector((state) => state.ir.sources);
+  const ir = {
+    cmds: useSelector((state) => state.ir.commands),
+    srcs: useSelector((state) => state.ir.sources),
+    lastCommand: useSelector((state) => state.ir.lastCommand),
+  };
   const { animation_active, lightsOn, animation, updated } = useSelector(
     (state) => state.lights
   );
   const [loading_toggleLights, setLoading_toggleLights] = useState(false);
   const [loading_toggleAudio, setLoading_toggleAudio] = useState(false);
 
-  const [dropdownSelection_sources, setDropdownSelection_sources] = useState([
-    ...ir_sources,
-  ]);
-  const [dropdownSelection_commands, setDropdownSelection_commands] = useState([
-    ...ir_commands,
-  ]);
+  const [sel_source, setSel_source] = useState(
+    ir.lastCommand === {}
+      ? 0
+      : ir.srcs.findIndex((item) => item === ir.lastCommand.source) || -1
+  );
+  const [sel_command, setSel_command] = useState(
+    sel_source >= -1
+      ? ir.cmds.findIndex((item) => item.source === sel_source)
+      : -1
+  );
 
   const AnimatedFlash = useSharedValue(false);
   const AnimatedFlash_style = useAnimatedStyle(() => ({
@@ -120,12 +127,11 @@ const overview = () => {
     lastCommand,
     setLastCommand,
     ir: {
-      cmds: ir_commands,
-      srcs: ir_sources,
-      dropdownSelection_sources,
-      setDropdownSelection_sources,
-      dropdownSelection_commands,
-      setDropdownSelection_commands,
+      ...ir,
+      sel_source,
+      setSel_source,
+      sel_command,
+      setSel_command,
     },
   };
 
@@ -139,8 +145,8 @@ const overview = () => {
       {render_lights(bus)}
       {/* Audio */}
       {render_audio(bus)}
-      {/* Test */}
-      {render_test(bus)}
+      {/* Ir Commands */}
+      {render_ir(bus)}
       {/* ardTest */}
       {render_ardTest(bus)}
     </ScrollView>
@@ -658,7 +664,25 @@ const render_loadingIcon = () => {
     </View>
   );
 };
-const render_test = ({}) => {
+const render_ir = ({ ir }) => {
+  const {
+    cmds,
+    srcs,
+    lastCommand,
+    sel_source,
+    sel_command,
+    setSel_source,
+    setSel_command,
+  } = ir;
+
+  const formatted_sources = srcs.map((item, index) => ({
+    key: item,
+    value: index,
+  }));
+  const formatted_commands = cmds.map((item, index) => ({
+    key: item.name,
+    value: index,
+  }));
   return (
     <View
       style={[
@@ -670,7 +694,33 @@ const render_test = ({}) => {
       ]}
     >
       <SelectList
-        boxStyles={[gs.border_gray, gs.border_rad5, gs.flex1, gs.paddingH40]}
+        defaultOption={() =>
+          sel_source < 0
+            ? { key: "Select Source", value: -1 }
+            : formatted_sources[sel_source]
+        }
+        setSelected={(val) => {
+          console.log(`Assigning val to setSel_source: ${val}`);
+          setSel_source(val);
+        }}
+        boxStyles={[gs.border_gray, gs.border_rad5, gs.flex1, gs.paddingH10]}
+        inputStyles={[gs.text_gray, gs.text_xlarge]}
+        dropdownStyles={[]}
+        dropdownTextStyles={[]}
+        arrowicon={<View style={[{ width: 0 }]} />}
+        search={false}
+      />
+      <SelectList
+        defaultOption={() =>
+          sel_command < 0
+            ? { key: "Select Command", value: -1 }
+            : formatted_commands[sel_command]
+        }
+        setSelected={(val) => {
+          console.log(`Assigning val to setSel_command: ${val}`);
+          setSel_command(val);
+        }}
+        boxStyles={[gs.border_gray, gs.border_rad5, gs.flex1, gs.paddingH10]}
         inputStyles={[gs.text_gray, gs.text_xlarge]}
         dropdownStyles={[]}
         dropdownTextStyles={[]}
