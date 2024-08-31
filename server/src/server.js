@@ -65,6 +65,11 @@ const HomeState = {
       active: true,
       updated: true
     }
+  },
+  ir: {
+    commands: [
+      // { name, command, source }
+    ]
   }
 
 }

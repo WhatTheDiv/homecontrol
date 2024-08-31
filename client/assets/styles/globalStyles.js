@@ -39,6 +39,7 @@ export default StyleSheet.create({
   border_red: { borderWidth: 1, borderColor: "red" },
   border_green: { borderWidth: 1, borderColor: greenColor },
   border_yellow: { borderWidth: 1, borderColor: "yellow" },
+  border_black: { borderWidth: 1, borderColor: "black" },
   border_cyan: { borderWidth: 1, borderColor: 'cyan' },
   border_orange: { borderWidth: 1, borderColor: 'chocolate' },
   border_white: { borderWidth: 1, borderColor: 'white' },

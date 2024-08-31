@@ -4,6 +4,7 @@ import { setLoaded, setFailMessage } from '../store/ui_slice'
 import { setRGB, lights_setInitial, lights_setDefaults } from "../store/lights_slice";
 import { setActive, setName } from "../store/audio_slice";
 import { setTvState } from '../store/tv_slice'
+import { addCommands } from '../store/ir_slice'
 const loadDelay = 0
 
 //XXX KEEP DEFAULTS UPDATED !!!
@@ -47,6 +48,9 @@ const DEFAULTS = {
         active: true,
         updated: false
       }
+    },
+    ir: {
+      commands: []
     }
   }
 }
@@ -62,7 +66,7 @@ export default async function request_initial(dispatch) {
 
       try {
         const { outdoorTemp, outdoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low, } = await getWeather()
-        const { lights, temp, tv, audio } = await getServerState({ timeout: 5000 })
+        const { lights, temp, tv, audio, ir } = await getServerState({ timeout: 5000 })
 
         const { indoorTemp, indoorHumidity } = temp
 
@@ -72,6 +76,7 @@ export default async function request_initial(dispatch) {
         dispatch(setActive({ zone1_active: audio.zone_1.active, zone2_active: audio.zone_2.active, zone1_updated: audio.zone_1.updated, zone2_updated: audio.zone_2.updated }))
         dispatch(setName({ zone1_newName: audio.zone_1.name, zone2_newName: audio.zone_2.name }))
         dispatch(updateWeather({ outdoorTemp, outdoorHumidity, indoorTemp, indoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low }))
+        dispatch(addCommands({ commands: ir.commands }))
         dispatch(lights_setInitial({ ...lights }))
         dispatch(lights_setDefaults({
           defaultAnimation: lights.defaultAnimation,
@@ -224,9 +229,7 @@ const getServerState = async ({ timeout = 7000 }) => {
       return DEFAULTS.serverState
     }
 
-    const data = await response.json()
-
-    const { lights, temp, tv, audio } = data
+    const { lights, temp, tv, audio, ir } = await response.json()
 
 
     return {
@@ -252,7 +255,8 @@ const getServerState = async ({ timeout = 7000 }) => {
         power: tv.power,
         input: tv.input,
       },
-      audio
+      audio,
+      ir
     }
   } catch (error) {
     console.log('Failed to hit server - ', error.message)

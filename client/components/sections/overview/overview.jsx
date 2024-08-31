@@ -26,6 +26,8 @@ import {
   lights_setInitial,
 } from "../../../js/store/lights_slice";
 import { setActive } from "../../../js/store/audio_slice";
+import { addCommand } from "../../../js/store/ir_slice";
+import { SelectList } from "react-native-dropdown-select-list";
 const light_actions = {
   toggleLights_white,
   toggleLights_color,
@@ -45,11 +47,20 @@ const overview = () => {
   const tvPower = useSelector((state) => state.tv.power);
   const tvInput = useSelector((state) => state.tv.input);
   const audio = useSelector((state) => state.audio);
+  const ir_commands = useSelector((state) => state.ir.commands);
+  const ir_sources = useSelector((state) => state.ir.sources);
   const { animation_active, lightsOn, animation, updated } = useSelector(
     (state) => state.lights
   );
   const [loading_toggleLights, setLoading_toggleLights] = useState(false);
   const [loading_toggleAudio, setLoading_toggleAudio] = useState(false);
+
+  const [dropdownSelection_sources, setDropdownSelection_sources] = useState([
+    ...ir_sources,
+  ]);
+  const [dropdownSelection_commands, setDropdownSelection_commands] = useState([
+    ...ir_commands,
+  ]);
 
   const AnimatedFlash = useSharedValue(false);
   const AnimatedFlash_style = useAnimatedStyle(() => ({
@@ -108,6 +119,14 @@ const overview = () => {
     AnimatedFade_audio_style,
     lastCommand,
     setLastCommand,
+    ir: {
+      cmds: ir_commands,
+      srcs: ir_sources,
+      dropdownSelection_sources,
+      setDropdownSelection_sources,
+      dropdownSelection_commands,
+      setDropdownSelection_commands,
+    },
   };
 
   return (
@@ -639,53 +658,52 @@ const render_loadingIcon = () => {
     </View>
   );
 };
-const render_test = () => {
+const render_test = ({}) => {
   return (
-    <View style={gs.marginV20}>
-      <View style={[gs.flex_row, gs.paddingH5, { gap: 5 }]}>
-        <Pressable
+    <View
+      style={[
+        gs.marginV20,
+        gs.flex_row,
+        gs.marginH5,
+        gs.justify_between,
+        { gap: 10 },
+      ]}
+    >
+      <SelectList
+        boxStyles={[gs.border_gray, gs.border_rad5, gs.flex1, gs.paddingH40]}
+        inputStyles={[gs.text_gray, gs.text_xlarge]}
+        dropdownStyles={[]}
+        dropdownTextStyles={[]}
+        arrowicon={<View style={[{ width: 0 }]} />}
+        search={false}
+      />
+      <Pressable
+        style={[
+          gs.background_green,
+          gs.border_rad5,
+          gs.flex1,
+          gs.justify_center,
+          gs.align_center,
+          gs.flex_row,
+          { padding: 1 },
+        ]}
+      >
+        <View
           style={[
-            gs.border_gray,
-            gs.flex1,
+            gs.border_black,
             gs.border_rad5,
-            gs.justify_around,
-            gs.paddingV5,
-          ]}
-          onPress={() => runTest({ learn: true })}
-        >
-          <Text style={[gs.text_white, gs.text_large, gs.text_center]}>
-            Learn
-          </Text>
-        </Pressable>
-        <Pressable
-          style={[
-            gs.border_gray,
             gs.flex1,
-            gs.border_rad5,
-            gs.justify_around,
-            gs.paddingV5,
+            gs.justify_center,
+            gs.align_center,
+            {
+              borderWidth: 3,
+              height: "100%",
+            },
           ]}
-          onPress={() => runTest({ report: true })}
         >
-          <Text style={[gs.text_white, gs.text_xlarge, gs.text_center]}>
-            Report
-          </Text>
-        </Pressable>
-        <Pressable
-          style={[
-            gs.border_gray,
-            gs.flex1,
-            gs.border_rad5,
-            gs.justify_around,
-            gs.paddingV5,
-          ]}
-          onPress={() => runTest({ send: true })}
-        >
-          <Text style={[gs.text_white, gs.text_xlarge, gs.text_center]}>
-            Send
-          </Text>
-        </Pressable>
-      </View>
+          <Text style={[gs.text_xlarge, gs.text_bold]}>Send</Text>
+        </View>
+      </Pressable>
     </View>
   );
 };
@@ -799,7 +817,7 @@ const updateAppData = async (dispatch) => {
   const response = await RequestServer(dispatch);
 };
 
-const runTest = async ({ learn = false, report = false, send = false }) => {
+const TestIr = async ({ learn = false, report = false, send = false }) => {
   // console.log(
   //   "Test result: ",
   //   await RequestLights({
