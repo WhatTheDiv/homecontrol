@@ -690,8 +690,8 @@ const render_ir = ({ ir, dispatch }) => {
       >
         Ir Commands
       </Text>
-      {ir.irAction === "emit" && render_ir_emit(ir)}
-      {ir.irAction === "learn" && render_ir_learn(ir)}
+      {ir.irAction === "emit" && render_ir_emit(ir, dispatch)}
+      {ir.irAction === "learn" && render_ir_learn(ir, dispatch)}
     </View>
   );
 };

@@ -25,7 +25,7 @@ const ir = createSlice({
     },
     setLastCommand: (state, action) => {
       if (action.payload.lastCommand !== undefined) {
-        state.lastCommand = state.commands.find(item => item.name === action.payload.lastCommand.name) || {}
+        state.lastCommand = state.commands.find(item => item.name === action.payload.lastCommand.name) || action.payload.lastCommand
       }
     }
   }

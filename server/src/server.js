@@ -243,14 +243,15 @@ app.post('/epsIr', async (req, res) => {
   console.log('Index from create command: ', index)
 
   if (index < 0) {
-    return res.status(502).send({ success: false })
+    return res.status(502).send({ success: false, ir: HomeState.ir })
   }
 
   console.log("Command created: ", HomeState.ir.commands[index])
+  HomeState.ir.lastCommand = HomeState.ir.commands[index]
 
 
 
-  res.status(200).send({ success: true, commands: HomeState.ir.commands })
+  res.status(200).send({ success: true, ir: HomeState.ir })
 
 
 })

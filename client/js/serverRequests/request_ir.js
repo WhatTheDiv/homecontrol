@@ -16,15 +16,16 @@ export async function requestIr({ source, command }, dispatch) {
     );
 
     console.log(response);
-    const data = await response.json();
+    const { success, ir } = await response.json();
 
-    console.log(data);
-    if (!data.commands)
+    console.log({ success, ir });
+    if (ir.commands.length < 1)
       throw new Error('Did not return any commands')
 
-    dispatch(addCommands({ commands: data.commands }))
+    dispatch(addCommands({ commands: ir.commands }))
+    dispatch(setLastCommand({ lastCommand: ir.lastCommand }))
 
-    return data.success
+    return success
   } catch (e) {
     return false
   }
