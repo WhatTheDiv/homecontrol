@@ -11,7 +11,7 @@ export async function requestIr({ source, command }, dispatch) {
     };
 
     const response = await fetch(
-      `${process.env.EXPO_PUBLIC_SERVER_URL}/epsIr`,
+      `${process.env.EXPO_PUBLIC_SERVER_URL}/epsIr_learn`,
       options
     );
 
@@ -27,6 +27,32 @@ export async function requestIr({ source, command }, dispatch) {
 
     return success
   } catch (e) {
+    return false
+  }
+}
+
+export async function emitIr(command, dispatch) {
+  try {
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ source: command.source, commandName: command.name }),
+    };
+
+    const response = await fetch(
+      `${process.env.EXPO_PUBLIC_SERVER_URL}/epsIr_emit`,
+      options
+    );
+
+    const { success } = await response.json();
+
+    dispatch(setLastCommand({ lastCommand: command }))
+
+    return success
+  } catch (e) {
+    console.error('Failed to emit ir: ', e.message)
     return false
   }
 }

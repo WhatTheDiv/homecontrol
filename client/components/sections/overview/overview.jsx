@@ -81,7 +81,7 @@ const overview = () => {
     command: "Power",
     code: null,
   });
-  const [irAction, setIrAction] = useState("learn");
+  const [irAction, setIrAction] = useState("emit");
 
   const AnimatedFlash = useSharedValue(false);
   const AnimatedFlash_style = useAnimatedStyle(() => ({
@@ -695,25 +695,31 @@ const render_ir = ({ ir, dispatch }) => {
     </View>
   );
 };
-const render_ir_emit = ({
-  cmds,
-  srcs,
-  lastCommand,
-  sel_source,
-  sel_command,
-  setSel_source,
-  setSel_command,
-  irAction,
-  setIrAction,
-}) => {
+const render_ir_emit = (
+  {
+    cmds,
+    srcs,
+    lastCommand,
+    sel_source,
+    sel_command,
+    setSel_source,
+    setSel_command,
+    irAction,
+    setIrAction,
+  },
+  dispatch
+) => {
   const formatted_sources = srcs.map((item, index) => ({
-    key: item,
-    value: index,
+    key: index,
+    value: item,
   }));
-  const formatted_commands = cmds.map((item, index) => ({
-    key: item.name,
-    value: index,
-  }));
+  const formatted_commands = cmds.map((item, index) => {
+    if (item.source === srcs[sel_source])
+      return {
+        key: index,
+        value: item.name,
+      };
+  });
 
   console.log({ formatted_commands, formatted_sources });
 
@@ -728,10 +734,11 @@ const render_ir_emit = ({
     >
       <Pressable
         style={[
-          gs.border_cyan,
+          gs.border_gray,
           gs.align_center,
           gs.justify_center,
-          gs.paddingH5,
+          gs.border_rad5,
+          { width: "15%" },
         ]}
         onPress={() => setIrAction("learn")}
       >
@@ -745,8 +752,10 @@ const render_ir_emit = ({
         }
         setSelected={(val) => {
           console.log(`Assigning val to setSel_source: ${val}`);
-          setSel_source(val.value);
+          setSel_source(val);
         }}
+        data={formatted_sources}
+        save="key"
         boxStyles={[
           gs.border_gray,
           gs.border_rad5,
@@ -757,7 +766,7 @@ const render_ir_emit = ({
         ]}
         inputStyles={[gs.text_gray, gs.text_medium]}
         dropdownStyles={[]}
-        dropdownTextStyles={[]}
+        dropdownTextStyles={[gs.text_gray]}
         arrowicon={<View style={[{ width: 0 }]} />}
         search={false}
       />
@@ -767,21 +776,24 @@ const render_ir_emit = ({
             ? { key: "Select Command", value: -1 }
             : formatted_commands[sel_command]
         }
-        setSelected={(val) => {
-          console.log(`Assigning val to setSel_command: ${val}`);
-          setSel_command(val.value);
+        setSelected={(val, key) => {
+          console.log(`Assigning val to setSel_command: ${val}, ${key}`);
+          setSel_command(val);
         }}
+        data={formatted_commands}
+        save="key"
         boxStyles={[
           gs.border_gray,
           gs.border_rad5,
           gs.flex1,
           gs.paddingH10,
           gs.align_center,
+          gs.text_green,
           { paddingVertical: 2 },
         ]}
         inputStyles={[gs.text_gray, gs.text_medium]}
-        dropdownStyles={[]}
-        dropdownTextStyles={[]}
+        dropdownStyles={[gs.text_gray]}
+        dropdownTextStyles={[gs.text_gray]}
         arrowicon={<View style={[{ width: 0 }]} />}
         search={false}
       />
@@ -789,12 +801,12 @@ const render_ir_emit = ({
         style={[
           gs.background_green,
           gs.border_rad5,
-          gs.flex1,
           gs.justify_center,
           gs.align_center,
           gs.flex_row,
-          { padding: 1 },
+          { padding: 1, width: "30%", flexGrow: 1 },
         ]}
+        onPress={() => emitIr(cmds[sel_command], dispatch)}
       >
         <View
           style={[
@@ -846,7 +858,7 @@ const render_ir_learn = (
           gs.border_rad5,
           gs.align_center,
           gs.justify_center,
-          gs.paddingH10,
+          { width: "15%" },
         ]}
         onPress={() => setIrAction("emit")}
       >
@@ -894,7 +906,7 @@ const render_ir_learn = (
           gs.justify_center,
           gs.align_center,
           gs.flex_row,
-          { padding: 1 },
+          { padding: 1, width: "30%" },
         ]}
         onPress={() => {
           learnIr(irLearnVars, dispatch);
@@ -909,10 +921,13 @@ const render_ir_learn = (
             gs.height100,
             {
               borderWidth: 3,
+              flexGrow: 1,
             },
           ]}
         >
-          <Text style={[gs.text_medium, gs.text_bold, gs.flex_wrap]}>
+          <Text
+            style={[gs.text_medium, gs.text_bold, gs.flex_wrap, gs.text_center]}
+          >
             Begin Receiver
           </Text>
         </View>
@@ -1075,8 +1090,12 @@ const ardTest = async () => {
 
 const learnIr = async (vars, dispatch) => {
   const success = await requestIr(vars, dispatch);
+};
 
-  if (success) alert("Successfully created command");
+const emitIr = async (command, dispatch) => {
+  console.log(`Emitting with command `, command);
+
+  const success = await emitIr(command, dispatch);
 };
 
 export default overview;
