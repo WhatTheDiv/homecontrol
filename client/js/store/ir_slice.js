@@ -16,7 +16,7 @@ const ir = createSlice({
         action.payload.commands.forEach(cmdObj => {
           if (!state.commands.find(item => item.name === cmdObj.name)) {
             state.commands.push(cmdObj)
-            if (state.sources.find(item => item === cmdObj.source))
+            if (!state.sources.find(item => item === cmdObj.source))
               state.sources.push(cmdObj.source)
           }
 
