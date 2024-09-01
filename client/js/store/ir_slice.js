@@ -21,6 +21,13 @@ const ir = createSlice({
           }
         });
     },
+    addSources: (state, action) => {
+      if (action.payload.sources.length >= 1)
+        action.payload.sources.forEach(src => {
+          if (!state.sources.find(item => item === src))
+            state.sources.push(item)
+        })
+    },
     setLastCommand: (state, action) => {
       if (action.payload.lastCommand !== undefined) {
         state.lastCommand = state.commands.find(item => item.name === action.payload.lastCommand.name) || action.payload.lastCommand
@@ -31,4 +38,4 @@ const ir = createSlice({
 
 export default ir.reducer
 
-export const { addCommands, setLastCommand } = ir.actions
+export const { addCommands, setLastCommand, addSources } = ir.actions

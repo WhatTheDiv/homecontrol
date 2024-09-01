@@ -696,6 +696,30 @@ const render_loadingIcon = () => {
   );
 };
 const render_ir = ({ ir, dispatch }) => {
+  const formatted_sources = ir.srcs.map((item, index) => ({
+    key: index,
+    value: item,
+  }));
+  const formatted_commands = ir.cmds
+    .filter((item, index) => {
+      if (item.source === ir.srcs[sel_source])
+        if (item.name === undefined) {
+          console.group("%cFormatted_commands", f_gTitle);
+          console.log("%cServer error --- Saved incomplete command", f_err);
+          console.log(`%ccmds[${index}] - ${JSON.stringify(item)}`, f_err);
+          console.log("cmds", ir.cmds);
+          console.log("%cCommand not added.", f_err);
+          console.groupEnd();
+          return false;
+        } else {
+          return true;
+        }
+    })
+    .map((item, index) => ({
+      key: index,
+      value: item.name,
+    }));
+
   return (
     <View style={[gs.marginV20]}>
       <Text
@@ -704,9 +728,11 @@ const render_ir = ({ ir, dispatch }) => {
         Ir Commands
       </Text>
       <View style={[{ maxHeight: 150, height: 40 }]}>
-        {ir.irAction === "emit" && render_ir_emit(ir, dispatch)}
+        {ir.irAction === "emit" &&
+          render_ir_emit(ir, dispatch, formatted_sources, formatted_commands)}
         {ir.irAction === "learn" && render_ir_learn(ir, dispatch)}
-        {ir.irAction === "test" && render_ir_test(ir, dispatch)}
+        {ir.irAction === "test" &&
+          render_ir_test(ir, dispatch, formatted_sources)}
       </View>
     </View>
   );
@@ -723,32 +749,10 @@ const render_ir_emit = (
     irAction,
     setIrAction,
   },
-  dispatch
+  dispatch,
+  formatted_sources,
+  formatted_commands
 ) => {
-  const formatted_sources = srcs.map((item, index) => ({
-    key: index,
-    value: item,
-  }));
-  const formatted_commands = cmds
-    .filter((item, index) => {
-      if (item.source === srcs[sel_source])
-        if (item.name === undefined) {
-          console.group("%cFormatted_commands", f_gTitle);
-          console.log("%cServer error --- Saved incomplete command", f_err);
-          console.log(`%ccmds[${index}] - ${JSON.stringify(item)}`, f_err);
-          console.log("cmds", cmds);
-          console.log("%cCommand not added.", f_err);
-          console.groupEnd();
-          return false;
-        } else {
-          return true;
-        }
-    })
-    .map((item, index) => ({
-      key: index,
-      value: item.name,
-    }));
-
   return (
     <View
       style={[
@@ -977,7 +981,8 @@ const render_ir_test = (
     irTestVars,
     setIrTestVars,
   },
-  dispatch
+  dispatch,
+  formatted_sources
 ) => {
   return (
     <View
@@ -1000,22 +1005,31 @@ const render_ir_test = (
       >
         <Text style={[gs.text_white, gs.text_medium]}>Emit</Text>
       </Pressable>
-      <TextInput
-        style={[
-          gs.marginH10,
-          gs.text_orange,
-          gs.text_center,
-          gs.text_medium,
-          gs.border_none,
-          gs.height100,
-          { borderBottomWidth: 1, borderColor: "gray" },
-        ]}
-        value={irTestVars.source}
-        onChange={(v) =>
-          setIrTestVars({ ...irTestVars, source: v.target.value })
+      <SelectList
+        defaultOption={() =>
+          sel_source < 0
+            ? { key: "Select Source", value: -1 }
+            : formatted_sources[sel_source]
         }
-        placeholder="Source"
-        placeholderTextColor={"gray"}
+        setSelected={(val) => {
+          console.log(`Assigning val to setSel_source: ${val}`);
+          setSel_source(val);
+        }}
+        data={formatted_sources}
+        save="key"
+        boxStyles={[
+          gs.border_gray,
+          gs.border_rad5,
+          gs.flex1,
+          gs.paddingH10,
+          gs.align_center,
+          { paddingVertical: 2 },
+        ]}
+        inputStyles={[gs.text_gray, gs.text_medium]}
+        dropdownStyles={[]}
+        dropdownTextStyles={[gs.text_gray]}
+        arrowicon={<View style={[{ width: 0 }]} />}
+        search={false}
       />
       <TextInput
         style={[
@@ -1029,9 +1043,9 @@ const render_ir_test = (
         ]}
         value={irTestVars.code}
         onChange={(v) =>
-          setIrLearnVars({ ...irTestVars, command: v.target.value })
+          setIrLearnVars({ ...irTestVars, code: v.target.value })
         }
-        placeholder="Code"
+        placeholder="Command"
         placeholderTextColor={"gray"}
       />
       <Pressable
@@ -1045,7 +1059,7 @@ const render_ir_test = (
           { padding: 1, width: "30%" },
         ]}
         onPress={() => {
-          testIr({ source: irTestVars.source, code: irTestVars.code });
+          testIr({ source: srcs[sel_source], code: irTestVars.code });
         }}
       >
         <View
@@ -1064,7 +1078,7 @@ const render_ir_test = (
           <Text
             style={[gs.text_medium, gs.text_bold, gs.flex_wrap, gs.text_center]}
           >
-            Begin Receiver
+            Test Code
           </Text>
         </View>
       </Pressable>
@@ -1221,6 +1235,7 @@ const emitIr = async ({ commandIndex, cmds, dispatch }) => {
 };
 
 const testIr = async ({ source, code }) => {
+  console.log(`Running testIr with source:${source}, code:${code}`);
   const { success, error } = await requestIr_custom({
     source,
     code,
