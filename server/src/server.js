@@ -232,9 +232,8 @@ app.post('/espAudio_get', async (req, res) => {
 
 app.post('/epsIr_emit', async (req, res) => {
   const { source, commandName } = req.body
-  const sourceId = HomeState.ir.sources.findIndex(item => item === source)
 
-  const { success, fail, error } = await WifiModule.sendCommand_ir({ name: commandName, sourceId, commands: HomeState.ir.commands })
+  const { success, fail, error } = await WifiModule.sendCommand_ir({ name: commandName, source, commands: HomeState.ir.commands })
 
 
 
@@ -250,8 +249,9 @@ app.post('/epsIr_emit', async (req, res) => {
 
 app.post('/epsIr_test', async (req, res) => {
   const { source, code } = req.body
+  const sourceId = HomeState.ir.sources.findIndex(item => item === source)
 
-  const { success, fail, error } = await WifiModule.testCommand({ source, code }, HomeState.ir.sources.findIndex(item => item === source))
+  const { success, fail, error } = await WifiModule.testCommand({ source, code }, sourceId)
 
   if (fail) {
     console.error(`Failed to test IR code: ${error}`)
