@@ -84,7 +84,6 @@ const overview = () => {
   const [irLearnVars, setIrLearnVars] = useState({
     source: "Audio Switch",
     command: "Power",
-    code: null,
   });
   const [irAction, setIrAction] = useState("emit");
 
@@ -928,7 +927,7 @@ const render_ir_learn = (
           { padding: 1, width: "30%" },
         ]}
         onPress={() => {
-          learnIr(irLearnVars, dispatch);
+          learnIr(irLearnVars, dispatch, setIrLearnVars);
         }}
       >
         <View
@@ -1107,8 +1106,13 @@ const ardTest = async () => {
   console.log(`data from ESP8266: '${data.response}'`);
 };
 
-const learnIr = async (vars, dispatch) => {
-  const success = await requestIr_learn(vars, dispatch);
+const learnIr = async (vars, dispatch, setState) => {
+  const success = await requestIr_learn(
+    { source: vars.source, commandName: vars.command },
+    dispatch
+  );
+
+  setState({ source: "", command: "" });
 };
 
 const emitIr = async ({ commandIndex, cmds, dispatch }) => {

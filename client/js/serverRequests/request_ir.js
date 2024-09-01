@@ -1,13 +1,15 @@
+import { f_err } from '../../assets/styles/globalStyles';
 import { addCommands, setLastCommand } from '../store/ir_slice'
 
-export async function requestIr_learn({ source, command }, dispatch) {
+export async function requestIr_learn({ source, commandName }, dispatch) {
   try {
+    console.log(`At request, learning command (${commandName}) with source (${source})`)
     const options = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ learn: true, source, command }),
+      body: JSON.stringify({ source, commandName }),
     };
 
     const response = await fetch(
@@ -15,20 +17,23 @@ export async function requestIr_learn({ source, command }, dispatch) {
       options
     );
 
-    console.log(response);
-    const { success, ir } = await response.json();
+    const { success, ir, error } = await response.json();
 
-    console.log({ success, ir });
-    if (ir.commands.length < 1)
+
+    if (!success)
+      throw new Error(error ? error : "Bad response from server")
+    else if (ir.commands.length < 1)
       throw new Error('Did not return any commands')
 
     dispatch(addCommands({ commands: ir.commands }))
     dispatch(setLastCommand({ lastCommand: ir.lastCommand }))
-    console.log(`%cSuccessfully created command: `)
-    console.log(ir)
+
+    console.log(`Successfully created command: `)
+    console.log({ ir })
 
     return success
   } catch (e) {
+    console.log(`%cError at request: ${e.message}`, f_err)
     return false
   }
 }
