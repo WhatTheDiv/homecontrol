@@ -67,7 +67,7 @@ export async function requestIr_emit(command, dispatch) {
   }
 }
 
-export async function requestIr_custom(source, code) {
+export async function requestIr_custom({ source, code }) {
   try {
     const url = `${process.env.EXPO_PUBLIC_SERVER_URL}/epsIr_test`
     const options = {
