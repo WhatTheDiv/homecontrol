@@ -177,11 +177,12 @@ class wifiModule {
     const status = { success: false, fail: false, error: '' }
 
     try {
-      if (command.source === undefined || command.code === undefined)
-        throw new Error(`malformed request: ${JSON.stringify(command)}`)
-
-      if (sourceId < 0)
-        throw new Error("Source does not exist")
+      if (command.source === undefined)
+        throw new Error(`malformed request, no source given: ${JSON.stringify(command)}`)
+      else if (command.code === undefined)
+        throw new Error(`malformed request, no code given: ${JSON.stringify(command)}`)
+      else if (sourceId < 0)
+        throw new Error(`Source does not exist (${JSON.stringify(command.source)})`)
 
 
       const url = `http://${this.ip}:${this.port}`
