@@ -1053,6 +1053,7 @@ const render_ir_test = (
           { padding: 1, width: "30%" },
         ]}
         onPress={() => {
+          console.log({ source: srcs[sel_source], code: irTestCode });
           testIr({ source: srcs[sel_source], code: irTestCode });
         }}
       >
@@ -1236,6 +1237,7 @@ const testIr = async ({ source, code }) => {
   });
 
   if (!success) alert(`Failed to test ir: ${error}`);
+  else console.log("Successful test");
 };
 
 export default overview;
