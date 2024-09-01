@@ -695,8 +695,10 @@ const render_ir = ({ ir, dispatch }) => {
       >
         Ir Commands
       </Text>
-      {ir.irAction === "emit" && render_ir_emit(ir, dispatch)}
-      {ir.irAction === "learn" && render_ir_learn(ir, dispatch)}
+      <View style={[{ maxHeight: 150, height: 40 }]}>
+        {ir.irAction === "emit" && render_ir_emit(ir, dispatch)}
+        {ir.irAction === "learn" && render_ir_learn(ir, dispatch)}
+      </View>
     </View>
   );
 };
@@ -746,7 +748,7 @@ const render_ir_emit = (
         gs.flex_row,
         gs.marginH5,
         gs.justify_between,
-        { gap: 10, height: 60, flexWrap: "wrap" },
+        { gap: 10, flexWrap: "nowrap" },
       ]}
     >
       <Pressable
@@ -755,7 +757,7 @@ const render_ir_emit = (
           gs.align_center,
           gs.justify_center,
           gs.border_rad5,
-          { width: "15%" },
+          { width: "15%", height: 50 },
         ]}
         onPress={() => setIrAction("learn")}
       >
@@ -821,7 +823,7 @@ const render_ir_emit = (
           gs.justify_center,
           gs.align_center,
           gs.flex_row,
-          { padding: 1, width: "30%", flexGrow: 1 },
+          { padding: 1, flexGrow: 1 },
         ]}
         onPress={() => emitIr({ commandIndex: sel_command, cmds, dispatch })}
       >
