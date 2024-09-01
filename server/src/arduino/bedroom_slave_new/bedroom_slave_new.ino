@@ -192,7 +192,7 @@ void MasterRequestingInput() {
   }
   else if (strstr(req, "sendCommand")) {
     sendCode = NULL;
-    char cmd[3];
+    char cmd[5];
     int flag_cmd = -1;
     // /s0-70]
     for (int i = 0; i < strlen(req); i++) {

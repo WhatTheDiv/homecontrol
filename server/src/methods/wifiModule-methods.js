@@ -172,6 +172,44 @@ class wifiModule {
   }
 
   // returns status { success, fail, error }
+  async testCommand(command, sourceId) {
+    const status = { success: false, fail: false, error: '' }
+    if (command.source === undefined || command.code === undefined)
+      throw new Error(`malformed request: ${JSON.stringify(command)}`)
+    if (sourceId < 0)
+      throw new Error("Source does not exist")
+
+    try {
+
+      const url = `http://${this.ip}:${this.port}`
+      const options = {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain"
+        },
+        body: JSON.stringify(`sendCommand/s${sourceId}-${command.code}`)
+      }
+
+
+      const _arduinoResponse = await fetch(url, options)
+      const arduinoResponse = (await _arduinoResponse.text()).trim()
+
+      if (arduinoResponse.indexOf('fail') >= 0)
+        throw new Error(`Arduino responded with fail (${arduinoResponse.slice(arduinoResponse.indexOf("-") + 1)})`)
+
+      status.success = true
+      return status
+
+    } catch (e) {
+      console.error(`Arduino rejected request: ${e.message}`)
+      status.fail = true
+      status.error = `Arduino rejected request: ${e.message}`
+      return status
+    }
+
+  }
+
+  // returns status { success, fail, error }
   async sendCommand_ir({ name = false, index = -1, commands, sourceId }) {
     const status = { success: false, fail: false, error: "" }
     if (!name && index < 0) {

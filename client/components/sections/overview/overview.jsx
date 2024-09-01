@@ -52,6 +52,7 @@ import Animated, {
 import {
   requestIr_learn,
   requestIr_emit,
+  requestIr_custom,
 } from "../../../js/serverRequests/request_ir.js";
 
 const overview = () => {
@@ -85,6 +86,11 @@ const overview = () => {
   const [irLearnVars, setIrLearnVars] = useState({
     source: "Audio Switch",
     command: "Power",
+  });
+  const [irTestVars, setIrTestVars] = useState({
+    source: "",
+    command: "",
+    code: undefined,
   });
   const [irAction, setIrAction] = useState("emit");
 
@@ -155,6 +161,8 @@ const overview = () => {
       setIrAction,
       irLearnVars,
       setIrLearnVars,
+      irTestVars,
+      setIrTestVars,
     },
   };
 
@@ -698,6 +706,7 @@ const render_ir = ({ ir, dispatch }) => {
       <View style={[{ maxHeight: 150, height: 40 }]}>
         {ir.irAction === "emit" && render_ir_emit(ir, dispatch)}
         {ir.irAction === "learn" && render_ir_learn(ir, dispatch)}
+        {ir.irAction === "test" && render_ir_test(ir, dispatch)}
       </View>
     </View>
   );
@@ -860,7 +869,6 @@ const render_ir_learn = (
   },
   dispatch
 ) => {
-  console.log("irLearnVars updated: ", irLearnVars);
   return (
     <View
       style={[
@@ -878,9 +886,9 @@ const render_ir_learn = (
           gs.justify_center,
           { width: "15%" },
         ]}
-        onPress={() => setIrAction("emit")}
+        onPress={() => setIrAction("test")}
       >
-        <Text style={[gs.text_white, gs.text_medium]}>Emit</Text>
+        <Text style={[gs.text_white, gs.text_medium]}>Test</Text>
       </Pressable>
       <TextInput
         style={[
@@ -930,6 +938,114 @@ const render_ir_learn = (
           console.log(`%cirLearnVars: `, f_hlt);
           console.log(irLearnVars);
           learnIr(irLearnVars, dispatch, setIrLearnVars);
+        }}
+      >
+        <View
+          style={[
+            gs.border_rad5,
+            gs.flex1,
+            gs.align_center,
+            gs.justify_center,
+            gs.height100,
+            {
+              borderWidth: 3,
+              flexGrow: 1,
+            },
+          ]}
+        >
+          <Text
+            style={[gs.text_medium, gs.text_bold, gs.flex_wrap, gs.text_center]}
+          >
+            Begin Receiver
+          </Text>
+        </View>
+      </Pressable>
+    </View>
+  );
+};
+const render_ir_test = (
+  {
+    cmds,
+    srcs,
+    lastCommand,
+    sel_source,
+    sel_command,
+    setSel_source,
+    setSel_command,
+    irAction,
+    setIrAction,
+    irTestVars,
+    setIrTestVars,
+  },
+  dispatch
+) => {
+  return (
+    <View
+      style={[
+        gs.flex_row,
+        gs.marginH5,
+        gs.justify_between,
+        { gap: 10, height: 60, flexWrap: "wrap" },
+      ]}
+    >
+      <Pressable
+        style={[
+          gs.border_gray,
+          gs.border_rad5,
+          gs.align_center,
+          gs.justify_center,
+          { width: "15%" },
+        ]}
+        onPress={() => setIrAction("emit")}
+      >
+        <Text style={[gs.text_white, gs.text_medium]}>Emit</Text>
+      </Pressable>
+      <TextInput
+        style={[
+          gs.marginH10,
+          gs.text_orange,
+          gs.text_center,
+          gs.text_medium,
+          gs.border_none,
+          gs.height100,
+          { borderBottomWidth: 1, borderColor: "gray" },
+        ]}
+        value={irTestVars.source}
+        onChange={(v) =>
+          setIrTestVars({ ...irTestVars, source: v.target.value })
+        }
+        placeholder="Source"
+        placeholderTextColor={"gray"}
+      />
+      <TextInput
+        style={[
+          gs.marginH10,
+          gs.text_orange,
+          gs.text_center,
+          gs.text_medium,
+          gs.border_none,
+          gs.height100,
+          { borderBottomWidth: 1, borderColor: "gray" },
+        ]}
+        value={irTestVars.code}
+        onChange={(v) =>
+          setIrLearnVars({ ...irTestVars, command: v.target.value })
+        }
+        placeholder="Code"
+        placeholderTextColor={"gray"}
+      />
+      <Pressable
+        style={[
+          gs.background_green,
+          gs.border_rad5,
+          gs.flex1,
+          gs.justify_center,
+          gs.align_center,
+          gs.flex_row,
+          { padding: 1, width: "30%" },
+        ]}
+        onPress={() => {
+          testIr({ source: irTestVars.source, code: irTestVars.code });
         }}
       >
         <View
@@ -1065,33 +1181,6 @@ const updateAppData = async (dispatch) => {
   const response = await RequestServer(dispatch);
 };
 
-const TestIr = async ({ learn = false, report = false, send = false }) => {
-  // console.log(
-  //   "Test result: ",
-  //   await RequestLights({
-  //     action: "setColor",
-  //     colorLabel: "primary",
-  //     rgbw: { r: 10, g: 10, b: 30, w: 11 },
-  //   })
-  // );
-  const options = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ learn, report, send }),
-  };
-
-  const response = await fetch(
-    `${process.env.EXPO_PUBLIC_SERVER_URL}/epsIr`,
-    options
-  );
-  console.log(response);
-  const data = await response.json();
-
-  console.log(data);
-};
-
 const ardTest = async () => {
   console.log("running arduino test");
   const options = {
@@ -1129,6 +1218,15 @@ const emitIr = async ({ commandIndex, cmds, dispatch }) => {
   const success = await requestIr_emit(command, dispatch);
 
   if (success) console.log("Ir Emitted!");
+};
+
+const testIr = async ({ source, code }) => {
+  const { success, error } = await requestIr_custom({
+    source,
+    code,
+  });
+
+  if (!success) alert(`Failed to test ir: ${error}`);
 };
 
 export default overview;

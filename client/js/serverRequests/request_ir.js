@@ -66,3 +66,25 @@ export async function requestIr_emit(command, dispatch) {
     return false
   }
 }
+
+export async function requestIr_custom(source, code) {
+  try {
+    const url = `${process.env.EXPO_PUBLIC_SERVER_URL}/epsIr_test`
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ source, code }),
+    };
+
+    const response = await fetch(url, options);
+
+    return await response.json();
+
+  } catch (e) {
+    return {
+      success: false, error: `Error in request: ${e.message}`
+    }
+  }
+}

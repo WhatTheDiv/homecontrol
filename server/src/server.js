@@ -248,6 +248,19 @@ app.post('/epsIr_emit', async (req, res) => {
   res.status(200).send({ success: true, ir: HomeState.ir })
 })
 
+app.post('/epsIr_test', async (req, res) => {
+  const { source, code } = req.body
+
+  const { success, fail, error } = await WifiModule.testCommand({ source, code }, HomeState.ir.sources.findIndex(item => item === source))
+
+  if (fail) {
+    console.error(`Failed to test IR code: ${error}`)
+    return res.status(401).send({ success, error, command: { command: code, source }, commands: HomeState.ir.commands })
+  }
+
+  res.status(200).send({ success: true, command: { command: code, source }, commands: HomeState.ir.commands })
+})
+
 app.post('/epsIr_learn', async (req, res) => {
   const { source, commandName } = req.body
 
