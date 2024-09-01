@@ -91,7 +91,6 @@ class wifiModule {
         const response = (await _response.text()).trim()
 
         if (response.indexOf("fail") >= 0) {
-          console.error(`fail message from arduino: ${response.slice(response.indexOf("-"))}`)
           res(false)
         }
         else {

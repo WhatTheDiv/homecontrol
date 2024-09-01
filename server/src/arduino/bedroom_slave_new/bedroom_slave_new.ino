@@ -112,7 +112,7 @@ void lookForIrSignal() {
         lookForIr = 0;
       }
       else {
-        IrReceiver.resume(); // Early enable receiving of the next IR frame
+
 
         Serial.print("Received signal - ");
         Serial.println(IrReceiver.decodedIRData.command);
@@ -123,6 +123,8 @@ void lookForIrSignal() {
     }
     else {
       Serial.println("Waiting for IR...");
+      Serial.println(IrReceiver.decodedIRData);
+      Serial.println(IrReceiver.decodedIRData.command);
     }
     delay(500);
   }
@@ -179,6 +181,7 @@ void MasterRequestingInput() {
   else if (strstr(req, "newIr")) {
     lastIrReceived = NULL;
     lookForIr = 1;
+    IrReceiver.resume();
     response = "success\0";
   }
   else if (strstr(req, "getIr")) {

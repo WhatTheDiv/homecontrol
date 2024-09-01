@@ -20,6 +20,7 @@ import gs, {
   text_xlarge,
   f_err,
   f_gTitle,
+  f_hlt,
 } from "../../../assets/styles/globalStyles";
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -859,6 +860,7 @@ const render_ir_learn = (
   },
   dispatch
 ) => {
+  console.log("irLearnVars updated: ", irLearnVars);
   return (
     <View
       style={[
@@ -925,6 +927,8 @@ const render_ir_learn = (
           { padding: 1, width: "30%" },
         ]}
         onPress={() => {
+          console.log(`%cirLearnVars: `, f_hlt);
+          console.log(irLearnVars);
           learnIr(irLearnVars, dispatch, setIrLearnVars);
         }}
       >
@@ -1111,7 +1115,11 @@ const learnIr = async (vars, dispatch, setState) => {
     dispatch
   );
 
-  setState({ source: "", command: "" });
+  setState((oldState) => ({
+    ...oldState,
+    command: "",
+    source: "",
+  }));
 };
 
 const emitIr = async ({ commandIndex, cmds, dispatch }) => {
