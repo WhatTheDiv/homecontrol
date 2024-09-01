@@ -739,8 +739,6 @@ const render_ir_emit = (
       value: item.name,
     }));
 
-  console.log({ formatted_commands, formatted_sources, srcs, cmds });
-
   return (
     <View
       style={[
@@ -1107,6 +1105,7 @@ const ardTest = async () => {
 };
 
 const learnIr = async (vars, dispatch, setState) => {
+  console.log("Learning with vars: ", vars);
   const success = await requestIr_learn(
     { source: vars.source, commandName: vars.command },
     dispatch

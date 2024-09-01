@@ -4,6 +4,9 @@ import { addCommands, setLastCommand } from '../store/ir_slice'
 export async function requestIr_learn({ source, commandName }, dispatch) {
   try {
     console.log(`At request, learning command (${commandName}) with source (${source})`)
+    if (commandName === undefined || source === undefined) {
+      throw new Error('malformed request')
+    }
     const options = {
       method: "POST",
       headers: {

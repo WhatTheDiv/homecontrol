@@ -191,30 +191,24 @@ void MasterRequestingInput() {
     sendCode = NULL;
     char cmd[3];
     int flag_cmd = -1;
-    int flag_source = 0;
-
+    // /s0-70]
     for (int i = 0; i < strlen(req); i++) {
       if (flag_cmd >= 0) {
         cmd[flag_cmd] = req[i];
         flag_cmd++;
       }
-      else if (flag_source >= 1) {
-        if (flag_source >= 3) {
-          sendCode_source = atoi(req[i]);
-          flag_source = 0;
-        }
-        flag_source++;
+      else if (req[i] == '/') {
+        sendCode_source = atoi(req[i + 2]);
       }
-      else if (req[i] == '/') flag_source++;
-      else if (req[i] == '-') flag_cmd++;
+      else if (req[i] == '-') {
+        flag_cmd = 0;
+      }
     }
+
     cmd[flag_cmd] = '\0';
 
     if (strlen(cmd) <= 0) {
       response = "fail-cmdNotParsed\0";
-    }
-    else if (sendCode_source == NULL) {
-      response = "fail-srcNotParsed\0"
     }
     else {
       sendCode = atoi(cmd);
@@ -266,7 +260,7 @@ void ReceivedDataFromMaster(uint8_t howMany) {
   Serial.print(howMany);
   Serial.print(" ) [");
   Serial.print(str);
-  Serial.print("]");
+  Serial.println("]");
 }
 
 

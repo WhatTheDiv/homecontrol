@@ -262,7 +262,7 @@ app.post('/epsIr_learn', async (req, res) => {
   console.log('Index from create command: ', index)
 
   if (index < 0) {
-    return res.status(502).send({ success: false, ir: HomeState.ir, error: "Failed to create" })
+    return res.status(502).send({ success: false, ir: HomeState.ir, error: `Error at server: command index ${index}` })
   }
 
   console.log("Command created: ", HomeState.ir.commands[index])
