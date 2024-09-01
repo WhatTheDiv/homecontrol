@@ -85,7 +85,7 @@ server -> python
     Send Command *****
           (Message) ------------------------- "sendCommand/s1-70"
           (Response - Success) --------------               "success"
-          (Response - Fail) -----------------                             "fail"
+          (Response - Fail) -----------------                             "fail-{reason}"
 
 
     New Ir - Read ***** 

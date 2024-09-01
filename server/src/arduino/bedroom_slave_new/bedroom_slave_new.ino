@@ -70,9 +70,17 @@ void loop() {
   if (lookForIr) lookForIrSignal();
   else if (sendIrOnce) {
     sendIrOnce = 0;
+    Serial.print("Send ir once ... source: ");
+    Serial.print(sendCode_source);
+    Serial.print(" - code: <");
+    Serial.print(sendCode);
+    Serial.println(">");
     if (sendCode != NULL) {
+      Serial.print("Sending ir code with source: ");
+
       switch (sendCode_source) {
       case 0:
+        Serial.println("Test, sending ir to audio switch");
         irsend_audio.sendNEC(0x0, sendCode, 10);
         break;
       case 1:
@@ -86,6 +94,7 @@ void loop() {
         Serial.println(sendCode_source);
         break;
       }
+      sendCode = NULL;
     }
   }
   delay(50);
@@ -201,9 +210,12 @@ void MasterRequestingInput() {
     }
     cmd[flag_cmd] = '\0';
 
-    if (strlen(cmd) <= 0)
-      response = "fail\0";
-
+    if (strlen(cmd) <= 0) {
+      response = "fail-cmdNotParsed\0";
+    }
+    else if (sendCode_source == NULL) {
+      response = "fail-srcNotParsed\0"
+    }
     else {
       sendCode = atoi(cmd);
       sendIrOnce = 1;
