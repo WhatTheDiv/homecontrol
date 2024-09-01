@@ -249,6 +249,7 @@ app.post('/epsIr_emit', async (req, res) => {
 
 app.post('/epsIr_test', async (req, res) => {
   const { source, code } = req.body
+  console.log('source at epsIr_test: ', source)
   const sourceId = HomeState.ir.sources.findIndex(item => item === source)
 
   const { success, fail, error } = await WifiModule.testCommand({ source, code }, sourceId)

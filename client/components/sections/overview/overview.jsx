@@ -88,7 +88,7 @@ const overview = () => {
     command: "Power",
   });
   const [irTestCode, setIrTestCode] = useState("");
-  const [irAction, setIrAction] = useState("emit");
+  const [irAction, setIrAction] = useState("test");
 
   const AnimatedFlash = useSharedValue(false);
   const AnimatedFlash_style = useAnimatedStyle(() => ({
