@@ -25,7 +25,7 @@ const ir = createSlice({
       if (action.payload.sources.length >= 1)
         action.payload.sources.forEach(src => {
           if (!state.sources.find(item => item === src))
-            state.sources.push(item)
+            state.sources.push(src)
         })
     },
     setLastCommand: (state, action) => {

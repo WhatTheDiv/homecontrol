@@ -87,11 +87,7 @@ const overview = () => {
     source: "Audio Switch",
     command: "Power",
   });
-  const [irTestVars, setIrTestVars] = useState({
-    source: "",
-    command: "",
-    code: undefined,
-  });
+  const [irTestCode, setIrTestCode] = useState("");
   const [irAction, setIrAction] = useState("emit");
 
   const AnimatedFlash = useSharedValue(false);
@@ -161,8 +157,8 @@ const overview = () => {
       setIrAction,
       irLearnVars,
       setIrLearnVars,
-      irTestVars,
-      setIrTestVars,
+      irTestCode,
+      setIrTestCode,
     },
   };
 
@@ -978,8 +974,8 @@ const render_ir_test = (
     setSel_command,
     irAction,
     setIrAction,
-    irTestVars,
-    setIrTestVars,
+    irTestCode,
+    setIrTestCode,
   },
   dispatch,
   formatted_sources
@@ -1041,11 +1037,9 @@ const render_ir_test = (
           gs.height100,
           { borderBottomWidth: 1, borderColor: "gray" },
         ]}
-        value={irTestVars.code}
-        onChange={(v) =>
-          setIrLearnVars({ ...irTestVars, code: v.target.value })
-        }
-        placeholder="Command"
+        value={irTestCode}
+        onChange={(v) => setIrTestCode(v.target.value)}
+        placeholder="Code"
         placeholderTextColor={"gray"}
       />
       <Pressable
@@ -1059,7 +1053,7 @@ const render_ir_test = (
           { padding: 1, width: "30%" },
         ]}
         onPress={() => {
-          testIr({ source: srcs[sel_source], code: irTestVars.code });
+          testIr({ source: srcs[sel_source], code: irTestCode });
         }}
       >
         <View
