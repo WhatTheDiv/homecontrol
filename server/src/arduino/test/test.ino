@@ -7,57 +7,55 @@ void setup() {
   while (!Serial)
     ;
 
-  Serial.println("Starting script ... ");
+  Serial.println("Start.");
   Serial.println("");
   delay(100);
 }
 
 void loop() {
-  char nothing[] = "\0";
-  Serial.print("Nothing length: ");
-  Serial.println(strlen(nothing));
-  // char* req = request;
-// char cmd[3];
+  char something[] = "1\0";
 
-// int flag_start = -1;
-// for (int i = 0; i < strlen(req); i++) {
+  char one = '1';
+  char two = '2';
+  char three[] = "30";
 
-//   if (flag_start >= 0) {
-//     Serial.print("Adding ");
-//     Serial.print(req[i]);
-//     Serial.println(" to array");
-//     cmd[flag_start] = req[i];
-//     flag_start++;
-//   }
-//   else if (req[i] == '/') flag_start++;
+  pchar(one, "one");
+  pchar(two, "two");
+  pchar(three, "three");
+  pcarr(something, "something");
+  pcarr(three, "three");
 
-// }
-// cmd[flag_start] = '\0';
+  Serial.print("atoi - 0: ");
+  Serial.println(atoi('0'));
+  Serial.print("atoi - 1: ");
+  Serial.println(atoi('1'));
+  Serial.print("atoi - 30: ");
+  Serial.println(atoi(three));
 
 
 
-
-// Serial.print("Command: ");
-
-// Serial.println(cmd);
-
-// int b = int(cmd);
-// int c = atoi(cmd);
-
-// Serial.print("c: ");
-// Serial.println(c);
-// Serial.print("b: ");
-// Serial.println(b);
+  fin();
+}
 
 
+void pchar(char c, char name[]) {
+  Serial.print("(Char) Var ");
+  Serial.print(name);
+  Serial.print(": <");
+  Serial.print(c);
+  Serial.println(">");
+}
+void pcarr(char c[], char name[]) {
+  Serial.print("(Arr) Var ");
+  Serial.print(name);
+  Serial.print(": <");
+  Serial.print(c);
+  Serial.print("> with length: ");
+  Serial.println(strlen(c));
 
+}
 
-
-
-
-
-
-
+void fin() {
   delay(1000);
   exit(0);
 }

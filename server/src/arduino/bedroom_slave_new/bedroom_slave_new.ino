@@ -77,6 +77,7 @@ void loop() {
     Serial.println(">");
     if (sendCode != NULL) {
       Serial.print("Sending ir code with source: ");
+      Serial.println(sendCode_source);
 
       switch (sendCode_source) {
       case 0:
@@ -84,6 +85,7 @@ void loop() {
         irsend_audio.sendNEC(0x0, sendCode, 10);
         break;
       case 1:
+        Serial.println("Test, sending ir to tv");
         irsend_tv.sendNEC(0x0, sendCode, 10);
         break;
       case 2:
@@ -123,8 +125,6 @@ void lookForIrSignal() {
     }
     else {
       Serial.println("Waiting for IR...");
-      Serial.println(IrReceiver.decodedIRData);
-      Serial.println(IrReceiver.decodedIRData.command);
     }
     delay(500);
   }
@@ -201,7 +201,12 @@ void MasterRequestingInput() {
         flag_cmd++;
       }
       else if (req[i] == '/') {
-        sendCode_source = atoi(req[i + 2]);
+        if (req[i + 2] == '0')
+          sendCode_source = 0;
+        else if (req[i + 2] == '1')
+          sendCode_source = 1;
+        else if (req[i + 2] == '2')
+          sendCode_source = 2;
       }
       else if (req[i] == '-') {
         flag_cmd = 0;

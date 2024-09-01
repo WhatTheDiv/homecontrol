@@ -176,13 +176,13 @@ class wifiModule {
     console.log('test command: ', { command, sourceId })
     const status = { success: false, fail: false, error: '' }
 
-    if (command.source === undefined || command.code === undefined)
-      throw new Error(`malformed request: ${JSON.stringify(command)}`)
-
-    if (sourceId < 0)
-      throw new Error("Source does not exist")
-
     try {
+      if (command.source === undefined || command.code === undefined)
+        throw new Error(`malformed request: ${JSON.stringify(command)}`)
+
+      if (sourceId < 0)
+        throw new Error("Source does not exist")
+
 
       const url = `http://${this.ip}:${this.port}`
       const options = {
