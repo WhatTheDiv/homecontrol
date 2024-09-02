@@ -168,7 +168,7 @@ const overview = () => {
   };
 
   return (
-    <ScrollView style={[gs.marginH5, gs.flex1]}>
+    <ScrollView style={[gs.marginH5, gs.flex1, { marginBottom: 5 }]}>
       {/* Thermostat */}
       {render_temp(bus)}
       {/* TV */}
@@ -697,45 +697,15 @@ const render_loadingIcon = () => {
   );
 };
 const render_ir = ({ ir, dispatch }) => {
-  console.log({ services: ir.svs });
   const formatted_sources =
-    ir.srcs.map((item, index) => ({
-      key: index,
-      value: item,
+    ir.svs.map((service) => ({
+      key: service.Id,
+      value: service.Source,
     })) || [];
-  const formatted_sources_new =
-    ir.svs
-      .filter((service) => {
-        Object.keys(service.command).length >= 1;
-      })
-      .map((service) => ({
-        key: service.Id,
-        value: service.Source,
-      })) || [];
-  formatted_sources_new.push({ key: -1, value: "Select Source" });
+
+  formatted_sources.splice(0, 0, { key: -1, value: "Select Source" });
 
   const formatted_commands =
-    ir.cmds
-      .filter((item, index) => {
-        if (item.source === ir.srcs[sel_source])
-          if (item.name === undefined) {
-            console.group("%cFormatted_commands", f_gTitle);
-            console.log("%cServer error --- Saved incomplete command", f_err);
-            console.log(`%ccmds[${index}] - ${JSON.stringify(item)}`, f_err);
-            console.log("cmds", ir.cmds);
-            console.log("%cCommand not added.", f_err);
-            console.groupEnd();
-            return false;
-          } else {
-            return true;
-          }
-      })
-      .map((item, index) => ({
-        key: index,
-        value: item.name,
-      })) || [];
-
-  const formatted_commands_new =
     ir.sel_source < 0
       ? []
       : Object.keys(
@@ -745,35 +715,21 @@ const render_ir = ({ ir, dispatch }) => {
           value: key,
         })) || [];
 
-  formatted_commands_new.push({ key: -1, value: "Select Command" });
-
-  console.log({ formatted_commands_new, formatted_sources_new });
+  formatted_commands.splice(0, 0, { key: -1, value: "Select Command" });
 
   return (
-    <View style={[gs.marginV20]}>
+    <View style={[gs.marginV20, { height: 200 }]}>
       <Text
         style={[gs.text_medium, gs.text_gray, gs.text_center, gs.paddingV5]}
       >
         Ir Commands
       </Text>
-      <View style={[{ maxHeight: 150, height: 40 }]}>
+      <View style={[gs.flex1]}>
         {ir.irAction === "emit" &&
-          render_ir_emit(
-            ir,
-            dispatch,
-            formatted_sources,
-            formatted_commands,
-            formatted_commands_new,
-            formatted_sources_new
-          )}
+          render_ir_emit(ir, dispatch, formatted_sources, formatted_commands)}
         {ir.irAction === "learn" && render_ir_learn(ir, dispatch)}
         {ir.irAction === "test" &&
-          render_ir_test(
-            ir,
-            dispatch,
-            formatted_sources,
-            formatted_sources_new
-          )}
+          render_ir_test(ir, dispatch, formatted_sources)}
       </View>
     </View>
   );
@@ -792,9 +748,7 @@ const render_ir_emit = (
   },
   dispatch,
   formatted_sources,
-  formatted_commands,
-  formatted_commands_new,
-  formatted_sources_new
+  formatted_commands
 ) => {
   return (
     <View
@@ -802,7 +756,8 @@ const render_ir_emit = (
         gs.flex_row,
         gs.marginH5,
         gs.justify_between,
-        { gap: 10, flexWrap: "nowrap" },
+        gs.height100,
+        { gap: 10 },
       ]}
     >
       <Pressable
@@ -818,50 +773,55 @@ const render_ir_emit = (
         <Text style={[gs.text_white, gs.text_medium]}>Learn</Text>
       </Pressable>
       <SelectList
-        defaultOption={() =>
-          formatted_sources_new.find((source) => source.key === sel_source)
-        }
+        defaultOption={formatted_sources.find(
+          (source) => source.key === sel_source
+        )}
         setSelected={(key) => {
-          console.log(`Assigning key (${key}) to setSel_source:`);
           setSel_source(key);
         }}
-        data={formatted_sources_new}
+        data={formatted_sources}
         save="key"
         boxStyles={[
           gs.border_gray,
           gs.border_rad5,
-          gs.flex1,
           gs.paddingH10,
           gs.align_center,
-          { paddingVertical: 2 },
+          { paddingVertical: 2, height: 50 },
         ]}
-        inputStyles={[gs.text_gray, gs.text_medium]}
-        dropdownStyles={[]}
+        inputStyles={[
+          gs.text_gray,
+          gs.text_medium,
+          gs.text_center,
+          { width: 100 },
+        ]}
+        dropdownStyles={[{ maxHeight: 100 }]}
         dropdownTextStyles={[gs.text_gray]}
         arrowicon={<View style={[{ width: 0 }]} />}
         search={false}
       />
       <SelectList
-        defaultOption={() =>
-          formatted_commands_new.find((command) => command.key === sel_command)
-        }
+        defaultOption={formatted_commands.find(
+          (command) => command.key === sel_command
+        )}
         setSelected={(val) => {
-          console.log(`Assigning value (${val}) to setSel_command`);
           setSel_command(val);
         }}
-        data={formatted_commands_new}
+        data={formatted_commands}
         save="value"
         boxStyles={[
           gs.border_gray,
           gs.border_rad5,
-          gs.flex1,
           gs.paddingH10,
           gs.align_center,
-          gs.text_green,
-          { paddingVertical: 2 },
+          { paddingVertical: 2, height: 50 },
         ]}
-        inputStyles={[gs.text_gray, gs.text_medium]}
-        dropdownStyles={[gs.text_gray]}
+        inputStyles={[
+          gs.text_gray,
+          gs.text_medium,
+          gs.text_center,
+          { width: 100 },
+        ]}
+        dropdownStyles={[{ maxHeight: 100 }]}
         dropdownTextStyles={[gs.text_gray]}
         arrowicon={<View style={[{ width: 0 }]} />}
         search={false}
@@ -873,9 +833,15 @@ const render_ir_emit = (
           gs.justify_center,
           gs.align_center,
           gs.flex_row,
-          { padding: 1, flexGrow: 1 },
+          { padding: 1, flexGrow: 1, height: 50 },
         ]}
-        onPress={() => emitIr({ commandIndex: sel_command, cmds, dispatch })}
+        onPress={() =>
+          emitIr({
+            source: svs.find((service) => service.Id === sel_source),
+            commandName: sel_command,
+            dispatch,
+          })
+        }
       >
         <View
           style={[
@@ -1268,13 +1234,17 @@ const learnIr = async (vars, dispatch, setState) => {
   }));
 };
 
-const emitIr = async ({ commandIndex, cmds, dispatch }) => {
-  const command = cmds[commandIndex];
-  console.log(`Emitting with command `, command);
+const emitIr = async ({ source, commandName, dispatch }) => {
+  if (source === undefined) alert(`No source provided (${source})`);
+  else if (!commandName || commandname === "" || commandname === -1)
+    alert(`No command provided (${commandName})`);
 
-  const success = await requestIr_emit(command, dispatch);
+  const { success, error } = await requestIr_emit({ source, commandName });
 
-  if (success) console.log("Ir Emitted!");
+  if (success) {
+    // dispatch(setLastCommand({ lastCommand: command }));
+    console.log("Ir Emitted!");
+  } else alert(`Emit Ir failed (${error})`);
 };
 
 const testIr = async ({ source, code }) => {

@@ -240,18 +240,15 @@ app.post('/espAudio_get', async (req, res) => {
 app.post('/epsIr_emit', async (req, res) => {
   const { source, commandName } = req.body
 
-  const { success, fail, error } = await IrManager.sendCommand_ir({ name: commandName, source, commands: HomeState.ir.commands })
+  const { success, error } = await IrManager.new_sendIrCommand({ commandName, source })
 
-
-
-  if (!success || fail) {
+  if (!success) {
     return res.status(502).send({ success: false, error })
   }
 
-  HomeState.ir.lastCommand = HomeState.ir.commands.find(item => item.name === commandName)
-  console.log("Command sent: ", HomeState.ir.lastCommand)
+  console.log(`Command (${commandName}) sent`)
 
-  res.status(200).send({ success: true, ir: HomeState.ir })
+  res.status(200).send({ success: true })
 })
 
 app.post('/epsIr_test', async (req, res) => {

@@ -41,7 +41,7 @@ const ir = createSlice({
           if (existingServiceIndex < 0)
             state.services.push(service)
           else {
-            state.services[existingService] = service
+            state.services[existingServiceIndex] = service
           }
         })
       }

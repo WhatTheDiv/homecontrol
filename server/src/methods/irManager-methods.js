@@ -271,5 +271,43 @@ class irManager {
     return status
   }
 
+  // returns { success, error }
+  async new_sendIrCommand(cmd) {
+    const status = { success: false, error: '' }
+    try {
+      const { sourceId, commandCode } = this.extractCommand(cmd)
+      const url = `http://${this.ip}:${this.port}`
+      const options = {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain"
+        },
+        body: JSON.stringify(`sendCommand/s${sourceId}-${commandCode}`)
+      }
+
+      const response = await fetch(url, options).then(async res => (await res.text()).trim())
+
+      if (response.indexOf('fail') >= 0)
+        throw new Error(`Arduino responded with fail (${response})`)
+
+      status.success = true;
+
+    } catch (e) {
+      status.error = `IrManager failed -> ${e.message}`
+      console.error(e)
+    }
+    return status
+
+  }
+
+  // returns { sourceId, commandCode }
+  extractCommand({ source, commandName }) {
+    const service = this.services.find(service => service.Source === source)
+    const sourceId = service.Id
+    const commandCode = service.commands[commandName]
+
+    return { sourceId, commandCode }
+  }
+
 }
 module.exports = { irManager }

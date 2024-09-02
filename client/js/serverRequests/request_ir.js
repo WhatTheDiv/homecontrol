@@ -43,14 +43,15 @@ export async function requestIr_learn({ source, commandName }, dispatch) {
   }
 }
 
-export async function requestIr_emit(command, dispatch) {
+export async function requestIr_emit({ source, commandName }) {
+  const status = { success: false, error: '' }
   try {
     const options = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ source: command.source, commandName: command.name }),
+      body: JSON.stringify({ source, commandName }),
     };
 
     const response = await fetch(
@@ -58,15 +59,17 @@ export async function requestIr_emit(command, dispatch) {
       options
     );
 
-    const { success, error, ir } = await response.json();
+    const { success, error } = await response.json();
+    status.success = success
+    status.error = error
 
-    dispatch(setLastCommand({ lastCommand: command }))
-
-    return success
   } catch (e) {
-    console.error('Failed to emit ir: ', e.message)
-    return false
+    status.error = `At request: ${e.message}`
+    status.success = false
+    console.error(e)
   }
+
+  return status
 }
 
 export async function requestIr_custom({ source, code }) {

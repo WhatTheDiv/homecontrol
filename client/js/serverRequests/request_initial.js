@@ -72,8 +72,6 @@ export default async function request_initial(dispatch) {
 
         const { indoorTemp, indoorHumidity } = temp
 
-        console.log({ irServices })
-
         // throw new Error('test fail')
 
         dispatch(setTvState({ power: tv.power, input: tv.input }))
