@@ -70,6 +70,7 @@ const HomeState = {
     }
   },
   ir: {
+    services: [],
     commands: [
       // { name, command, source }
     ],
@@ -449,9 +450,9 @@ app.post('/remote', async (req, res) => {
 
 app.listen(port, async () => {
   Daemon.init.bind(Daemon)()
-  const irData = await extractIrCommands();
+  HomeState.ir.services = await extractIrCommands();
 
-  console.log(irData)
+  console.log(HomeState.ir.services)
   console.log('Starting server on port [', port, '] ')
 })
 
