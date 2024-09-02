@@ -5,7 +5,7 @@ async function extractIrCommands() {
   try {
     console.log(process.cwd())
     const res = await fs.readFile('src/StoredData/ircommands.json', { encoding: 'utf-8' })
-    console.log('res: ', res)
+    console.log('res: ', JSON.parse(res))
   } catch (e) {
     console.error(`Failed to extract ir commands: (${e.message})`)
   }
