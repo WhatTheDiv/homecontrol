@@ -1,17 +1,28 @@
+const fs = require('node:fs/promises');
 
-
-class wifiModule {
-  constructor({ ip, port, commands = [] }) {
+class irManager {
+  constructor({ ip, port }) {
     this.isAlive = false
     this.ip = ip
     this.port = port
-    this.irCommands = commands
-
-
-  }
-  activate() {
-    this.isAlive = true
+    this.services = []
     return this
+  }
+  async activate() {
+    this.isAlive = true
+    this.services = await this.extractIrCommands();
+    return this
+  }
+  // extracts ir commands and returns them
+  async extractIrCommands() {
+    try {
+      const res = await fs.readFile('src/StoredData/ircommands.json', { encoding: 'utf-8' })
+      return (JSON.parse(res)).IrCommands
+
+    } catch (e) {
+      console.error(`Failed to extract ir commands: (${e.message})`)
+      return []
+    }
   }
 
   // returns status { success, fail, error, state}
@@ -258,4 +269,4 @@ class wifiModule {
   }
 
 }
-module.exports = { wifiModule }
+module.exports = { irManager }

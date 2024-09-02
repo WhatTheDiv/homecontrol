@@ -6,7 +6,7 @@ const port = 3000 //process.argv[2] === 'live' ? 3000 : 3001
 const { handleButtonPress, getTvState, test } = require('./methods/tv-methods.js')
 const { getIndoorTempReading } = require('./methods/gpio-methods.js')
 const { DaemonClass } = require('./methods/Daemon')
-const { wifiModule } = require('./methods/wifiModule-methods.js')
+const { irManager } = require('./methods/irManager-methods.js')
 const { extractIrCommands } = require('./methods/fileManip-methods.js')
 
 
@@ -83,7 +83,7 @@ const HomeState = {
 }
 
 const Daemon = new DaemonClass()
-const WifiModule = new wifiModule({ ip: '192.168.2.116', port: 80 }).activate()
+const IrManager = new wifiModule({ ip: '192.168.2.116', port: 80 })
 
 
 
@@ -117,7 +117,7 @@ app.get('/initialState', async (req, res) => {
   })
 
   // Get audio state //
-  const passed_audio = await WifiModule.sendCommand_audio({ command: 'getAudio' }).then(response => {
+  const passed_audio = await IrManager.sendCommand_audio({ command: 'getAudio' }).then(response => {
     const { success, fail, error, state } = response
 
     if (!success || fail) {
@@ -201,7 +201,7 @@ app.post('/espTouch', async (req, res) => {
 app.post('/espAudio_set', async (req, res) => {
   const { zone, newState } = req.body
 
-  const { success, fail, error } = await WifiModule.sendCommand_audio({ command: 'setAudio', zone, state: newState })
+  const { success, fail, error } = await IrManager.sendCommand_audio({ command: 'setAudio', zone, state: newState })
 
   if (!success || fail) {
     HomeState.audio.zone_1.updated = false
@@ -218,7 +218,7 @@ app.post('/espAudio_set', async (req, res) => {
 })
 
 app.post('/espAudio_get', async (req, res) => {
-  const { success, fail, error, state } = await WifiModule.sendCommand_audio({ command: 'getAudio' })
+  const { success, fail, error, state } = await IrManager.sendCommand_audio({ command: 'getAudio' })
 
   if (!success || fail) {
     HomeState.audio.zone_1.updated = false
@@ -240,7 +240,7 @@ app.post('/espAudio_get', async (req, res) => {
 app.post('/epsIr_emit', async (req, res) => {
   const { source, commandName } = req.body
 
-  const { success, fail, error } = await WifiModule.sendCommand_ir({ name: commandName, source, commands: HomeState.ir.commands })
+  const { success, fail, error } = await IrManager.sendCommand_ir({ name: commandName, source, commands: HomeState.ir.commands })
 
 
 
@@ -259,7 +259,7 @@ app.post('/epsIr_test', async (req, res) => {
   console.log('source at epsIr_test: ', source)
   const sourceId = HomeState.ir.sources.findIndex(item => item === source)
 
-  const { success, fail, error } = await WifiModule.testCommand({ source, code }, sourceId)
+  const { success, fail, error } = await IrManager.testCommand({ source, code }, sourceId)
 
   if (fail) {
     console.error(`Failed to test IR code: ${error}`)
@@ -278,7 +278,7 @@ app.post('/epsIr_learn', async (req, res) => {
   if (source === undefined || commandName === undefined)
     return res.status(500).send({ success: false, error: "malformed request" })
 
-  const index = (await WifiModule.createCommand({ name: commandName, source, commands: HomeState.ir.commands })) - 1
+  const index = (await IrManager.createCommand({ name: commandName, source, commands: HomeState.ir.commands })) - 1
 
   console.log('Index from create command: ', index)
 
@@ -450,9 +450,8 @@ app.post('/remote', async (req, res) => {
 
 app.listen(port, async () => {
   Daemon.init.bind(Daemon)()
-  HomeState.ir.services = await extractIrCommands();
+  await IrManager.activate.bind(IrManager)()
 
-  console.log(HomeState.ir.services)
   console.log('Starting server on port [', port, '] ')
 })
 
