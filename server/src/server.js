@@ -451,6 +451,8 @@ app.listen(port, async () => {
   Daemon.init.bind(Daemon)()
   await IrManager.activate.bind(IrManager)()
 
+  console.log(IrManager.services)
+
   console.log('Starting server on port [', port, '] ')
 })
 
