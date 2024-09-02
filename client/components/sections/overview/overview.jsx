@@ -738,6 +738,7 @@ const render_ir_emit = (
   {
     cmds,
     srcs,
+    svs,
     lastCommand,
     sel_source,
     sel_command,
@@ -837,7 +838,7 @@ const render_ir_emit = (
         ]}
         onPress={() =>
           emitIr({
-            source: svs.find((service) => service.Id === sel_source),
+            source: svs.find((service) => service.Id === sel_source).Source,
             commandName: sel_command,
             dispatch,
           })
@@ -1236,8 +1237,9 @@ const learnIr = async (vars, dispatch, setState) => {
 
 const emitIr = async ({ source, commandName, dispatch }) => {
   if (source === undefined) alert(`No source provided (${source})`);
-  else if (!commandName || commandname === "" || commandname === -1)
+  else if (!commandName || commandName === "" || commandName === -1)
     alert(`No command provided (${commandName})`);
+  else console.log(`Sending command (${commandName}) from source (${source})`);
 
   const { success, error } = await requestIr_emit({ source, commandName });
 
