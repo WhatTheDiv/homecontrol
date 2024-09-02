@@ -3,7 +3,7 @@ const path = require('path')
 
 async function extractIrCommands() {
   try {
-    console.log(process.cwd)
+    console.log(process.cwd())
     const res = await fs.readFile('../StoredData/ircommands.json', { encoding: 'utf-8' })
   } catch (e) {
     console.error(`Failed to extract ir commands: (${e.message})`)
