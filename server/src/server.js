@@ -83,12 +83,7 @@ const HomeState = {
 const Daemon = new DaemonClass()
 const WifiModule = new wifiModule({ ip: '192.168.2.116', port: 80 }).activate()
 
-try {
-  const res = await fs.readFile("./js/StoredData/ircommands.json", { encoding: "utf-8" });
-  console.log('res: ', res)
-} catch (e) {
-  console.error(`Failed to read data (${e.message})`)
-}
+
 
 app.get('/initialState', async (req, res) => {
   // Get tv state // 
@@ -451,8 +446,14 @@ app.post('/remote', async (req, res) => {
   })
 })
 
-app.listen(port, () => {
+app.listen(port, async () => {
   Daemon.init.bind(Daemon)()
+  try {
+    const res = await fs.readFile("./js/StoredData/ircommands.json", { encoding: "utf-8" });
+    console.log('res: ', res)
+  } catch (e) {
+    console.error(`Failed to read data (${e.message})`)
+  }
   console.log('Starting server on port [', port, '] ')
 })
 
