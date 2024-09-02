@@ -7,7 +7,8 @@ const { handleButtonPress, getTvState, test } = require('./methods/tv-methods.js
 const { getIndoorTempReading } = require('./methods/gpio-methods.js')
 const { DaemonClass } = require('./methods/Daemon')
 const { wifiModule } = require('./methods/wifiModule-methods.js')
-const fs = require('node:fs/promises');
+const { extractIrCommands } = require('./methods/fileManip-methods.js')
+
 
 app.use(cors())
 app.use(express.json())
@@ -448,12 +449,7 @@ app.post('/remote', async (req, res) => {
 
 app.listen(port, async () => {
   Daemon.init.bind(Daemon)()
-  try {
-    const res = await fs.readFile("./StoredData/ircommands.json", { encoding: "utf-8" });
-    console.log('res: ', res)
-  } catch (e) {
-    console.error(`*** Failed to read data: (${e.message})`)
-  }
+  await extractIrCommands();
   console.log('Starting server on port [', port, '] ')
 })
 
