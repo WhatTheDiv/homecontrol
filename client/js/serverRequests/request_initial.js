@@ -4,7 +4,7 @@ import { setLoaded, setFailMessage } from '../store/ui_slice'
 import { setRGB, lights_setInitial, lights_setDefaults } from "../store/lights_slice";
 import { setActive, setName } from "../store/audio_slice";
 import { setTvState } from '../store/tv_slice'
-import { addCommands, setLastCommand, addSources } from '../store/ir_slice'
+import { addCommands, setLastCommand, addSources, setServices_replace } from '../store/ir_slice'
 import { f_err } from "../../assets/styles/globalStyles";
 
 const loadDelay = 0
@@ -68,7 +68,7 @@ export default async function request_initial(dispatch) {
       try {
 
         const { outdoorTemp, outdoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low, } = await getWeather()
-        const { lights, temp, tv, audio, ir } = await getServerState({ timeout: 5000 })
+        const { lights, temp, tv, audio, ir, irServices } = await getServerState({ timeout: 5000 })
 
         const { indoorTemp, indoorHumidity } = temp
 
@@ -80,6 +80,7 @@ export default async function request_initial(dispatch) {
         dispatch(updateWeather({ outdoorTemp, outdoorHumidity, indoorTemp, indoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low }))
         dispatch(addCommands({ commands: [...ir.commands] }))
         dispatch(addSources({ sources: [...ir.sources] }))
+        dispatch(setServices_replace({ services: irServices }))
         dispatch(setLastCommand({ lastCommand: ir.lastCommand }))
         dispatch(lights_setInitial({ ...lights }))
         dispatch(lights_setDefaults({
@@ -239,7 +240,7 @@ const getServerState = async ({ timeout = 7000 }) => {
       return DEFAULTS.serverState
     }
 
-    const { lights, temp, tv, audio, ir } = await response.json()
+    const { lights, temp, tv, audio, ir, irServices } = await response.json()
 
 
     return {
@@ -266,7 +267,8 @@ const getServerState = async ({ timeout = 7000 }) => {
         input: tv.input,
       },
       audio,
-      ir
+      ir,
+      irServices
     }
   } catch (error) {
     console.log('Failed to hit server - ', error.message)

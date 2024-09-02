@@ -84,8 +84,6 @@ const HomeState = {
 const Daemon = new DaemonClass()
 const IrManager = new irManager({ ip: '192.168.2.116', port: 80 })
 
-
-
 app.get('/initialState', async (req, res) => {
   // Get tv state // 
   HomeState.tv = { ...HomeState.tv, ... await getTvState(HomeState.tv) }
@@ -136,9 +134,12 @@ app.get('/initialState', async (req, res) => {
     return true
   })
 
+  // format ir services
+  const irServices = irManager.services
 
 
-  res.status(200).send(HomeState).end();
+
+  res.status(200).send({ ...HomeState, irServices }).end();
 })
 
 app.post('/test', async (req, res) => {
@@ -450,8 +451,6 @@ app.post('/remote', async (req, res) => {
 app.listen(port, async () => {
   Daemon.init.bind(Daemon)()
   await IrManager.activate.bind(IrManager)()
-
-  console.log(IrManager.services)
 
   console.log('Starting server on port [', port, '] ')
 })

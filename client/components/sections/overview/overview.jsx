@@ -66,6 +66,7 @@ const overview = () => {
     cmds: useSelector((state) => state.ir.commands),
     srcs: useSelector((state) => state.ir.sources),
     lastCommand: useSelector((state) => state.ir.lastCommand),
+    svs: useSelector((state) => state.ir.services),
   };
   const { animation_active, lightsOn, animation, updated } = useSelector(
     (state) => state.lights
@@ -701,25 +702,49 @@ const render_ir = ({ ir, dispatch }) => {
       key: index,
       value: item,
     })) || [];
+  const formatted_sources_new =
+    ir.svs
+      .filter((service) => {
+        Object.keys(service.command).length >= 1;
+      })
+      .map((service) => ({
+        key: service.Id,
+        value: service.Source,
+      })) || [];
+  formatted_sources_new.push({ key: -1, value: "Select Source" });
+
   const formatted_commands =
-    ir.cmds.filter((item, index) => {
-      if (item.source === ir.srcs[sel_source])
-        if (item.name === undefined) {
-          console.group("%cFormatted_commands", f_gTitle);
-          console.log("%cServer error --- Saved incomplete command", f_err);
-          console.log(`%ccmds[${index}] - ${JSON.stringify(item)}`, f_err);
-          console.log("cmds", ir.cmds);
-          console.log("%cCommand not added.", f_err);
-          console.groupEnd();
-          return false;
-        } else {
-          return true;
-        }
-    }) ||
-    [].map((item, index) => ({
-      key: index,
-      value: item.name,
-    }));
+    ir.cmds
+      .filter((item, index) => {
+        if (item.source === ir.srcs[sel_source])
+          if (item.name === undefined) {
+            console.group("%cFormatted_commands", f_gTitle);
+            console.log("%cServer error --- Saved incomplete command", f_err);
+            console.log(`%ccmds[${index}] - ${JSON.stringify(item)}`, f_err);
+            console.log("cmds", ir.cmds);
+            console.log("%cCommand not added.", f_err);
+            console.groupEnd();
+            return false;
+          } else {
+            return true;
+          }
+      })
+      .map((item, index) => ({
+        key: index,
+        value: item.name,
+      })) || [];
+
+  const formatted_commands_new =
+    ir.sel_source < 0
+      ? []
+      : Object.keys(
+          ir.svs.find((service) => service.Id === ir.sel_source).commands
+        ).map((key) => ({
+          key,
+          value: key,
+        })) || [];
+
+  formatted_commands_new.push({ key: -1, value: "Select Command" });
 
   return (
     <View style={[gs.marginV20]}>
@@ -730,10 +755,22 @@ const render_ir = ({ ir, dispatch }) => {
       </Text>
       <View style={[{ maxHeight: 150, height: 40 }]}>
         {ir.irAction === "emit" &&
-          render_ir_emit(ir, dispatch, formatted_sources, formatted_commands)}
+          render_ir_emit(
+            ir,
+            dispatch,
+            formatted_sources,
+            formatted_commands,
+            formatted_commands_new,
+            formatted_sources_new
+          )}
         {ir.irAction === "learn" && render_ir_learn(ir, dispatch)}
         {ir.irAction === "test" &&
-          render_ir_test(ir, dispatch, formatted_sources)}
+          render_ir_test(
+            ir,
+            dispatch,
+            formatted_sources,
+            formatted_sources_new
+          )}
       </View>
     </View>
   );
@@ -752,7 +789,9 @@ const render_ir_emit = (
   },
   dispatch,
   formatted_sources,
-  formatted_commands
+  formatted_commands,
+  formatted_commands_new,
+  formatted_sources_new
 ) => {
   return (
     <View
@@ -777,15 +816,13 @@ const render_ir_emit = (
       </Pressable>
       <SelectList
         defaultOption={() =>
-          sel_source < 0
-            ? { key: "Select Source", value: -1 }
-            : formatted_sources[sel_source]
+          formatted_sources_new.find((source) => source.key === sel_source)
         }
-        setSelected={(val) => {
-          console.log(`Assigning val to setSel_source: ${val}`);
-          setSel_source(val);
+        setSelected={(key) => {
+          console.log(`Assigning key (${key}) to setSel_source:`);
+          setSel_source(key);
         }}
-        data={formatted_sources}
+        data={formatted_sources_new}
         save="key"
         boxStyles={[
           gs.border_gray,
@@ -803,16 +840,14 @@ const render_ir_emit = (
       />
       <SelectList
         defaultOption={() =>
-          sel_command < 0
-            ? { key: "Select Command", value: -1 }
-            : formatted_commands[sel_command]
+          formatted_commands_new.find((command) => command.key === sel_command)
         }
-        setSelected={(val, key) => {
-          console.log(`Assigning val to setSel_command: ${val}, ${key}`);
+        setSelected={(val) => {
+          console.log(`Assigning value (${val}) to setSel_command`);
           setSel_command(val);
         }}
-        data={formatted_commands}
-        save="key"
+        data={formatted_commands_new}
+        save="value"
         boxStyles={[
           gs.border_gray,
           gs.border_rad5,

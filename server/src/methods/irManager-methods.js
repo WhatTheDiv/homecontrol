@@ -13,6 +13,9 @@ class irManager {
     this.services = await this.extractIrCommands();
     return this
   }
+
+  extractSourceList() {
+  }
   // extracts ir commands and returns them
   async extractIrCommands() {
     try {

@@ -50,7 +50,8 @@
     },
     {
       "Source": "Hdmi Switch",
-      "Id": 2
+      "Id": 2,
+      "commands": {}
     }
   ]
 }
