@@ -7,7 +7,6 @@ const { handleButtonPress, getTvState, test } = require('./methods/tv-methods.js
 const { getIndoorTempReading } = require('./methods/gpio-methods.js')
 const { DaemonClass } = require('./methods/Daemon')
 const { irManager } = require('./methods/irManager-methods.js')
-const { extractIrCommands } = require('./methods/fileManip-methods.js')
 
 
 app.use(cors())
