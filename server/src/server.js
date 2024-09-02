@@ -82,7 +82,7 @@ const HomeState = {
 }
 
 const Daemon = new DaemonClass()
-const IrManager = new wifiModule({ ip: '192.168.2.116', port: 80 })
+const IrManager = new irManager({ ip: '192.168.2.116', port: 80 })
 
 
 
