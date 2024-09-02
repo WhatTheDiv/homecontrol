@@ -452,7 +452,7 @@ app.listen(port, async () => {
     const res = await fs.readFile("/StoredData/ircommands.json", { encoding: "utf-8" });
     console.log('res: ', res)
   } catch (e) {
-    console.error(`Failed to read data (${e.message})`)
+    console.error(`*** Failed to read data: (${e.message})`)
   }
   console.log('Starting server on port [', port, '] ')
 })
