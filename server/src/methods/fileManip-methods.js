@@ -1,7 +1,7 @@
 const fs = require('node:fs/promises');
 const path = require('path')
 
-export async function extractIrCommands() {
+async function extractIrCommands() {
   console.log('heartbeat ;... ')
 }
 
