@@ -135,7 +135,7 @@ app.get('/initialState', async (req, res) => {
   })
 
   // format ir services
-  const irServices = irManager.services
+  const irServices = IrManager.services
 
 
 

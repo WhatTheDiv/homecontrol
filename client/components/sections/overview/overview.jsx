@@ -91,7 +91,7 @@ const overview = () => {
 
   const [test, setTest] = useState(false);
   const [irTestCode, setIrTestCode] = useState("");
-  const [irAction, setIrAction] = useState("test");
+  const [irAction, setIrAction] = useState("emit");
 
   const AnimatedFlash = useSharedValue(false);
   const AnimatedFlash_style = useAnimatedStyle(() => ({
@@ -697,6 +697,7 @@ const render_loadingIcon = () => {
   );
 };
 const render_ir = ({ ir, dispatch }) => {
+  console.log({ services: ir.svs });
   const formatted_sources =
     ir.srcs.map((item, index) => ({
       key: index,
@@ -745,6 +746,8 @@ const render_ir = ({ ir, dispatch }) => {
         })) || [];
 
   formatted_commands_new.push({ key: -1, value: "Select Command" });
+
+  console.log({ formatted_commands_new, formatted_sources_new });
 
   return (
     <View style={[gs.marginV20]}>

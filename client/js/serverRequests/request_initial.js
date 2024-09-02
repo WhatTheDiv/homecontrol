@@ -72,6 +72,8 @@ export default async function request_initial(dispatch) {
 
         const { indoorTemp, indoorHumidity } = temp
 
+        console.log({ irServices })
+
         // throw new Error('test fail')
 
         dispatch(setTvState({ power: tv.power, input: tv.input }))
@@ -80,7 +82,7 @@ export default async function request_initial(dispatch) {
         dispatch(updateWeather({ outdoorTemp, outdoorHumidity, indoorTemp, indoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low }))
         dispatch(addCommands({ commands: [...ir.commands] }))
         dispatch(addSources({ sources: [...ir.sources] }))
-        dispatch(setServices_replace({ services: irServices }))
+        dispatch(setServices_replace({ services: [...irServices] }))
         dispatch(setLastCommand({ lastCommand: ir.lastCommand }))
         dispatch(lights_setInitial({ ...lights }))
         dispatch(lights_setDefaults({
