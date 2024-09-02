@@ -449,7 +449,7 @@ app.post('/remote', async (req, res) => {
 app.listen(port, async () => {
   Daemon.init.bind(Daemon)()
   try {
-    const res = await fs.readFile("./StoredData/ircommands.json", { encoding: "utf-8" });
+    const res = await fs.readFile("StoredData/ircommands.json", { encoding: "utf-8" });
     console.log('res: ', res)
   } catch (e) {
     console.error(`Failed to read data (${e.message})`)
