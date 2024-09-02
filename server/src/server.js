@@ -449,7 +449,9 @@ app.post('/remote', async (req, res) => {
 
 app.listen(port, async () => {
   Daemon.init.bind(Daemon)()
-  await extractIrCommands();
+  const irData = await extractIrCommands();
+
+  console.log(irData)
   console.log('Starting server on port [', port, '] ')
 })
 
