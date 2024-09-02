@@ -70,34 +70,34 @@ void loop() {
   if (lookForIr) lookForIrSignal();
   else if (sendIrOnce) {
     sendIrOnce = 0;
-    Serial.print("Send ir once ... source: ");
-    Serial.print(sendCode_source);
-    Serial.print(" - code: <");
+    Serial.println("----------");
+    Serial.println("Sending IR");
+    Serial.print("Code: <");
     Serial.print(sendCode);
     Serial.println(">");
-    if (sendCode != NULL) {
-      Serial.print("Sending ir code with source: ");
-      Serial.println(sendCode_source);
 
+    if (sendCode != NULL) {
       switch (sendCode_source) {
       case 0:
-        Serial.println("Test, sending ir to audio switch");
+        Serial.println("Source: Audio Switch");
         irsend_audio.sendNEC(0x0, sendCode, 10);
         break;
       case 1:
-        Serial.println("Test, sending ir to tv");
-        irsend_tv.sendNEC(0x0, sendCode, 10);
+        Serial.println("Source: Tv");
+        irsend_tv.sendNEC(64, sendCode, 10);
         break;
       case 2:
-        Serial.println("Nothing for this yet");
+        Serial.println("Source: Hdmi Switch");
         break;
       default:
-        Serial.print("Out of bounds - SendIr - source: ");
-        Serial.println(sendCode_source);
+        Serial.print("Source: Invalid (");
+        Serial.print(sendCode_source);
+        Serial.println(")");
         break;
       }
       sendCode = NULL;
     }
+    Serial.println("----------");
   }
   delay(50);
 }

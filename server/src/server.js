@@ -7,6 +7,7 @@ const { handleButtonPress, getTvState, test } = require('./methods/tv-methods.js
 const { getIndoorTempReading } = require('./methods/gpio-methods.js')
 const { DaemonClass } = require('./methods/Daemon')
 const { wifiModule } = require('./methods/wifiModule-methods.js')
+const fs = require('node:fs/promises');
 
 app.use(cors())
 app.use(express.json())
@@ -82,6 +83,13 @@ const HomeState = {
 const Daemon = new DaemonClass()
 const WifiModule = new wifiModule({ ip: '192.168.2.116', port: 80 }).activate()
 
+try {
+  const res = await fs.readFile("./js/StoredData/ircommands.json", { encoding: "utf-8" });
+  console.log('res: ', res)
+} catch (e) {
+  console.error(`Failed to read data (${e.message})`)
+}
+
 app.get('/initialState', async (req, res) => {
   // Get tv state // 
   HomeState.tv = { ...HomeState.tv, ... await getTvState(HomeState.tv) }
@@ -131,6 +139,8 @@ app.get('/initialState', async (req, res) => {
 
     return true
   })
+
+
 
   res.status(200).send(HomeState).end();
 })

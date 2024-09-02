@@ -5,6 +5,8 @@ import { setRGB, lights_setInitial, lights_setDefaults } from "../store/lights_s
 import { setActive, setName } from "../store/audio_slice";
 import { setTvState } from '../store/tv_slice'
 import { addCommands, setLastCommand, addSources } from '../store/ir_slice'
+import { f_err } from "../../assets/styles/globalStyles";
+
 const loadDelay = 0
 
 //XXX KEEP DEFAULTS UPDATED !!!
@@ -63,8 +65,8 @@ export default async function request_initial(dispatch) {
       // [ ] get local storage 
       // [x] ask server for state
       // [x] set up state
-
       try {
+
         const { outdoorTemp, outdoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low, } = await getWeather()
         const { lights, temp, tv, audio, ir } = await getServerState({ timeout: 5000 })
 
@@ -204,6 +206,12 @@ const getWeather = async () => {
   console.log('Weather Data: ', data)
 
   return data
+
+}
+
+const getIr = async () => {
+
+
 
 }
 

@@ -87,6 +87,8 @@ const overview = () => {
     source: "Audio Switch",
     command: "Power",
   });
+
+  const [test, setTest] = useState(false);
   const [irTestCode, setIrTestCode] = useState("");
   const [irAction, setIrAction] = useState("test");
 
@@ -159,6 +161,8 @@ const overview = () => {
       setIrLearnVars,
       irTestCode,
       setIrTestCode,
+      test,
+      setTest,
     },
   };
 
@@ -692,12 +696,13 @@ const render_loadingIcon = () => {
   );
 };
 const render_ir = ({ ir, dispatch }) => {
-  const formatted_sources = ir.srcs.map((item, index) => ({
-    key: index,
-    value: item,
-  }));
-  const formatted_commands = ir.cmds
-    .filter((item, index) => {
+  const formatted_sources =
+    ir.srcs.map((item, index) => ({
+      key: index,
+      value: item,
+    })) || [];
+  const formatted_commands =
+    ir.cmds.filter((item, index) => {
       if (item.source === ir.srcs[sel_source])
         if (item.name === undefined) {
           console.group("%cFormatted_commands", f_gTitle);
@@ -710,8 +715,8 @@ const render_ir = ({ ir, dispatch }) => {
         } else {
           return true;
         }
-    })
-    .map((item, index) => ({
+    }) ||
+    [].map((item, index) => ({
       key: index,
       value: item.name,
     }));
@@ -901,9 +906,7 @@ const render_ir_learn = (
           { borderBottomWidth: 1, borderColor: "gray" },
         ]}
         value={irLearnVars.source}
-        onChange={(v) =>
-          setIrLearnVars({ ...irLearnVars, source: v.target.value })
-        }
+        onChangeText={(v) => setIrLearnVars({ ...irLearnVars, source: v })}
         placeholder="Source"
         placeholderTextColor={"gray"}
       />
@@ -918,9 +921,7 @@ const render_ir_learn = (
           { borderBottomWidth: 1, borderColor: "gray" },
         ]}
         value={irLearnVars.command}
-        onChange={(v) =>
-          setIrLearnVars({ ...irLearnVars, command: v.target.value })
-        }
+        onChangeText={(v) => setIrLearnVars({ ...irLearnVars, command: v })}
         placeholder="Command"
         placeholderTextColor={"gray"}
       />
@@ -976,6 +977,8 @@ const render_ir_test = (
     setIrAction,
     irTestCode,
     setIrTestCode,
+    test,
+    setTest,
   },
   dispatch,
   formatted_sources
@@ -1028,6 +1031,7 @@ const render_ir_test = (
         search={false}
       />
       <TextInput
+        onChangeText={(v) => setIrTestCode(v)}
         style={[
           gs.marginH10,
           gs.text_orange,
@@ -1037,8 +1041,12 @@ const render_ir_test = (
           gs.height100,
           { borderBottomWidth: 1, borderColor: "gray" },
         ]}
+        selectTextOnFocus={true}
+        onSubmitEditing={() =>
+          testIr({ source: srcs[sel_source], code: irTestCode })
+        }
+        keyboardType="numeric"
         value={irTestCode}
-        onChange={(v) => setIrTestCode(v.target.value)}
         placeholder="Code"
         placeholderTextColor={"gray"}
       />
@@ -1080,7 +1088,9 @@ const render_ir_test = (
     </View>
   );
 };
-const render_ardTest = () => {
+const render_ardTest = ({ ir }) => {
+  const { test, setTest } = ir;
+
   return (
     <View style={[gs.paddingH5, gs.marginV20]}>
       <Pressable
@@ -1092,9 +1102,9 @@ const render_ardTest = () => {
           gs.border_rad5,
           gs.justify_around,
         ]}
-        onPress={() => ardTest()}
+        onPress={() => macro()}
       >
-        <Text style={[gs.text_white, gs.text_large]}>Touch Arduino</Text>
+        <Text style={[gs.text_white, gs.text_large]}>Run</Text>
       </Pressable>
     </View>
   );
@@ -1238,6 +1248,22 @@ const testIr = async ({ source, code }) => {
 
   if (!success) alert(`Failed to test ir: ${error}`);
   else console.log("Successful test");
+};
+
+const macro = async (test, setTest) => {
+  let i = 99;
+  const maxNumber = 20000;
+  let inter;
+
+  inter = setInterval(async () => {
+    if (!(await requestIr_custom({ source: "Tv", code: i }))) {
+      alert("Stopped before complete");
+      clearInterval(inter);
+    }
+
+    if (i < maxNumber) i += 1;
+    else clearInterval(inter);
+  }, 1600);
 };
 
 export default overview;

@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { StyleSheet, Text, View, Pressable, ScrollView } from "react-native";
 import gs, {
+  f_err,
   greenColor,
   orangeColor,
 } from "../../../assets/styles/globalStyles";
@@ -27,6 +28,8 @@ const remote = () => {
   const [tvState, _setTvState] = useState(useSelector((state) => state.tv));
 
   const statusButtonFlash = useSharedValue(false);
+
+  useEffect(() => {}, []);
 
   console.log({
     isHome: tvState.input.name?.toLowerCase().indexOf("menu") >= 0,
