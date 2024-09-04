@@ -55,7 +55,7 @@ const HomeState = {
     inputs: [],
     menuInput: { id: 'null', name: 'null' },
     tvURL: 'http://192.168.10.109:8060',
-    source: {
+    sources: {
       list: [
         { SourceName: 'Living Room Tv', Id: 0 },
         { SourceName: 'Bedroom Tv', Id: 1 }

@@ -25,11 +25,11 @@ const remote = () => {
 
   const dispatch = useDispatch();
 
-  const sourceList = useSelector((state) => state.tv.source.list);
+  const sourceList = useSelector((state) => state.tv.sources.list);
   const defaultSourceType = useSelector(
     (state) => state.tv.source.defaultSourceType
   );
-  const defaultSource = useSelector((state) => state.tv.source.defaultSource);
+  const defaultSource = useSelector((state) => state.tv.sources.defaultSource);
 
   const [tvState, _setTvState] = useState(useSelector((state) => state.tv));
   const [tvSource, setTvSource] = useState(TVs.livingRoom.id);

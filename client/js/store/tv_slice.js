@@ -19,8 +19,8 @@ const tv = createSlice({
       if (action.payload.input !== undefined) state.input = action.payload.input
     },
     setSource: (state, action) => {
-      if (action.payload.sourceList !== undefined && action.payload.sourceList >= 1)
-        state.sources.list = action.payload.sourceList
+      if (action.payload.list !== undefined && action.payload.list >= 1)
+        state.sources.list = action.payload.list
 
       if (action.payload.defaultSource !== undefined)
         state.sources.defaultSource = action.payload.defaultSource

@@ -76,7 +76,7 @@ export default async function request_initial(dispatch) {
         // [ ] use redux default state instead of custom object
 
         dispatch(setTvState({ power: tv.power, input: tv.input }))
-        dispatch(setSource({ sourceList: tv.sources.list, defaultSource: tv.sources.defaultSource, defaultSourceType: tv.sources.defaultSourceType }))
+        dispatch(setSource({ list: [...tv.sources.list], defaultSource: tv.sources.defaultSource, defaultSourceType: tv.sources.defaultSourceType }))
         dispatch(setActive({ zone1_active: audio.zone_1.active, zone2_active: audio.zone_2.active, zone1_updated: audio.zone_1.updated, zone2_updated: audio.zone_2.updated }))
         dispatch(setName({ zone1_newName: audio.zone_1.name, zone2_newName: audio.zone_2.name }))
         dispatch(updateWeather({ outdoorTemp, outdoorHumidity, indoorTemp, indoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low }))
