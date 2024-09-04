@@ -54,7 +54,15 @@ const HomeState = {
     input: { id: 'null', name: 'null' },
     inputs: [],
     menuInput: { id: 'null', name: 'null' },
-    tvURL: 'http://192.168.10.109:8060'
+    tvURL: 'http://192.168.10.109:8060',
+    source: {
+      list: [
+        { SourceName: 'Living Room Tv', Id: 0 },
+        { SourceName: 'Bedroom Tv', Id: 1 }
+      ],
+      defaultSource: 0,
+      defaultSourceType: 'last' /*        || 'favorite'          */
+    }
   },
   audio: {
     zone_1: {

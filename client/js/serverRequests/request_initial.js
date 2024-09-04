@@ -3,7 +3,7 @@ import { updateWeather } from "../store/weather_slice";
 import { setLoaded, setFailMessage } from '../store/ui_slice'
 import { setRGB, lights_setInitial, lights_setDefaults } from "../store/lights_slice";
 import { setActive, setName } from "../store/audio_slice";
-import { setTvState } from '../store/tv_slice'
+import { setSource, setTvState } from '../store/tv_slice'
 import { addCommands, setLastCommand, addSources, setServices_replace } from '../store/ir_slice'
 import { f_err } from "../../assets/styles/globalStyles";
 
@@ -37,7 +37,12 @@ const DEFAULTS = {
     },
     tv: {
       power: true,
-      input: 'chromecast'
+      input: 'chromecast',
+      sources: {
+        list: [],
+        lastSource: 0,
+        default: 'last'
+      }
     },
     audio: {
       zone_1: {
@@ -60,11 +65,6 @@ const DEFAULTS = {
 export default async function request_initial(dispatch) {
   return new Promise(async (res) => {
     setTimeout(async () => {
-
-      // [x] Get the weather data 
-      // [ ] get local storage 
-      // [x] ask server for state
-      // [x] set up state
       try {
 
         const { outdoorTemp, outdoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low, } = await getWeather()
@@ -73,8 +73,10 @@ export default async function request_initial(dispatch) {
         const { indoorTemp, indoorHumidity } = temp
 
         // throw new Error('test fail')
+        // [ ] use redux default state instead of custom object
 
         dispatch(setTvState({ power: tv.power, input: tv.input }))
+        dispatch(setSource({ sourceList: tv.sources.list, defaultSource: tv.sources.defaultSource, defaultSourceType: tv.sources.defaultSourceType }))
         dispatch(setActive({ zone1_active: audio.zone_1.active, zone2_active: audio.zone_2.active, zone1_updated: audio.zone_1.updated, zone2_updated: audio.zone_2.updated }))
         dispatch(setName({ zone1_newName: audio.zone_1.name, zone2_newName: audio.zone_2.name }))
         dispatch(updateWeather({ outdoorTemp, outdoorHumidity, indoorTemp, indoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low }))
@@ -210,11 +212,6 @@ const getWeather = async () => {
 
 }
 
-const getIr = async () => {
-
-
-
-}
 
 const getServerState = async ({ timeout = 7000 }) => {
 
@@ -265,6 +262,7 @@ const getServerState = async ({ timeout = 7000 }) => {
       tv: {
         power: tv.power,
         input: tv.input,
+        sources: tv.sources
       },
       audio,
       ir,

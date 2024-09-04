@@ -25,17 +25,23 @@ const remote = () => {
 
   const dispatch = useDispatch();
 
+  const sourceList = useSelector((state) => state.tv.source.list);
+  const defaultSourceType = useSelector(
+    (state) => state.tv.source.defaultSourceType
+  );
+  const defaultSource = useSelector((state) => state.tv.source.defaultSource);
+
   const [tvState, _setTvState] = useState(useSelector((state) => state.tv));
+  const [tvSource, setTvSource] = useState(TVs.livingRoom.id);
 
   const statusButtonFlash = useSharedValue(false);
 
-  useEffect(() => {}, []);
-
-  console.log({
-    isHome: tvState.input.name?.toLowerCase().indexOf("menu") >= 0,
-    inputname: tvState.input.name?.toLowerCase(),
-    tvState,
-  });
+  tvState.power &&
+    console.log({
+      isHome: tvState.input.name?.toLowerCase().indexOf("menu") >= 0,
+      inputname: tvState.input.name?.toLowerCase(),
+      tvState,
+    });
 
   const statusButton_AnimationStyle = useAnimatedStyle(() => ({
     opacity: statusButtonFlash.value
@@ -58,15 +64,15 @@ const remote = () => {
     tvState,
     _setTvState,
     dispatch,
+    source: {
+      sourceList,
+      defaultSource,
+      defaultSourceType,
+    },
   };
 
-  useEffect(() => {
-    console.log("Updating tv state with server.");
-    // updateTvState(bus);
-  }, []);
-
   return (
-    <ScrollView style={[{ position: "relative" }]}>
+    <ScrollView style={[gs.border_cyan, { position: "relative" }]}>
       <View
         style={[
           gs.width100,
@@ -86,6 +92,9 @@ const remote = () => {
             },
           ]}
         />
+        <View style={[gs.border_gray, { width: 50, height: 50 }]}>
+          <Text style={[gs.text_xlarge, gs.text_gray]}>+</Text>
+        </View>
       </View>
       <View style={[gs.flex1, gs.justify_center, gs.align_center]}>
         {/* Power */}
