@@ -3,14 +3,15 @@ import { StyleSheet } from 'react-native'
 export const appBackground = 'hsl(255, 100%, 5%)'
 export const greenColor = "hsl(120,100%,30%)"
 export const greenColor_a = "hsla(120,100%,30%,.6)"
-export const chocolate_a = "hsla(7,85%,47%,.7)"
+export const chocolate_a = "hsla(7,85%,47%,.3)"
 export const orangeColor = 'chocolate'
+export const orange_a = 'hsla(40, 70%, 50%, .3)'
 export const cold_coldColor = '#12EBFF'
 export const mid_coldColor = '#1960EA'
 export const hot_coldColor = '#A20BEA'
 export const cold_hotColor = '#DB9E09'
 export const hot_hotColor = '#D11608'
-export const gray_a = "hsla(1,0%,50%,.6)"
+export const gray_a = "hsla(1,0%,50%,.3)"
 export const cyanDColor = '#244242'
 export const text_xsmall = 10
 export const text_small = 12

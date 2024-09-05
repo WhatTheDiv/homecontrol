@@ -57,8 +57,8 @@ const HomeState = {
     tvURL: 'http://192.168.10.109:8060',
     sources: {
       list: [
-        { SourceName: 'Living Room Tv', Id: 0 },
-        { SourceName: 'Bedroom Tv', Id: 1 }
+        { SourceName: 'Living Room', Id: 0 },
+        { SourceName: 'Bedroom', Id: 1 }
       ],
       defaultSource: 0,
       defaultSourceType: 'last' /*        || 'favorite'          */

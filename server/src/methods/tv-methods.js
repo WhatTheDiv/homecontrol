@@ -11,7 +11,7 @@ const handleButtonPress = async (button, { power, inputs, menuInput }, tv) => {
   let route = 'keypress/'
 
   switch (button) {
-    case 'power':
+    case 'Power':
       response.setting = 'power'
       response.newState = !power
       route += response.newState ? 'power' : 'PowerOff'
@@ -24,36 +24,36 @@ const handleButtonPress = async (button, { power, inputs, menuInput }, tv) => {
       route = 'launch/' + response.newState.id
       console.log('route ::: ', route)
       break;
-    case 'home':
+    case 'Home':
       response.setting = 'input'
       response.newState = menuInput
       route = route + 'Home'
       break;
-    case 'left':
+    case 'Menu Left':
       route += 'Left'
       break;
-    case 'right':
+    case 'Menu Right':
       route += 'Right'
       break;
-    case 'down':
+    case 'Menu Down':
       route += 'Down'
       break;
-    case 'up':
+    case 'Menu Up':
       route += 'Up'
       break;
-    case 'select':
+    case 'Select':
       route += 'Select'
       break;
-    case 'back':
+    case 'Back':
       route += 'Back'
       break;
-    case 'volDown':
+    case 'Volume Down':
       route += 'VolumeDown'
       break;
-    case 'volUp':
+    case 'Volume Up':
       route += 'VolumeUp'
       break;
-    case 'mute':
+    case 'Mute':
       route += 'VolumeMute'
       break;
   }

@@ -1,12 +1,17 @@
 // @ts-nocheck
 import { StyleSheet, Text, View, Pressable, ScrollView } from "react-native";
 import gs, {
+  chocolate_a,
   f_err,
+  gray_a,
   greenColor,
+  orange_a,
   orangeColor,
 } from "../../../assets/styles/globalStyles";
 import React, { useState, useEffect } from "react";
 import RequestTv from "../../../js/serverRequests/request_tv";
+import RequestAudio from "../../../js/serverRequests/request_audio";
+import { requestIr_emit } from "../../../js/serverRequests/request_ir";
 import Animated, {
   useSharedValue,
   withTiming,
@@ -16,33 +21,29 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSelector, useDispatch } from "react-redux";
 import { setTvState } from "../../../js/store/tv_slice";
+import { setActive } from "../../../js/store/audio_slice";
 
 const rippleColor = "green";
 
 const remote = () => {
   const btnTxtSize = gs.text_medium;
   const btnTxtColor = gs.text_white;
+  const drawerMaxHeight = 140;
 
   const dispatch = useDispatch();
 
   const sourceList = useSelector((state) => state.tv.sources.list);
+  const audioZoneList = useSelector((state) => state.audio);
   const defaultSourceType = useSelector(
-    (state) => state.tv.source.defaultSourceType
+    (state) => state.tv.sources.defaultSourceType
   );
   const defaultSource = useSelector((state) => state.tv.sources.defaultSource);
 
   const [tvState, _setTvState] = useState(useSelector((state) => state.tv));
-  const [tvSource, setTvSource] = useState(TVs.livingRoom.id);
+  const [videoControlTarget, setVideoControlTarget] = useState(0); // set this to default
 
+  // Animation - Flash-Bar-On-Click
   const statusButtonFlash = useSharedValue(false);
-
-  tvState.power &&
-    console.log({
-      isHome: tvState.input.name?.toLowerCase().indexOf("menu") >= 0,
-      inputname: tvState.input.name?.toLowerCase(),
-      tvState,
-    });
-
   const statusButton_AnimationStyle = useAnimatedStyle(() => ({
     opacity: statusButtonFlash.value
       ? withRepeat(
@@ -59,44 +60,132 @@ const remote = () => {
       : 0,
   }));
 
+  // Animation - Expand-Options-Section
+  const optionsButtonExpanded = useSharedValue(false);
+  const optionsButton_AnimationStyle = useAnimatedStyle(() => ({
+    height: optionsButtonExpanded.value
+      ? withTiming(drawerMaxHeight, { duration: 275 })
+      : withTiming(0, { duration: 275 }),
+    opacity: optionsButtonExpanded.value
+      ? withTiming(1, { duration: 275 })
+      : withTiming(0, { duration: 150 }),
+  }));
+  const optionsDisplay_AnimationStyle = useAnimatedStyle(() => ({
+    opacity: optionsButtonExpanded.value
+      ? withTiming(0, { duration: 150 })
+      : withTiming(1, { duration: 275 }),
+  }));
+
+  // Animation - Highlight-Selected-Source
+  const sourceHighlighter_selectedIndex = useSharedValue(0);
+
   const bus = {
     statusButtonFlash,
     tvState,
     _setTvState,
     dispatch,
+    animations: {
+      optionsButtonExpanded,
+      optionsButton_AnimationStyle,
+      drawerMaxHeight,
+      sourceHighlighter_selectedIndex,
+    },
     source: {
       sourceList,
       defaultSource,
       defaultSourceType,
+      audioZoneList,
+      videoControlTarget,
+      setVideoControlTarget,
     },
   };
 
   return (
-    <ScrollView style={[gs.border_cyan, { position: "relative" }]}>
-      <View
-        style={[
-          gs.width100,
-          gs.align_center,
-          gs.paddingH10,
-          { position: "absolute" },
-        ]}
-      >
+    <ScrollView style={[gs.relative]}>
+      {/*  Options Drawer  */}
+      {render_options(bus)}
+
+      <View style={[gs.flex1, gs.relative, gs.justify_center, gs.align_center]}>
+        {/*  Flasher Indicator  */}
+        <View style={[gs.width100, gs.paddingH10, gs.absolute, { top: 0 }]}>
+          <Animated.View
+            style={[
+              gs.background_orange,
+              gs.width100,
+              statusButton_AnimationStyle,
+              {
+                borderRadius: 3,
+                height: 10,
+              },
+            ]}
+          />
+        </View>
+
+        {/*  Drawer Button Expand / Retract */}
+        <Pressable
+          style={[
+            gs.absolute,
+            gs.border_gray,
+            gs.border_rad10,
+            gs.flex_row,
+            gs.justify_center,
+            gs.align_center,
+            { width: 40, height: 40, top: 15, left: 15 },
+          ]}
+          onPress={() =>
+            (optionsButtonExpanded.value = !optionsButtonExpanded.value)
+          }
+        >
+          <Text style={[gs.text_xlarge, gs.text_gray, {}]}>+</Text>
+        </Pressable>
+
+        {/*  Compact Options display  */}
         <Animated.View
           style={[
-            gs.background_orange,
-            gs.width100,
-            statusButton_AnimationStyle,
-            {
-              borderRadius: 3,
-              height: 10,
-            },
+            gs.absolute,
+            gs.align_center,
+            optionsDisplay_AnimationStyle,
+            { right: 5, top: 15, gap: 5 },
           ]}
-        />
-        <View style={[gs.border_gray, { width: 50, height: 50 }]}>
-          <Text style={[gs.text_xlarge, gs.text_gray]}>+</Text>
-        </View>
-      </View>
-      <View style={[gs.flex1, gs.justify_center, gs.align_center]}>
+        >
+          <Text
+            style={[
+              gs.text_orange,
+              gs.text_medium,
+              gs.text_right,
+              { marginBottom: 10 },
+            ]}
+          >
+            {
+              sourceList.find((source) => source.Id === videoControlTarget)
+                .SourceName
+            }
+          </Text>
+          <Text
+            style={[
+              gs.align_end,
+              gs.text_gray,
+              gs.text_medium,
+              gs.text_right,
+              {
+                borderBottomColor: gray_a,
+                borderBottomWidth: 1,
+              },
+            ]}
+          >
+            Active Zones
+          </Text>
+          {[...Object.keys(audioZoneList)]
+            .filter(
+              (RawAudioSourceName) => audioZoneList[RawAudioSourceName].active
+            )
+            .map((RawAudioSourceName) => (
+              <Text style={[gs.text_gray, gs.text_medium, gs.text_right]}>
+                {audioZoneList[RawAudioSourceName].name}
+              </Text>
+            ))}
+        </Animated.View>
+
         {/* Power */}
         <View style={[gs.flex_row, styles.tv_section]}>
           {/* - - - - - - - - - - - - - - - - - - - POWER - - - - - - - - - - - - - - - - - - - */}
@@ -109,7 +198,7 @@ const remote = () => {
               color: rippleColor,
               foreground: true,
             }}
-            onPress={() => pressButton(bus, "power")}
+            onPress={() => pressButton(bus, "Power")}
           >
             <Text style={[btnTxtSize, gs.text_white]}>Power</Text>
           </Pressable>
@@ -123,7 +212,7 @@ const remote = () => {
               color: rippleColor,
               foreground: true,
             }}
-            onPress={() => pressButton(bus, "back")}
+            onPress={() => pressButton(bus, "Back")}
           >
             <Text style={[btnTxtColor]}>Back</Text>
           </Pressable>
@@ -143,7 +232,7 @@ const remote = () => {
               color: rippleColor,
               foreground: true,
             }}
-            onPress={() => pressButton(bus, "home")}
+            onPress={() => pressButton(bus, "Home")}
           >
             <Text style={[btnTxtColor]}>Home</Text>
           </Pressable>
@@ -158,7 +247,7 @@ const remote = () => {
                 color: rippleColor,
                 foreground: true,
               }}
-              onPress={() => pressButton(bus, "left")}
+              onPress={() => pressButton(bus, "Menu Left")}
             >
               <Text style={[btnTxtColor, btnTxtSize]}>Left</Text>
             </Pressable>
@@ -171,7 +260,7 @@ const remote = () => {
                 color: rippleColor,
                 foreground: true,
               }}
-              onPress={() => pressButton(bus, "up")}
+              onPress={() => pressButton(bus, "Menu Up")}
             >
               <Text style={[btnTxtColor, btnTxtSize]}>Up</Text>
             </Pressable>
@@ -182,7 +271,7 @@ const remote = () => {
                 color: rippleColor,
                 foreground: true,
               }}
-              onPress={() => pressButton(bus, "select")}
+              onPress={() => pressButton(bus, "Select")}
             >
               <Text style={[btnTxtColor, btnTxtSize]}>Select</Text>
             </Pressable>
@@ -193,7 +282,7 @@ const remote = () => {
                 color: rippleColor,
                 foreground: true,
               }}
-              onPress={() => pressButton(bus, "down")}
+              onPress={() => pressButton(bus, "Menu Down")}
             >
               <Text style={[btnTxtColor, btnTxtSize]}>Down</Text>
             </Pressable>
@@ -206,7 +295,7 @@ const remote = () => {
                 color: rippleColor,
                 foreground: true,
               }}
-              onPress={() => pressButton(bus, "right")}
+              onPress={() => pressButton(bus, "Menu Right")}
             >
               <Text style={[btnTxtColor, btnTxtSize]}>Right</Text>
             </Pressable>
@@ -221,7 +310,7 @@ const remote = () => {
               color: rippleColor,
               foreground: true,
             }}
-            onPress={() => pressButton(bus, "volDown")}
+            onPress={() => pressButton(bus, "Volume Down")}
           >
             <Text style={[btnTxtSize, btnTxtColor]}>Vol. Down</Text>
           </Pressable>
@@ -232,7 +321,7 @@ const remote = () => {
               color: rippleColor,
               foreground: true,
             }}
-            onPress={() => pressButton(bus, "mute")}
+            onPress={() => pressButton(bus, "Mute")}
           >
             <Text style={[btnTxtSize, btnTxtColor]}>Mute</Text>
           </Pressable>
@@ -243,7 +332,7 @@ const remote = () => {
               color: rippleColor,
               foreground: true,
             }}
-            onPress={() => pressButton(bus, "volUp")}
+            onPress={() => pressButton(bus, "Volume Up")}
           >
             <Text style={[btnTxtSize, btnTxtColor]}>Vol. Up</Text>
           </Pressable>
@@ -318,11 +407,201 @@ const remote = () => {
 
 export default remote;
 
+const render_options = ({ animations, source, dispatch }) => {
+  console.log(source);
+  const {
+    optionsButton_AnimationStyle,
+    drawerMaxHeight,
+    sourceHighlighter_selectedIndex,
+  } = animations;
+  const {
+    sourceList,
+    defaultSource,
+    defaultSourceType,
+    audioZoneList,
+    videoControlTarget,
+    setVideoControlTarget,
+  } = source;
+  const sourceOptionHeight = 45;
+  const unselectedOpacity = 0.3;
+
+  return (
+    <Animated.View
+      style={[
+        optionsButton_AnimationStyle,
+        gs.marginH5,
+        gs.flex_row,
+        { overflow: "hidden", borderBottomWidth: 1, borderBottomColor: "gray" },
+      ]}
+    >
+      <View
+        style={[
+          gs.flex1,
+          gs.align_center,
+          {
+            height: drawerMaxHeight - 7,
+          },
+        ]}
+      >
+        <Text
+          style={[
+            gs.text_medium,
+            gs.text_gray,
+            gs.text_center,
+            { borderBottomWidth: 1, borderBottomColor: "gray" },
+          ]}
+        >
+          Sources
+        </Text>
+
+        {/* Sources */}
+        <View style={[gs.flex1, gs.marginV10, gs.relative]}>
+          {sourceList.map((source) => {
+            // ----------------------               Animation Style
+            const sourceHighlighter_AnimationStyle = useAnimatedStyle(() => ({
+              color:
+                sourceHighlighter_selectedIndex.value === source.Id
+                  ? withTiming(orangeColor, { duration: 250 })
+                  : withTiming("gray", { duration: 250 }),
+              opacity:
+                sourceHighlighter_selectedIndex.value === source.Id
+                  ? withTiming(1, { duration: 250 })
+                  : withTiming(unselectedOpacity, { duration: 250 }),
+            }));
+
+            return (
+              <View style={[gs.flex1]} key={source.Id}>
+                <Pressable
+                  key={source.Id}
+                  style={[
+                    gs.paddingH30,
+                    gs.justify_center,
+                    { height: sourceOptionHeight },
+                  ]}
+                  onPress={
+                    () =>
+                      changeTarget(
+                        source.Id,
+                        sourceHighlighter_selectedIndex,
+                        setVideoControlTarget
+                      )
+                    // (sourceHighlighter_selectedIndex.value = source.Id)
+                  }
+                >
+                  <Animated.Text
+                    style={[
+                      gs.text_orange,
+                      gs.text_medium,
+                      gs.text_center,
+                      sourceHighlighter_AnimationStyle,
+                    ]}
+                  >
+                    {source.SourceName}
+                  </Animated.Text>
+                </Pressable>
+              </View>
+            );
+          })}
+        </View>
+      </View>
+      <View style={[gs.marginV10, { width: 1, backgroundColor: gray_a }]} />
+      <View
+        style={[
+          gs.flex1,
+          gs.align_center,
+          {
+            height: drawerMaxHeight - 7,
+          },
+        ]}
+      >
+        <Text
+          style={[
+            gs.text_medium,
+            gs.text_gray,
+            gs.text_center,
+            { borderBottomWidth: 1, borderBottomColor: "gray" },
+          ]}
+        >
+          Zones
+        </Text>
+        {/* Zones */}
+
+        <View style={[gs.flex1, gs.marginV10, gs.relative]}>
+          {[...Object.keys(audioZoneList)].map((zoneName, index) => {
+            const zoneObj = audioZoneList[zoneName];
+            console.log(
+              "setting zone ",
+              zoneObj.name,
+              " active - ",
+              zoneObj.active
+            );
+            const zoneActiveHighlighter = useSharedValue(zoneObj.active);
+            const ZoneActiveHighlighter_AnimationStyle = useAnimatedStyle(
+              () => ({
+                color: zoneActiveHighlighter.value
+                  ? withTiming(orangeColor, { duration: 250 })
+                  : withTiming("gray", { duration: 250 }),
+                opacity: zoneActiveHighlighter.value
+                  ? withTiming(1, { duration: 250 })
+                  : withTiming(unselectedOpacity, { duration: 250 }),
+              })
+            );
+
+            return (
+              <View style={[gs.flex1]} key={index}>
+                <Pressable
+                  key={source.Id}
+                  style={[
+                    gs.paddingH30,
+                    gs.justify_center,
+                    { height: sourceOptionHeight },
+                  ]}
+                  onPress={(event) =>
+                    setAudioZoneActive({
+                      zoneName: zoneObj.name,
+                      audioZoneList,
+                      newState: !zoneObj.active,
+                      zoneActiveHighlighter,
+                      dispatch,
+                      event,
+                    })
+                  }
+                >
+                  <Animated.Text
+                    style={[
+                      gs.text_orange,
+                      gs.text_medium,
+                      gs.text_center,
+                      ZoneActiveHighlighter_AnimationStyle,
+                    ]}
+                  >
+                    {zoneObj.name}
+                  </Animated.Text>
+                </Pressable>
+              </View>
+            );
+          })}
+        </View>
+      </View>
+    </Animated.View>
+  );
+};
+
 const pressButton = async (
-  { statusButtonFlash, tvState, _setTvState, dispatch },
+  { statusButtonFlash, tvState, _setTvState, dispatch, source },
   button
 ) => {
-  const response = await RequestTv(button, dispatch);
+  const { videoControlTarget, sourceList } = source;
+  console.log("(pressButton()) Sourcelist: ", sourceList);
+
+  let response;
+
+  if (videoControlTarget === 0)
+    // Living Room Tv Id:0
+    response = await RequestTv(button, dispatch);
+  else if (videoControlTarget === 1)
+    // Bedroom Tv Id:1
+    response = await requestIr_emit({ source: "Tv", commandName });
 
   // exit early if bad response from server or TV
   if (!response || !response.success) return;
@@ -347,6 +626,61 @@ const pressButton = async (
   dispatch(setTvState({ power, input }));
 };
 
+const changeTarget = (
+  newIndex,
+  animationValue_index,
+  setVideoControlTarget_index
+) => {
+  animationValue_index.value = newIndex;
+  setVideoControlTarget_index(newIndex);
+};
+
+const setAudioZoneActive = async ({
+  zoneName,
+  audioZoneList,
+  newState,
+  zoneActiveHighlighter,
+  dispatch,
+  event,
+}) => {
+  const RawZoneNameArray = Object.keys(audioZoneList);
+  const RawZoneName_selected = RawZoneNameArray.find(
+    (rawZoneName) => audioZoneList[rawZoneName].name === zoneName
+  );
+
+  if (RawZoneName_selected === undefined)
+    return alert(
+      `Failed at setAudioZoneActive() - bad input (zoneName: ${zoneName})`
+    );
+
+  const zone = Number(
+    RawZoneName_selected.slice(RawZoneName_selected.indexOf("_") + 1)
+  );
+
+  if (isNaN(zone) || newState === undefined || zone === undefined)
+    return alert(
+      `Failed at setAudioZoneActive() - input not what was expected (zone = undefined (${
+        zone === undefined
+      }) , newState = undefined (${
+        newState === undefined
+      }), zone = NaN (${isNaN(zone)}))`
+    );
+
+  const originalState = audioZoneList[RawZoneName_selected].active;
+  zoneActiveHighlighter.value = newState;
+
+  console.log(event.target.disabled);
+
+  if (await RequestAudio({ zone, newState })) {
+    dispatch(
+      setActive({
+        [`zone${zone}_active`]: newState,
+        [`zone${zone}_updated`]: true,
+      })
+    );
+  } else zoneActiveHighlighter.value = originalState;
+};
+
 const flashStatusButton = ({ statusButtonFlash }) =>
   (statusButtonFlash.value = true);
 
@@ -364,6 +698,6 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   tv_section: {
-    marginVertical: 20,
+    marginVertical: 15,
   },
 });

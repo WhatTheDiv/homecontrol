@@ -70,6 +70,8 @@ export default async function request_initial(dispatch) {
         const { outdoorTemp, outdoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low, } = await getWeather()
         const { lights, temp, tv, audio, ir, irServices } = await getServerState({ timeout: 5000 })
 
+        console.log("SourceList at request_initial: ", tv.sources.list)
+
         const { indoorTemp, indoorHumidity } = temp
 
         // throw new Error('test fail')
