@@ -5,6 +5,7 @@ class irManager {
     this.isAlive = false
     this.ip = ip
     this.port = port
+    this.url = `http://${ip}:${port}`
     this.services = []
     return this
   }
@@ -19,7 +20,7 @@ class irManager {
   // extracts ir commands and returns them
   async extractIrCommands() {
     try {
-      const res = await fs.readFile('src/StoredData/ircommands.json', { encoding: 'utf-8' })
+      const res = await fs.readFile('src/StoredData/avData.json', { encoding: 'utf-8' })
       return (JSON.parse(res)).IrCommands
 
     } catch (e) {
@@ -84,6 +85,58 @@ class irManager {
       status.fail = true
       status.error = `Error in "send audio" command: ${e.message}`
       return status
+    }
+
+  }
+
+
+  // returns status { success, fail, error, zoneNumber_state}
+  async new_sendCommand_audio({ command = '', zone = -1, state = null }) {
+    const status = { success: false, zoneNumber_state: {}, error: false, errorMessage: '' }
+
+    try {
+      if (!command && zone <= 0 && state === null)
+        throw new Error(`Malformed command`)
+
+      const options = {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain"
+        },
+        body: JSON.stringify(
+          command === 'getAudio'
+            ? "getAudio"
+            : `setAudio/z${zone}-${state
+              ? 1
+              : 0
+            }`)
+      }
+
+      const arduinoResponse = (await fetch(this.url, options).then(async response => await response.text())).trim();
+
+      if (arduinoResponse.indexOf("fail") >= 0)
+        throw new Error(arduinoResponse.slice(arduinoResponse.indexOf("fail") + 5) || "noreason:'(")
+
+
+      // "success/z1-{active?}/z2-{active}"
+      if (command === 'getAudio') {
+        const stringIndex_z1 = arduinoResponse.indexOf("z1-") + 3
+        const stringIndex_z2 = arduinoResponse.indexOf("z1-") + 3
+
+        status.zoneNumber_state = {
+          1: arduinoResponse.slice(stringIndex_z1, stringIndex_z1 + 1) === '0' ? false : true,
+          2: arduinoResponse.slice(stringIndex_z2, stringIndex_z2 + 1) === '0' ? false : true,
+        }
+      }
+
+      status.success = true
+
+    } catch (e) {
+      status.error = true
+      status.errorMessage = `---> Failed to set/get audio (${e.message})`
+    } finally {
+      return status
+
     }
 
   }
@@ -272,10 +325,10 @@ class irManager {
   }
 
   // returns { success, error }
-  async new_sendIrCommand(cmd) {
+  async new_sendIrCommand({ commandName, source }) {
     const status = { success: false, error: '' }
     try {
-      const { sourceId, commandCode } = this.extractCommand(cmd)
+      const { sourceId, commandCode } = this.extractCommand({ commandName, source })
       const url = `http://${this.ip}:${this.port}`
       const options = {
         method: "POST",
@@ -293,7 +346,7 @@ class irManager {
       status.success = true;
 
     } catch (e) {
-      status.error = `IrManager failed -> ${e.message}`
+      status.error = `---> Failed to send Ir Command (${e.message})`
       console.error(e)
     }
     return status

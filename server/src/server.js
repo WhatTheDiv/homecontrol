@@ -7,6 +7,7 @@ const { handleButtonPress, getTvState, test } = require('./methods/tv-methods.js
 const { getIndoorTempReading } = require('./methods/gpio-methods.js')
 const { DaemonClass } = require('./methods/Daemon')
 const { irManager } = require('./methods/irManager-methods.js')
+const audioManager = require('./methods/AudioManager.js')
 
 
 app.use(cors())
@@ -91,6 +92,7 @@ const HomeState = {
 
 const Daemon = new DaemonClass()
 const IrManager = new irManager({ ip: '192.168.2.116', port: 80 })
+const AudioManager = new audioManager()
 
 app.get('/initialState', async (req, res) => {
   // Get tv state // 
@@ -122,32 +124,35 @@ app.get('/initialState', async (req, res) => {
   })
 
   // Get audio state //
-  const passed_audio = await IrManager.sendCommand_audio({ command: 'getAudio' }).then(response => {
-    const { success, fail, error, state } = response
+  // const passed_audio = await IrManager.sendCommand_audio({ command: 'getAudio' }).then(response => {
+  //   const { success, fail, error, state } = response
 
-    if (!success || fail) {
-      HomeState.audio.zone_1.updated = false
-      HomeState.audio.zone_2.updated = false
+  //   if (!success || fail) {
+  //     HomeState.audio.zone_1.updated = false
+  //     HomeState.audio.zone_2.updated = false
 
-      console.error(`Audio state failed: ${error}`)
-      return false
-    }
+  //     console.error(`Audio state failed: ${error}`)
+  //     return false
+  //   }
 
-    HomeState.audio.zone_1.updated = true
-    HomeState.audio.zone_1.active = state.z1
+  //   HomeState.audio.zone_1.updated = true
+  //   HomeState.audio.zone_1.active = state.z1
 
-    HomeState.audio.zone_2.updated = true
-    HomeState.audio.zone_2.active = state.z2
+  //   HomeState.audio.zone_2.updated = true
+  //   HomeState.audio.zone_2.active = state.z2
 
-    return true
-  })
+  //   return true
+  // })
+  // Get audio state //
+  await AudioManager.audioZone_updatetState({ IrManager })
+  const audio = AudioManager.audio
 
   // format ir services
   const irServices = IrManager.services
 
 
 
-  res.status(200).send({ ...HomeState, irServices }).end();
+  res.status(200).send({ ...HomeState, irServices, audio }).end();
 })
 
 app.post('/test', async (req, res) => {
@@ -456,6 +461,7 @@ app.post('/remote', async (req, res) => {
 app.listen(port, async () => {
   Daemon.init.bind(Daemon)()
   await IrManager.activate.bind(IrManager)()
+  await AudioManager.activate.bind(AudioManager)()
 
   console.log('Starting server on port [', port, '] ')
 })

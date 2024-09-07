@@ -80,11 +80,11 @@ void loop() {
       switch (sendCode_source) {
       case 0:
         Serial.println("Source: Audio Switch");
-        irsend_audio.sendNEC(0x0, sendCode, 10);
+        irsend_audio.sendNEC(0x0, sendCode, 3);
         break;
       case 1:
         Serial.println("Source: Tv");
-        irsend_tv.sendNEC(64, sendCode, 10);
+        irsend_tv.sendNEC(64, sendCode, 3);
         break;
       case 2:
         Serial.println("Source: Hdmi Switch");

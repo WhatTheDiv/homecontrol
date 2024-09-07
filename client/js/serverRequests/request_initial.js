@@ -2,14 +2,13 @@
 import { updateWeather } from "../store/weather_slice";
 import { setLoaded, setFailMessage } from '../store/ui_slice'
 import { setRGB, lights_setInitial, lights_setDefaults } from "../store/lights_slice";
-import { setActive, setName } from "../store/audio_slice";
+import { setLastSourceSelected_id, setAudioActive, setInitialAudio } from "../store/audio_slice";
 import { setSource, setTvState } from '../store/tv_slice'
 import { addCommands, setLastCommand, addSources, setServices_replace } from '../store/ir_slice'
 import { f_err } from "../../assets/styles/globalStyles";
 
 const loadDelay = 0
 
-//XXX KEEP DEFAULTS UPDATED !!!
 const DEFAULTS = {
   weather: {
     outdoorTemp: 0,
@@ -62,54 +61,91 @@ const DEFAULTS = {
   }
 }
 
+
+
 export default async function request_initial(dispatch) {
   return new Promise(async (res) => {
-    setTimeout(async () => {
-      try {
+    try {
+      await getWeather().then(({ outdoorTemp, outdoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low, }) => {
+        dispatch(updateWeather({ outdoorTemp, outdoorHumidity, indoorTemp, indoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low }))
+      }).catch(e => {
+        console.error('Failed to get weather')
+      })
 
-        const { outdoorTemp, outdoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low, } = await getWeather()
-        const { lights, temp, tv, audio, ir, irServices } = await getServerState({ timeout: 5000 })
-
-        console.log("SourceList at request_initial: ", tv.sources.list)
-
+      await getServerState({ timeout: 5000 }).then(({ lights, temp, tv, audio, ir, irServices }) => {
         const { indoorTemp, indoorHumidity } = temp
-
-        // throw new Error('test fail')
-        // [ ] use redux default state instead of custom object
 
         dispatch(setTvState({ power: tv.power, input: tv.input }))
         dispatch(setSource({ list: [...tv.sources.list], defaultSource: tv.sources.defaultSource, defaultSourceType: tv.sources.defaultSourceType }))
-        dispatch(setActive({ zone1_active: audio.zone_1.active, zone2_active: audio.zone_2.active, zone1_updated: audio.zone_1.updated, zone2_updated: audio.zone_2.updated }))
-        dispatch(setName({ zone1_newName: audio.zone_1.name, zone2_newName: audio.zone_2.name }))
-        dispatch(updateWeather({ outdoorTemp, outdoorHumidity, indoorTemp, indoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low }))
-        dispatch(addCommands({ commands: [...ir.commands] }))
-        dispatch(addSources({ sources: [...ir.sources] }))
+        dispatch(setInitialAudio({ ...audio }))
         dispatch(setServices_replace({ services: [...irServices] }))
-        dispatch(setLastCommand({ lastCommand: ir.lastCommand }))
         dispatch(lights_setInitial({ ...lights }))
         dispatch(lights_setDefaults({
           defaultAnimation: lights.defaultAnimation,
           defaultOnAnimation: lights.defaultOnAnimation,
           defaultOffAnimation: lights.defaultOffAnimation,
         }))
-        dispatch(setLoaded(true))
-        res(true)
+      }).catch(e => {
+        console.error('Failed to get update from server')
+      })
 
-      } catch (e) {
-        //XXX KEEP DEFAULTS UPDATED !!!
-        console.log('error: ', e)
-        dispatch(setFailMessage(e.message))
-        res(false)
-      }
+      dispatch(setLoaded(true))
+      res(true)
 
-
-
-      // base function return true or false ONLY 
-      // dispatch required: 
-      // - setLoaded = true 
-    }, loadDelay);
+    } catch (e) {
+      console.log('error: ', e)
+      dispatch(setFailMessage(e.message))
+      res(false)
+    }
   })
 }
+
+// export default async function request_initial(dispatch) {
+//   return new Promise(async (res) => {
+//     setTimeout(async () => {
+//       try {
+
+//         const { outdoorTemp, outdoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low, } = await getWeather()
+//         const { lights, temp, tv, audio, ir, irServices } = await getServerState({ timeout: 5000 })
+
+//         const { indoorTemp, indoorHumidity } = temp
+
+//         // throw new Error('test fail')
+//         // [ ] use redux default state instead of custom object
+
+//         dispatch(setTvState({ power: tv.power, input: tv.input }))
+//         dispatch(setSource({ list: [...tv.sources.list], defaultSource: tv.sources.defaultSource, defaultSourceType: tv.sources.defaultSourceType }))
+//         dispatch(setInitialAudio({ ... audio }))
+
+//         dispatch(updateWeather({ outdoorTemp, outdoorHumidity, indoorTemp, indoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low }))
+//         dispatch(addCommands({ commands: [...ir.commands] })) // delete these
+//         dispatch(addSources({ sources: [...ir.sources] })) // delete these
+//         dispatch(setServices_replace({ services: [...irServices] }))
+//         dispatch(setLastCommand({ lastCommand: ir.lastCommand })) // delete these
+//         dispatch(lights_setInitial({ ...lights }))
+//         dispatch(lights_setDefaults({
+//           defaultAnimation: lights.defaultAnimation,
+//           defaultOnAnimation: lights.defaultOnAnimation,
+//           defaultOffAnimation: lights.defaultOffAnimation,
+//         }))
+//         dispatch(setLoaded(true))
+//         res(true)
+
+//       } catch (e) {
+//         //XXX KEEP DEFAULTS UPDATED !!!
+//         console.log('error: ', e)
+//         dispatch(setFailMessage(e.message))
+//         res(false)
+//       }
+
+
+
+//       // base function return true or false ONLY 
+//       // dispatch required: 
+//       // - setLoaded = true 
+//     }, loadDelay);
+//   })
+// }
 
 export async function request_periodic() {
 

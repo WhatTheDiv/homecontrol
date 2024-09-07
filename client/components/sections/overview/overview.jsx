@@ -56,43 +56,14 @@ import {
 } from "../../../js/serverRequests/request_ir.js";
 
 const overview = () => {
-  // @ts-ignore
-  const [lastCommand, setLastCommand] = useState(null);
+  const dispatch = useDispatch();
+
+  //            Weather variables
   const weather = useSelector((state) => state.weather);
+
+  //            Living Room Tv Variables
   const tvPower = useSelector((state) => state.tv.power);
   const tvInput = useSelector((state) => state.tv.input);
-  const audio = useSelector((state) => state.audio);
-  const ir = {
-    cmds: useSelector((state) => state.ir.commands),
-    srcs: useSelector((state) => state.ir.sources),
-    lastCommand: useSelector((state) => state.ir.lastCommand),
-    svs: useSelector((state) => state.ir.services),
-  };
-  const { animation_active, lightsOn, animation, updated } = useSelector(
-    (state) => state.lights
-  );
-  const [loading_toggleLights, setLoading_toggleLights] = useState(false);
-  const [loading_toggleAudio, setLoading_toggleAudio] = useState(false);
-
-  const [sel_source, setSel_source] = useState(
-    ir.lastCommand === {}
-      ? 0
-      : ir.srcs.findIndex((item) => item === ir.lastCommand.source) || -1
-  );
-  const [sel_command, setSel_command] = useState(
-    sel_source >= -1
-      ? ir.cmds.findIndex((item) => item.source === sel_source)
-      : -1
-  );
-  const [irLearnVars, setIrLearnVars] = useState({
-    source: "Audio Switch",
-    command: "Power",
-  });
-
-  const [test, setTest] = useState(false);
-  const [irTestCode, setIrTestCode] = useState("");
-  const [irAction, setIrAction] = useState("emit");
-
   const AnimatedFlash = useSharedValue(false);
   const AnimatedFlash_style = useAnimatedStyle(() => ({
     opacity: AnimatedFlash.value
@@ -110,6 +81,22 @@ const overview = () => {
       : 0,
   }));
 
+  //            Audio Variables
+  const audioZones = useSelector((state) => state.audio.zones);
+  const audioSources = useSelector((state) => state.audio.sources);
+  const lastSourceSelected_id = useSelector(
+    (state) => state.audio.lastSourceSelected_id
+  );
+  const audioActive = useSelector((state) => state.audio.active);
+  const AnimatedFade_audio = useSharedValue(1);
+
+  //            Lights Variables
+
+  const { animation_active, lightsOn, animation, updated } = useSelector(
+    (state) => state.lights
+  );
+  const [loading_toggleLights, setLoading_toggleLights] = useState(false);
+  const [loading_toggleAudio, setLoading_toggleAudio] = useState(false);
   const AnimatedFade_lights = useSharedValue(1);
   const AnimatedFade_lights_style = useAnimatedStyle(() => ({
     opacity:
@@ -117,16 +104,6 @@ const overview = () => {
         ? withTiming(1, { duration: 300 })
         : withTiming(0, { duration: 50 }),
   }));
-
-  const AnimatedFade_audio = useSharedValue(1);
-  const AnimatedFade_audio_style = useAnimatedStyle(() => ({
-    opacity:
-      AnimatedFade_audio.value === 1
-        ? withTiming(1, { duration: 300 })
-        : withTiming(0, { duration: 50 }),
-  }));
-
-  const dispatch = useDispatch();
 
   const bus = {
     lightsOn,
@@ -136,7 +113,6 @@ const overview = () => {
     tvPower,
     tvInput,
     weather,
-    audio,
     dispatch,
     AnimatedFlash,
     AnimatedFlash_style,
@@ -144,26 +120,15 @@ const overview = () => {
     AnimatedFade_lights_style,
     loading_toggleLights,
     setLoading_toggleLights,
-    loading_toggleAudio,
-    setLoading_toggleAudio,
-    AnimatedFade_audio,
-    AnimatedFade_audio_style,
-    lastCommand,
-    setLastCommand,
-    ir: {
-      ...ir,
-      sel_source,
-      setSel_source,
-      sel_command,
-      setSel_command,
-      irAction,
-      setIrAction,
-      irLearnVars,
-      setIrLearnVars,
-      irTestCode,
-      setIrTestCode,
-      test,
-      setTest,
+
+    audio: {
+      audioZones,
+      audioSources,
+      lastSourceSelected_id,
+      audioActive,
+      AnimatedFade_audio,
+      loading_toggleAudio,
+      setLoading_toggleAudio,
     },
   };
 
@@ -615,16 +580,24 @@ const render_temp = ({ weather, dispatch }) => {
     </View>
   );
 };
-const render_audio = ({
-  audio,
-  dispatch,
-  AnimatedFade_audio,
-  AnimatedFade_audio_style,
-  loading_toggleAudio,
-  setLoading_toggleAudio,
-}) => {
-  z1 = audio.zone_1;
-  z2 = audio.zone_2;
+const render_audio = ({ audio, dispatch }) => {
+  const {
+    audioZones,
+    audioSources,
+    lastSourceSelected_id,
+    audioActive,
+    AnimatedFade_audio,
+    loading_toggleAudio,
+    setLoading_toggleAudio,
+  } = audio;
+
+  const AnimatedFade_audio_style = useAnimatedStyle(() => ({
+    opacity:
+      AnimatedFade_audio.value >= 1
+        ? withTiming(1, { duration: 300 })
+        : withTiming(0, { duration: 50 }),
+  }));
+
   return (
     <View style={[styles.section, gs.relative]}>
       <Text style={[gs.text_gray, gs.text_center, gs.marginV5]}>Audio</Text>
@@ -637,7 +610,33 @@ const render_audio = ({
           { gap: 5 },
         ]}
       >
-        <View style={[gs.flex1, {}]}>
+        {audioZones.map((zone) => (
+          <View style={[gs.flex1, {}]}>
+            <Pressable
+              style={[
+                gs.flex1,
+                zone.active ? gs.border_green : gs.border_gray,
+                gs.padding10,
+                gs.border_rad5,
+                { opacity: zone.updated ? 1 : 0.5 },
+              ]}
+              onPress={() =>
+                audio_toggleZone({
+                  zone,
+                  newState: !zone.active,
+                  dispatch,
+                  AnimatedFade_audio,
+                  setLoading_toggleAudio,
+                })
+              }
+            >
+              <Text style={[gs.text_center, gs.text_large, gs.text_white, {}]}>
+                {zone.name}
+              </Text>
+            </Pressable>
+          </View>
+        ))}
+        {/* <View style={[gs.flex1, {}]}>
           <Pressable
             style={[
               gs.flex1,
@@ -684,7 +683,7 @@ const render_audio = ({
               {z2.name}
             </Text>
           </Pressable>
-        </View>
+        </View> */}
       </Animated.View>
     </View>
   );
@@ -696,424 +695,424 @@ const render_loadingIcon = () => {
     </View>
   );
 };
-const render_ir = ({ ir, dispatch }) => {
-  const formatted_sources =
-    ir.svs.map((service) => ({
-      key: service.Id,
-      value: service.Source,
-    })) || [];
+// const render_ir = ({ ir, dispatch }) => {
+//   const formatted_sources =
+//     ir.svs.map((service) => ({
+//       key: service.Id,
+//       value: service.Source,
+//     })) || [];
 
-  formatted_sources.splice(0, 0, { key: -1, value: "Select Source" });
+//   formatted_sources.splice(0, 0, { key: -1, value: "Select Source" });
 
-  const formatted_commands =
-    ir.sel_source < 0
-      ? []
-      : Object.keys(
-          ir.svs.find((service) => service.Id === ir.sel_source).commands
-        ).map((key) => ({
-          key,
-          value: key,
-        })) || [];
+//   const formatted_commands =
+//     ir.sel_source < 0
+//       ? []
+//       : Object.keys(
+//           ir.svs.find((service) => service.Id === ir.sel_source).commands
+//         ).map((key) => ({
+//           key,
+//           value: key,
+//         })) || [];
 
-  formatted_commands.splice(0, 0, { key: -1, value: "Select Command" });
+//   formatted_commands.splice(0, 0, { key: -1, value: "Select Command" });
 
-  return (
-    <View style={[gs.marginV20, { height: 200 }]}>
-      <Text
-        style={[gs.text_medium, gs.text_gray, gs.text_center, gs.paddingV5]}
-      >
-        Ir Commands
-      </Text>
-      <View style={[gs.flex1]}>
-        {ir.irAction === "emit" &&
-          render_ir_emit(ir, dispatch, formatted_sources, formatted_commands)}
-        {ir.irAction === "learn" && render_ir_learn(ir, dispatch)}
-        {ir.irAction === "test" &&
-          render_ir_test(ir, dispatch, formatted_sources)}
-      </View>
-    </View>
-  );
-};
-const render_ir_emit = (
-  {
-    cmds,
-    srcs,
-    svs,
-    lastCommand,
-    sel_source,
-    sel_command,
-    setSel_source,
-    setSel_command,
-    irAction,
-    setIrAction,
-  },
-  dispatch,
-  formatted_sources,
-  formatted_commands
-) => {
-  return (
-    <View
-      style={[
-        gs.flex_row,
-        gs.marginH5,
-        gs.justify_between,
-        gs.height100,
-        { gap: 10 },
-      ]}
-    >
-      <Pressable
-        style={[
-          gs.border_gray,
-          gs.align_center,
-          gs.justify_center,
-          gs.border_rad5,
-          { width: "15%", height: 50 },
-        ]}
-        onPress={() => setIrAction("learn")}
-      >
-        <Text style={[gs.text_white, gs.text_medium]}>Learn</Text>
-      </Pressable>
-      <SelectList
-        defaultOption={formatted_sources.find(
-          (source) => source.key === sel_source
-        )}
-        setSelected={(key) => {
-          setSel_source(key);
-        }}
-        data={formatted_sources}
-        save="key"
-        boxStyles={[
-          gs.border_gray,
-          gs.border_rad5,
-          gs.paddingH10,
-          gs.align_center,
-          { paddingVertical: 2, height: 50 },
-        ]}
-        inputStyles={[
-          gs.text_gray,
-          gs.text_medium,
-          gs.text_center,
-          { width: 100 },
-        ]}
-        dropdownStyles={[{ maxHeight: 100 }]}
-        dropdownTextStyles={[gs.text_gray]}
-        arrowicon={<View style={[{ width: 0 }]} />}
-        search={false}
-      />
-      <SelectList
-        defaultOption={formatted_commands.find(
-          (command) => command.key === sel_command
-        )}
-        setSelected={(val) => {
-          setSel_command(val);
-        }}
-        data={formatted_commands}
-        save="value"
-        boxStyles={[
-          gs.border_gray,
-          gs.border_rad5,
-          gs.paddingH10,
-          gs.align_center,
-          { paddingVertical: 2, height: 50 },
-        ]}
-        inputStyles={[
-          gs.text_gray,
-          gs.text_medium,
-          gs.text_center,
-          { width: 100 },
-        ]}
-        dropdownStyles={[{ maxHeight: 100 }]}
-        dropdownTextStyles={[gs.text_gray]}
-        arrowicon={<View style={[{ width: 0 }]} />}
-        search={false}
-      />
-      <Pressable
-        style={[
-          gs.background_green,
-          gs.border_rad5,
-          gs.justify_center,
-          gs.align_center,
-          gs.flex_row,
-          { padding: 1, flexGrow: 1, height: 50 },
-        ]}
-        onPress={() =>
-          emitIr({
-            source: svs.find((service) => service.Id === sel_source).Source,
-            commandName: sel_command,
-            dispatch,
-          })
-        }
-      >
-        <View
-          style={[
-            gs.border_black,
-            gs.border_rad5,
-            gs.flex1,
-            gs.justify_center,
-            gs.align_center,
-            {
-              borderWidth: 3,
-              height: "100%",
-            },
-          ]}
-        >
-          <Text style={[gs.text_medium, gs.text_bold]}>Send</Text>
-        </View>
-      </Pressable>
-    </View>
-  );
-};
-const render_ir_learn = (
-  {
-    cmds,
-    srcs,
-    lastCommand,
-    sel_source,
-    sel_command,
-    setSel_source,
-    setSel_command,
-    irAction,
-    setIrAction,
-    irLearnVars,
-    setIrLearnVars,
-  },
-  dispatch
-) => {
-  return (
-    <View
-      style={[
-        gs.flex_row,
-        gs.marginH5,
-        gs.justify_between,
-        { gap: 10, height: 60, flexWrap: "wrap" },
-      ]}
-    >
-      <Pressable
-        style={[
-          gs.border_gray,
-          gs.border_rad5,
-          gs.align_center,
-          gs.justify_center,
-          { width: "15%" },
-        ]}
-        onPress={() => setIrAction("test")}
-      >
-        <Text style={[gs.text_white, gs.text_medium]}>Test</Text>
-      </Pressable>
-      <TextInput
-        style={[
-          gs.marginH10,
-          gs.text_orange,
-          gs.text_center,
-          gs.text_medium,
-          gs.border_none,
-          gs.height100,
-          { borderBottomWidth: 1, borderColor: "gray" },
-        ]}
-        value={irLearnVars.source}
-        onChangeText={(v) => setIrLearnVars({ ...irLearnVars, source: v })}
-        placeholder="Source"
-        placeholderTextColor={"gray"}
-      />
-      <TextInput
-        style={[
-          gs.marginH10,
-          gs.text_orange,
-          gs.text_center,
-          gs.text_medium,
-          gs.border_none,
-          gs.height100,
-          { borderBottomWidth: 1, borderColor: "gray" },
-        ]}
-        value={irLearnVars.command}
-        onChangeText={(v) => setIrLearnVars({ ...irLearnVars, command: v })}
-        placeholder="Command"
-        placeholderTextColor={"gray"}
-      />
-      <Pressable
-        style={[
-          gs.background_green,
-          gs.border_rad5,
-          gs.flex1,
-          gs.justify_center,
-          gs.align_center,
-          gs.flex_row,
-          { padding: 1, width: "30%" },
-        ]}
-        onPress={() => {
-          console.log(`%cirLearnVars: `, f_hlt);
-          console.log(irLearnVars);
-          learnIr(irLearnVars, dispatch, setIrLearnVars);
-        }}
-      >
-        <View
-          style={[
-            gs.border_rad5,
-            gs.flex1,
-            gs.align_center,
-            gs.justify_center,
-            gs.height100,
-            {
-              borderWidth: 3,
-              flexGrow: 1,
-            },
-          ]}
-        >
-          <Text
-            style={[gs.text_medium, gs.text_bold, gs.flex_wrap, gs.text_center]}
-          >
-            Begin Receiver
-          </Text>
-        </View>
-      </Pressable>
-    </View>
-  );
-};
-const render_ir_test = (
-  {
-    cmds,
-    srcs,
-    lastCommand,
-    sel_source,
-    sel_command,
-    setSel_source,
-    setSel_command,
-    irAction,
-    setIrAction,
-    irTestCode,
-    setIrTestCode,
-    test,
-    setTest,
-  },
-  dispatch,
-  formatted_sources
-) => {
-  return (
-    <View
-      style={[
-        gs.flex_row,
-        gs.marginH5,
-        gs.justify_between,
-        { gap: 10, height: 60, flexWrap: "wrap" },
-      ]}
-    >
-      <Pressable
-        style={[
-          gs.border_gray,
-          gs.border_rad5,
-          gs.align_center,
-          gs.justify_center,
-          { width: "15%" },
-        ]}
-        onPress={() => setIrAction("emit")}
-      >
-        <Text style={[gs.text_white, gs.text_medium]}>Emit</Text>
-      </Pressable>
-      <SelectList
-        defaultOption={() =>
-          sel_source < 0
-            ? { key: "Select Source", value: -1 }
-            : formatted_sources[sel_source]
-        }
-        setSelected={(val) => {
-          console.log(`Assigning val to setSel_source: ${val}`);
-          setSel_source(val);
-        }}
-        data={formatted_sources}
-        save="key"
-        boxStyles={[
-          gs.border_gray,
-          gs.border_rad5,
-          gs.flex1,
-          gs.paddingH10,
-          gs.align_center,
-          { paddingVertical: 2 },
-        ]}
-        inputStyles={[gs.text_gray, gs.text_medium]}
-        dropdownStyles={[]}
-        dropdownTextStyles={[gs.text_gray]}
-        arrowicon={<View style={[{ width: 0 }]} />}
-        search={false}
-      />
-      <TextInput
-        onChangeText={(v) => setIrTestCode(v)}
-        style={[
-          gs.marginH10,
-          gs.text_orange,
-          gs.text_center,
-          gs.text_medium,
-          gs.border_none,
-          gs.height100,
-          { borderBottomWidth: 1, borderColor: "gray" },
-        ]}
-        selectTextOnFocus={true}
-        onSubmitEditing={() =>
-          testIr({ source: srcs[sel_source], code: irTestCode })
-        }
-        keyboardType="numeric"
-        value={irTestCode}
-        placeholder="Code"
-        placeholderTextColor={"gray"}
-      />
-      <Pressable
-        style={[
-          gs.background_green,
-          gs.border_rad5,
-          gs.flex1,
-          gs.justify_center,
-          gs.align_center,
-          gs.flex_row,
-          { padding: 1, width: "30%" },
-        ]}
-        onPress={() => {
-          console.log({ source: srcs[sel_source], code: irTestCode });
-          testIr({ source: srcs[sel_source], code: irTestCode });
-        }}
-      >
-        <View
-          style={[
-            gs.border_rad5,
-            gs.flex1,
-            gs.align_center,
-            gs.justify_center,
-            gs.height100,
-            {
-              borderWidth: 3,
-              flexGrow: 1,
-            },
-          ]}
-        >
-          <Text
-            style={[gs.text_medium, gs.text_bold, gs.flex_wrap, gs.text_center]}
-          >
-            Test Code
-          </Text>
-        </View>
-      </Pressable>
-    </View>
-  );
-};
-const render_ardTest = ({ ir }) => {
-  const { test, setTest } = ir;
+//   return (
+//     <View style={[gs.marginV20, { height: 200 }]}>
+//       <Text
+//         style={[gs.text_medium, gs.text_gray, gs.text_center, gs.paddingV5]}
+//       >
+//         Ir Commands
+//       </Text>
+//       <View style={[gs.flex1]}>
+//         {ir.irAction === "emit" &&
+//           render_ir_emit(ir, dispatch, formatted_sources, formatted_commands)}
+//         {ir.irAction === "learn" && render_ir_learn(ir, dispatch)}
+//         {ir.irAction === "test" &&
+//           render_ir_test(ir, dispatch, formatted_sources)}
+//       </View>
+//     </View>
+//   );
+// };
+// const render_ir_emit = (
+//   {
+//     cmds,
+//     srcs,
+//     svs,
+//     lastCommand,
+//     sel_source,
+//     sel_command,
+//     setSel_source,
+//     setSel_command,
+//     irAction,
+//     setIrAction,
+//   },
+//   dispatch,
+//   formatted_sources,
+//   formatted_commands
+// ) => {
+//   return (
+//     <View
+//       style={[
+//         gs.flex_row,
+//         gs.marginH5,
+//         gs.justify_between,
+//         gs.height100,
+//         { gap: 10 },
+//       ]}
+//     >
+//       <Pressable
+//         style={[
+//           gs.border_gray,
+//           gs.align_center,
+//           gs.justify_center,
+//           gs.border_rad5,
+//           { width: "15%", height: 50 },
+//         ]}
+//         onPress={() => setIrAction("learn")}
+//       >
+//         <Text style={[gs.text_white, gs.text_medium]}>Learn</Text>
+//       </Pressable>
+//       <SelectList
+//         defaultOption={formatted_sources.find(
+//           (source) => source.key === sel_source
+//         )}
+//         setSelected={(key) => {
+//           setSel_source(key);
+//         }}
+//         data={formatted_sources}
+//         save="key"
+//         boxStyles={[
+//           gs.border_gray,
+//           gs.border_rad5,
+//           gs.paddingH10,
+//           gs.align_center,
+//           { paddingVertical: 2, height: 50 },
+//         ]}
+//         inputStyles={[
+//           gs.text_gray,
+//           gs.text_medium,
+//           gs.text_center,
+//           { width: 100 },
+//         ]}
+//         dropdownStyles={[{ maxHeight: 100 }]}
+//         dropdownTextStyles={[gs.text_gray]}
+//         arrowicon={<View style={[{ width: 0 }]} />}
+//         search={false}
+//       />
+//       <SelectList
+//         defaultOption={formatted_commands.find(
+//           (command) => command.key === sel_command
+//         )}
+//         setSelected={(val) => {
+//           setSel_command(val);
+//         }}
+//         data={formatted_commands}
+//         save="value"
+//         boxStyles={[
+//           gs.border_gray,
+//           gs.border_rad5,
+//           gs.paddingH10,
+//           gs.align_center,
+//           { paddingVertical: 2, height: 50 },
+//         ]}
+//         inputStyles={[
+//           gs.text_gray,
+//           gs.text_medium,
+//           gs.text_center,
+//           { width: 100 },
+//         ]}
+//         dropdownStyles={[{ maxHeight: 100 }]}
+//         dropdownTextStyles={[gs.text_gray]}
+//         arrowicon={<View style={[{ width: 0 }]} />}
+//         search={false}
+//       />
+//       <Pressable
+//         style={[
+//           gs.background_green,
+//           gs.border_rad5,
+//           gs.justify_center,
+//           gs.align_center,
+//           gs.flex_row,
+//           { padding: 1, flexGrow: 1, height: 50 },
+//         ]}
+//         onPress={() =>
+//           emitIr({
+//             source: svs.find((service) => service.Id === sel_source).Source,
+//             commandName: sel_command,
+//             dispatch,
+//           })
+//         }
+//       >
+//         <View
+//           style={[
+//             gs.border_black,
+//             gs.border_rad5,
+//             gs.flex1,
+//             gs.justify_center,
+//             gs.align_center,
+//             {
+//               borderWidth: 3,
+//               height: "100%",
+//             },
+//           ]}
+//         >
+//           <Text style={[gs.text_medium, gs.text_bold]}>Send</Text>
+//         </View>
+//       </Pressable>
+//     </View>
+//   );
+// };
+// const render_ir_learn = (
+//   {
+//     cmds,
+//     srcs,
+//     lastCommand,
+//     sel_source,
+//     sel_command,
+//     setSel_source,
+//     setSel_command,
+//     irAction,
+//     setIrAction,
+//     irLearnVars,
+//     setIrLearnVars,
+//   },
+//   dispatch
+// ) => {
+//   return (
+//     <View
+//       style={[
+//         gs.flex_row,
+//         gs.marginH5,
+//         gs.justify_between,
+//         { gap: 10, height: 60, flexWrap: "wrap" },
+//       ]}
+//     >
+//       <Pressable
+//         style={[
+//           gs.border_gray,
+//           gs.border_rad5,
+//           gs.align_center,
+//           gs.justify_center,
+//           { width: "15%" },
+//         ]}
+//         onPress={() => setIrAction("test")}
+//       >
+//         <Text style={[gs.text_white, gs.text_medium]}>Test</Text>
+//       </Pressable>
+//       <TextInput
+//         style={[
+//           gs.marginH10,
+//           gs.text_orange,
+//           gs.text_center,
+//           gs.text_medium,
+//           gs.border_none,
+//           gs.height100,
+//           { borderBottomWidth: 1, borderColor: "gray" },
+//         ]}
+//         value={irLearnVars.source}
+//         onChangeText={(v) => setIrLearnVars({ ...irLearnVars, source: v })}
+//         placeholder="Source"
+//         placeholderTextColor={"gray"}
+//       />
+//       <TextInput
+//         style={[
+//           gs.marginH10,
+//           gs.text_orange,
+//           gs.text_center,
+//           gs.text_medium,
+//           gs.border_none,
+//           gs.height100,
+//           { borderBottomWidth: 1, borderColor: "gray" },
+//         ]}
+//         value={irLearnVars.command}
+//         onChangeText={(v) => setIrLearnVars({ ...irLearnVars, command: v })}
+//         placeholder="Command"
+//         placeholderTextColor={"gray"}
+//       />
+//       <Pressable
+//         style={[
+//           gs.background_green,
+//           gs.border_rad5,
+//           gs.flex1,
+//           gs.justify_center,
+//           gs.align_center,
+//           gs.flex_row,
+//           { padding: 1, width: "30%" },
+//         ]}
+//         onPress={() => {
+//           console.log(`%cirLearnVars: `, f_hlt);
+//           console.log(irLearnVars);
+//           learnIr(irLearnVars, dispatch, setIrLearnVars);
+//         }}
+//       >
+//         <View
+//           style={[
+//             gs.border_rad5,
+//             gs.flex1,
+//             gs.align_center,
+//             gs.justify_center,
+//             gs.height100,
+//             {
+//               borderWidth: 3,
+//               flexGrow: 1,
+//             },
+//           ]}
+//         >
+//           <Text
+//             style={[gs.text_medium, gs.text_bold, gs.flex_wrap, gs.text_center]}
+//           >
+//             Begin Receiver
+//           </Text>
+//         </View>
+//       </Pressable>
+//     </View>
+//   );
+// };
+// const render_ir_test = (
+//   {
+//     cmds,
+//     srcs,
+//     lastCommand,
+//     sel_source,
+//     sel_command,
+//     setSel_source,
+//     setSel_command,
+//     irAction,
+//     setIrAction,
+//     irTestCode,
+//     setIrTestCode,
+//     test,
+//     setTest,
+//   },
+//   dispatch,
+//   formatted_sources
+// ) => {
+//   return (
+//     <View
+//       style={[
+//         gs.flex_row,
+//         gs.marginH5,
+//         gs.justify_between,
+//         { gap: 10, height: 60, flexWrap: "wrap" },
+//       ]}
+//     >
+//       <Pressable
+//         style={[
+//           gs.border_gray,
+//           gs.border_rad5,
+//           gs.align_center,
+//           gs.justify_center,
+//           { width: "15%" },
+//         ]}
+//         onPress={() => setIrAction("emit")}
+//       >
+//         <Text style={[gs.text_white, gs.text_medium]}>Emit</Text>
+//       </Pressable>
+//       <SelectList
+//         defaultOption={() =>
+//           sel_source < 0
+//             ? { key: "Select Source", value: -1 }
+//             : formatted_sources[sel_source]
+//         }
+//         setSelected={(val) => {
+//           console.log(`Assigning val to setSel_source: ${val}`);
+//           setSel_source(val);
+//         }}
+//         data={formatted_sources}
+//         save="key"
+//         boxStyles={[
+//           gs.border_gray,
+//           gs.border_rad5,
+//           gs.flex1,
+//           gs.paddingH10,
+//           gs.align_center,
+//           { paddingVertical: 2 },
+//         ]}
+//         inputStyles={[gs.text_gray, gs.text_medium]}
+//         dropdownStyles={[]}
+//         dropdownTextStyles={[gs.text_gray]}
+//         arrowicon={<View style={[{ width: 0 }]} />}
+//         search={false}
+//       />
+//       <TextInput
+//         onChangeText={(v) => setIrTestCode(v)}
+//         style={[
+//           gs.marginH10,
+//           gs.text_orange,
+//           gs.text_center,
+//           gs.text_medium,
+//           gs.border_none,
+//           gs.height100,
+//           { borderBottomWidth: 1, borderColor: "gray" },
+//         ]}
+//         selectTextOnFocus={true}
+//         onSubmitEditing={() =>
+//           testIr({ source: srcs[sel_source], code: irTestCode })
+//         }
+//         keyboardType="numeric"
+//         value={irTestCode}
+//         placeholder="Code"
+//         placeholderTextColor={"gray"}
+//       />
+//       <Pressable
+//         style={[
+//           gs.background_green,
+//           gs.border_rad5,
+//           gs.flex1,
+//           gs.justify_center,
+//           gs.align_center,
+//           gs.flex_row,
+//           { padding: 1, width: "30%" },
+//         ]}
+//         onPress={() => {
+//           console.log({ source: srcs[sel_source], code: irTestCode });
+//           testIr({ source: srcs[sel_source], code: irTestCode });
+//         }}
+//       >
+//         <View
+//           style={[
+//             gs.border_rad5,
+//             gs.flex1,
+//             gs.align_center,
+//             gs.justify_center,
+//             gs.height100,
+//             {
+//               borderWidth: 3,
+//               flexGrow: 1,
+//             },
+//           ]}
+//         >
+//           <Text
+//             style={[gs.text_medium, gs.text_bold, gs.flex_wrap, gs.text_center]}
+//           >
+//             Test Code
+//           </Text>
+//         </View>
+//       </Pressable>
+//     </View>
+//   );
+// };
+// const render_ardTest = ({ ir }) => {
+//   const { test, setTest } = ir;
 
-  return (
-    <View style={[gs.paddingH5, gs.marginV20]}>
-      <Pressable
-        style={[
-          gs.flex_row,
-          gs.flex1,
-          gs.padding10,
-          gs.border_gray,
-          gs.border_rad5,
-          gs.justify_around,
-        ]}
-        onPress={() => macro()}
-      >
-        <Text style={[gs.text_white, gs.text_large]}>Run</Text>
-      </Pressable>
-    </View>
-  );
-};
+//   return (
+//     <View style={[gs.paddingH5, gs.marginV20]}>
+//       <Pressable
+//         style={[
+//           gs.flex_row,
+//           gs.flex1,
+//           gs.padding10,
+//           gs.border_gray,
+//           gs.border_rad5,
+//           gs.justify_around,
+//         ]}
+//         onPress={() => macro()}
+//       >
+//         <Text style={[gs.text_white, gs.text_large]}>Run</Text>
+//       </Pressable>
+//     </View>
+//   );
+// };
 
 const tv_pressButton = async (button, { dispatch, AnimatedFlash }) => {
   console.log("pressing button ... ");
@@ -1189,13 +1188,8 @@ const audio_toggleZone = async ({
 
   toggleAudioLoading(true, setLoading_toggleAudio);
 
-  if (await RequestAudio({ zone, newState })) {
-    dispatch(
-      setActive({
-        [`zone${zone}_active`]: newState,
-        [`zone${zone}_updated`]: true,
-      })
-    );
+  if (await RequestAudio({ zone: zone.zone, newState })) {
+    dispatch(setZone({ zone }));
   }
 
   toggleAudioLoading(false, setLoading_toggleAudio);
@@ -1205,76 +1199,76 @@ const updateAppData = async (dispatch) => {
   const response = await RequestServer(dispatch);
 };
 
-const ardTest = async () => {
-  console.log("running arduino test");
-  const options = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ command: "setAudio/z1-0" }),
-  };
-  const response = await fetch("http://192.168.2.114:3000/espTouch", options);
-  if (!response.ok) return console.error("Bad request!");
+// const ardTest = async () => {
+//   console.log("running arduino test");
+//   const options = {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({ command: "setAudio/z1-0" }),
+//   };
+//   const response = await fetch("http://192.168.2.114:3000/espTouch", options);
+//   if (!response.ok) return console.error("Bad request!");
 
-  const data = await response.json();
-  console.log(`data from ESP8266: '${data.response}'`);
-};
+//   const data = await response.json();
+//   console.log(`data from ESP8266: '${data.response}'`);
+// };
 
-const learnIr = async (vars, dispatch, setState) => {
-  console.log("Learning with vars: ", vars);
-  const success = await requestIr_learn(
-    { source: vars.source, commandName: vars.command },
-    dispatch
-  );
+// const learnIr = async (vars, dispatch, setState) => {
+//   console.log("Learning with vars: ", vars);
+//   const success = await requestIr_learn(
+//     { source: vars.source, commandName: vars.command },
+//     dispatch
+//   );
 
-  setState((oldState) => ({
-    ...oldState,
-    command: "",
-    source: "",
-  }));
-};
+//   setState((oldState) => ({
+//     ...oldState,
+//     command: "",
+//     source: "",
+//   }));
+// };
 
-const emitIr = async ({ source, commandName, dispatch }) => {
-  if (source === undefined) alert(`No source provided (${source})`);
-  else if (!commandName || commandName === "" || commandName === -1)
-    alert(`No command provided (${commandName})`);
-  else console.log(`Sending command (${commandName}) from source (${source})`);
+// const emitIr = async ({ source, commandName, dispatch }) => {
+//   if (source === undefined) alert(`No source provided (${source})`);
+//   else if (!commandName || commandName === "" || commandName === -1)
+//     alert(`No command provided (${commandName})`);
+//   else console.log(`Sending command (${commandName}) from source (${source})`);
 
-  const { success, error } = await requestIr_emit({ source, commandName });
+//   const { success, error } = await requestIr_emit({ source, commandName });
 
-  if (success) {
-    // dispatch(setLastCommand({ lastCommand: command }));
-    console.log("Ir Emitted!");
-  } else alert(`Emit Ir failed (${error})`);
-};
+//   if (success) {
+//     // dispatch(setLastCommand({ lastCommand: command }));
+//     console.log("Ir Emitted!");
+//   } else alert(`Emit Ir failed (${error})`);
+// };
 
-const testIr = async ({ source, code }) => {
-  console.log(`Running testIr with source:${source}, code:${code}`);
-  const { success, error } = await requestIr_custom({
-    source,
-    code,
-  });
+// const testIr = async ({ source, code }) => {
+//   console.log(`Running testIr with source:${source}, code:${code}`);
+//   const { success, error } = await requestIr_custom({
+//     source,
+//     code,
+//   });
 
-  if (!success) alert(`Failed to test ir: ${error}`);
-  else console.log("Successful test");
-};
+//   if (!success) alert(`Failed to test ir: ${error}`);
+//   else console.log("Successful test");
+// };
 
-const macro = async (test, setTest) => {
-  let i = 99;
-  const maxNumber = 20000;
-  let inter;
+// const macro = async (test, setTest) => {
+//   let i = 99;
+//   const maxNumber = 20000;
+//   let inter;
 
-  inter = setInterval(async () => {
-    if (!(await requestIr_custom({ source: "Tv", code: i }))) {
-      alert("Stopped before complete");
-      clearInterval(inter);
-    }
+//   inter = setInterval(async () => {
+//     if (!(await requestIr_custom({ source: "Tv", code: i }))) {
+//       alert("Stopped before complete");
+//       clearInterval(inter);
+//     }
 
-    if (i < maxNumber) i += 1;
-    else clearInterval(inter);
-  }, 1600);
-};
+//     if (i < maxNumber) i += 1;
+//     else clearInterval(inter);
+//   }, 1600);
+// };
 
 export default overview;
 

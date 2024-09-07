@@ -7,11 +7,11 @@
       "commands": {
         "Power": 70,
         "Computer": 7,
-        "Tv": 25
+        "Bedroom Tv": 25
       }
     },
     {
-      "Source": "Tv",
+      "Source": "Bedroom Tv",
       "Id": 1,
       "address": 64,
       "commands": {
@@ -52,6 +52,34 @@
       "Source": "Hdmi Switch",
       "Id": 2,
       "commands": {}
+    }
+  ],
+  "AudioZones": [
+    {
+      "zone": 1,
+      "id": 0,
+      "name": "Bedroom",
+      "active": false,
+      "updated": false
+    },
+    {
+      "zone": 1,
+      "id": 1,
+      "name": "Living Room",
+      "active": false,
+      "updated": false
+    }
+  ],
+  "AudioSources": [
+    {
+      "name": "Bedroom Tv",
+      "id": 0,
+      "controlMethod": "ir"
+    },
+    {
+      "name": "Computer",
+      "id": 1,
+      "controlMethod": "none"
     }
   ]
 }
