@@ -80,7 +80,7 @@ class audioManager {
       console.error(status.errorMessage)
 
     } finally {
-      this.audio.zones.find(zone => zone.id === zoneId) = zone
+      (this.audio.zones.find(zone => zone.id === zoneId)) = zone
       return status
 
     }
