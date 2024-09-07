@@ -1,32 +1,38 @@
-export default async function request_audio({ zone, newState }) {
+export default async function request_audio({ zoneId, newState }) {
+  const status = { success: false, errorMessage: '', audio: {} }
   try {
 
-    console.log('request audio ------')
-
+    const url = `${process.env.EXPO_PUBLIC_SERVER_URL}/espAudio_set`
     const options = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ zone, newState })
+      body: JSON.stringify({ zoneId, newState })
     }
-    console.log('server url: ', process.env.EXPO_PUBLIC_SERVER_URL)
-    const url = `${process.env.EXPO_PUBLIC_SERVER_URL}/espAudio_set`
+
     const result = await fetch(url, options)
-    console.log('result: ', result)
-    const parsed = await result.json()
-    console.log('parsed: ', parsed)
+
+    if (result.status === 400)
+      throw new Error(`Failed to reach server`)
+
+    const { audio, errorMessage } = await result.json()
 
     if (result.status !== 200)
-      throw new Error(`Error code ${result.status}: ${parsed.message}`)
-    else
-      return true
+      throw new Error(`Server responded with fail code ${result.status} (${errorMessage})`)
 
+    status.success = true
+    status.audio = audio
 
   } catch (e) {
-    console.log('caught error at request_audio fetch')
+    status.errorMessage = `(RequestAudio) Failed to change audio state (${e.message})`
+    console.log(status.errorMessage)
     console.error(e)
-    return false
+
+  } finally {
+
+    return status
+
   }
 }
 

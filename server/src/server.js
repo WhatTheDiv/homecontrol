@@ -212,21 +212,11 @@ app.post('/espTouch', async (req, res) => {
 })
 
 app.post('/espAudio_set', async (req, res) => {
-  const { zone, newState } = req.body
+  const { zoneId, newState } = req.body
 
-  const { success, fail, error } = await IrManager.sendCommand_audio({ command: 'setAudio', zone, state: newState })
+  const { success, error, errorMessage } = await AudioManager.audioZone_changeState({ zoneId, newState, IrManager })
 
-  if (!success || fail) {
-    HomeState.audio.zone_1.updated = false
-    HomeState.audio.zone_2.updated = false
-
-    return res.status(502).send({ success: false, error }).end()
-  }
-
-  HomeState.audio["zone_" + zone].updated = true
-  HomeState.audio["zone_" + zone].active = newState ? true : false
-
-  res.status(200).send({ success: true, audio: HomeState.audio })
+  res.status(success ? 200 : 500).send({ success, audio: AudioManager.audio, errorMessage })
 
 })
 

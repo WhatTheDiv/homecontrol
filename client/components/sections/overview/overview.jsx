@@ -22,7 +22,7 @@ import gs, {
   f_gTitle,
   f_hlt,
 } from "../../../assets/styles/globalStyles";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import LoadingIcon from "../../misc/loadingIcon";
 import RequestTv from "../../../js/serverRequests/request_tv";
@@ -35,7 +35,7 @@ import {
   toggleLights_color,
   lights_setInitial,
 } from "../../../js/store/lights_slice";
-import { setActive } from "../../../js/store/audio_slice";
+import { setZones } from "../../../js/store/audio_slice";
 import { addCommand } from "../../../js/store/ir_slice";
 import { SelectList } from "react-native-dropdown-select-list";
 const light_actions = {
@@ -82,7 +82,9 @@ const overview = () => {
   }));
 
   //            Audio Variables
-  const audioZones = useSelector((state) => state.audio.zones);
+  const [audioZones, setAudioZones] = useState(
+    useSelector((state) => state.audio.zones)
+  );
   const audioSources = useSelector((state) => state.audio.sources);
   const lastSourceSelected_id = useSelector(
     (state) => state.audio.lastSourceSelected_id
@@ -123,6 +125,7 @@ const overview = () => {
 
     audio: {
       audioZones,
+      setAudioZones,
       audioSources,
       lastSourceSelected_id,
       audioActive,
@@ -143,7 +146,7 @@ const overview = () => {
       {/* Audio */}
       {render_audio(bus)}
       {/* Ir Commands */}
-      {render_ir(bus)}
+      {/* {render_ir(bus)} */}
       {/* ardTest */}
       {/* {render_ardTest(bus)} */}
     </ScrollView>
@@ -583,6 +586,7 @@ const render_temp = ({ weather, dispatch }) => {
 const render_audio = ({ audio, dispatch }) => {
   const {
     audioZones,
+    setAudioZones,
     audioSources,
     lastSourceSelected_id,
     audioActive,
@@ -610,8 +614,8 @@ const render_audio = ({ audio, dispatch }) => {
           { gap: 5 },
         ]}
       >
-        {audioZones.map((zone) => (
-          <View style={[gs.flex1, {}]}>
+        {audioZones.map((zone, index) => (
+          <View style={[gs.flex1, {}]} key={index}>
             <Pressable
               style={[
                 gs.flex1,
@@ -627,6 +631,7 @@ const render_audio = ({ audio, dispatch }) => {
                   dispatch,
                   AnimatedFade_audio,
                   setLoading_toggleAudio,
+                  setAudioZones,
                 })
               }
             >
@@ -1175,6 +1180,7 @@ const audio_toggleZone = async ({
   dispatch,
   AnimatedFade_audio,
   setLoading_toggleAudio,
+  setAudioZones,
 }) => {
   const toggleAudioLoading = (newState, setter) => {
     if (newState) {
@@ -1187,11 +1193,18 @@ const audio_toggleZone = async ({
   };
 
   toggleAudioLoading(true, setLoading_toggleAudio);
+  const { success, errorMessage, audio } = await RequestAudio({
+    zoneId: zone.id,
+    newState,
+  });
 
-  if (await RequestAudio({ zone: zone.zone, newState })) {
-    dispatch(setZone({ zone }));
+  if (success) {
+    dispatch(setZones({ zones: audio.zones }));
+  } else {
+    console.error(errorMessage);
   }
 
+  setAudioZones;
   toggleAudioLoading(false, setLoading_toggleAudio);
 };
 
