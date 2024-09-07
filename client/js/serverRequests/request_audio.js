@@ -31,6 +31,7 @@ export default async function request_audio({ zoneId, newState }) {
 
   } finally {
 
+    console.log("Returning from RequestAudio: ", status.audio)
     return status
 
   }
