@@ -50,7 +50,8 @@ const HomeState = {
     indoor_temp: 0,
     indoor_humidity: 0,
     showTwoDay: true,
-    updated: false
+    updated: false,
+    isWarmDayTrigger: 75
   },
   tv: {
     power: false,

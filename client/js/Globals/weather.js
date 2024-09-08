@@ -16,42 +16,33 @@ export function determineTempColor({ val, feelsObj, inside = false, humidity = f
       ? feelsObj.hotDay
       : feelsObj.coldDay;
 
-  log && console.group("determineTempColor")
-  log && console.log('values passed: ', { val, feelsObj, inside, humidity, schemeWarm })
-  log && console.log('feelScale: ', feelScale)
+
 
   const feelsHot = feelScale.hot;
   const feelsCold = feelScale.cold;
 
   const v = Number(val);
 
-  log && console.log('coldDay?: ', inside ? feelsObj.inside : "isWarmDay" ? "hotDay" : "coldDay")
-  log && console.log('schemeWarm: ', schemeWarm)
+  log && console.log({ value: val, inside, schemeWarm, humidity, humidInside: v >= feelScale.h_high && inside, goodHumidityInside: v > feelScale.h_low && inside, dryInside: v <= feelScale.h_low && inside })
 
   if (humidity) {
     // High Humidity
-    if (v >= feelScale.h_high && inside)
-      return '#12EBFF'
-    else if (v >= feelScale.h_high && schemeWarm)
+    if (v >= feelScale.h_high && (inside || schemeWarm))
       return hot_hotColor
-    else if (v >= feelScale.h_high && !schemeWarm)
-      return hot_coldColor
+    else if (v >= feelScale.h_high && !inside && !schemeWarm)
+      return orangeColor
 
     // Good Humidity
-    if (v > feelScale.h_low && inside)
-      return '#12EBFF'
-    else if (v > feelScale.h_low && schemeWarm)
-      return cold_coldColor
-    else if (v > feelScale.h_low && !schemeWarm)
+    if (v > feelScale.h_low && (inside || schemeWarm))
+      return orangeColor
+    else if (v > feelScale.h_low && !inside && !schemeWarm)
       return cold_hotColor
 
     // Low Humidity
-    if (v <= feelScale.h_low && inside)
-      return '#12EBFF'
-    else if (v <= feelScale.h_low && schemeWarm)
-      return orangeColor
-    else if (v <= feelScale.h_low && !schemeWarm)
-      return mid_coldColor
+    if (v <= feelScale.h_low && (inside || schemeWarm))
+      return cold_hotColor
+    else if (v <= feelScale.h_low && !inside && !schemeWarm)
+      return cold_coldColor
 
     // Out of bounds
     else {
@@ -59,29 +50,16 @@ export function determineTempColor({ val, feelsObj, inside = false, humidity = f
       return orangeColor
     }
   }
-  // if (humidity) {
-  //   if (v >= feelScale.h_high)
-  //     return inside
-  //       ? hot_hotColor
-  //       : schemeWarm
-  //         ? hot_hotColor
-  //         : hot_coldColor;
-  //   else if (v <= feelScale.h_low)
-  //     return inside ? orangeColor : schemeWarm ? orangeColor : mid_coldColor;
-  //   else return inside ? schemeWarm ? cold_hotColor : cold_coldColor;
-  //   // else return schemeWarm ? cold_hotColor : cold_coldColor;
-  // }
 
   if (inside) {
-    if (v >= feelScale.tooHot) return hot_hotColor;
-    else if (v >= feelScale.hot) return orangeColor;
-    else if (v >= feelScale.cold) return cold_hotColor;
-    else if (v >= feelScale.tooCold) return cold_coldColor;
-    // else if (v >= feelScale.tooCold) return mid_coldColor;
-    else return cold_coldColor;
+    if (v >= feelScale.tooHot) return hot_hotColor; // too hot
+    else if (v >= feelScale.hot) return orangeColor; // hot
+    else if (v > feelScale.cold && v < feelScale.hot) return cold_hotColor// warm
+    else if (v <= feelScale.tooCold) return cold_coldColor; // chilly
+    else if (v <= feelScale.cold) return mid_coldColor; // cold
   }
 
-  const hotColor = schemeWarm ? hot_hotColor : hot_coldColor;
+  const hotColor = schemeWarm ? hot_hotColor : orangeColor;
   const midColor = schemeWarm ? orangeColor : mid_coldColor;
   const coldColor = schemeWarm ? cold_hotColor : cold_coldColor;
 

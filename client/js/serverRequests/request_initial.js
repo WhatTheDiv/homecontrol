@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { updateWeather } from "../store/weather_slice";
+import { updateWeather, updateFeels } from "../store/weather_slice";
 import { setLoaded, setFailMessage } from '../store/ui_slice'
 import { setRGB, lights_setInitial, lights_setDefaults } from "../store/lights_slice";
 import { setLastSourceSelected_id, setAudioActive, setInitialAudio } from "../store/audio_slice";
@@ -69,16 +69,17 @@ export default async function request_initial(dispatch) {
       await getWeather().then(({ outdoorTemp, outdoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low, }) => {
         dispatch(updateWeather({ outdoorTemp, outdoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low }))
       }).catch(e => {
-        console.error('Failed to get weather')
+        console.error(`Failed to get weather (${e.message})`)
       })
 
       await getServerState({ timeout: 5000 }).then(({ lights, temp, tv, audio, ir, irServices, video }) => {
-        const { indoorTemp, indoorHumidity } = temp
+        const { indoorTemp, indoorHumidity, isWarmDayTrigger } = temp
 
         console.log("request initial : ", video)
 
         dispatch(setTvState({ power: tv.power, input: tv.input }))
         dispatch(updateWeather({ indoorTemp, indoorHumidity }))
+        dispatch(updateFeels({ warmDay: isWarmDayTrigger }))
         dispatch(setSource({ ...video }))
         dispatch(setInitialAudio({ ...audio }))
         dispatch(setServices_replace({ services: [...irServices] }))
@@ -161,14 +162,11 @@ const getWeather = async () => {
   const locationCode = 2083757
   const weatherapiurl = "http://dataservice.accuweather.com"
 
-  if (process.env.EXPO_PUBLIC_WEATHER_API_KEY === 'false') {
-    console.log('Not bothering Weather with a request ... ')
-    return DEFAULTS.weather
-  }
-  if (process.env.EXPO_PUBLIC_WEATHER_API_KEY.length <= 0) {
-    console.error('Problem with weather API key')
-  }
-  else console.log(`Getting weather data from ${process.env.EXPO_PUBLIC_WEATHER_API_URL}/forecasts/v1/daily/5day/${locationCode}?apikey=${process.env.EXPO_PUBLIC_WEATHER_API_KEY}&details=true&metric=false`)
+  if (process.env.EXPO_PUBLIC_WEATHER_API_KEY === 'false')
+    throw new Error('Not bothering weather with request.')
+
+  if (process.env.EXPO_PUBLIC_WEATHER_API_KEY.length <= 0)
+    throw new Error('Problem with weather API key')
 
   const getCurrentTemperature = new Promise(async res => {
     try {
@@ -231,9 +229,6 @@ const getWeather = async () => {
       res(DEFAULTS.weather.forecast)
     }
   })
-
-
-
 
   const [currentTemperature, forecast] = await Promise.all([getCurrentTemperature, getForecast])
   const { today, tomorrow } = forecast
@@ -298,7 +293,8 @@ const getServerState = async ({ timeout = 7000 }) => {
       },
       temp: {
         indoorTemp: temp.indoor_temp,
-        indoorHumidity: temp.indoor_humidity
+        indoorHumidity: temp.indoor_humidity,
+        isWarmDayTrigger: temp.isWarmDayTrigger
       },
       tv: {
         power: tv.power,

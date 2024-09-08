@@ -79,8 +79,10 @@ const weather = createSlice({
 
     },
     updateFeels: (state, action) => {
-      if (action.payload.warmDay !== undefined)
+      if (action.payload.warmDay !== undefined) {
         state.feels.warmDay = action.payload.warmDay
+        state.feels.isWarmDay = state.outdoorTemp_high >= action.payload.warmDay ? true : false
+      }
 
       if (action.payload.hotDay?.hot !== undefined)
         state.feels.hotDay.hot = action.payload.hotDay?.hot

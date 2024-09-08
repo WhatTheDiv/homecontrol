@@ -12,7 +12,6 @@ const settings = () => {
 
   const feelsObj = useSelector((state) => state.weather.feels);
   const feels_inside = useSelector((state) => state.weather.feels.inside);
-  console.log(feels_inside);
   const feels_coldDay = useSelector((state) => state.weather.feels.coldDay);
   const feels_hotDay = useSelector((state) => state.weather.feels.hotDay);
   const feels_warmDayAt = useSelector((state) => state.weather.feels.warmDay);
@@ -75,6 +74,18 @@ const render_tempSettings = ({ feels }) => {
         }),
       },
       {
+        display: "Warm",
+        val:
+          (feels_inside.cold + 1).toString() +
+          " - " +
+          (feels_inside.hot - 1).toString(),
+        color: determineTempColor({
+          val: feels_inside.cold + 1,
+          feelsObj,
+          inside: true,
+        }),
+      },
+      {
         display: "Cold",
         val: feels_inside.cold,
         color: determineTempColor({
@@ -84,7 +95,7 @@ const render_tempSettings = ({ feels }) => {
         }),
       },
       {
-        display: "Too Cold",
+        display: "Chilly",
         val: feels_inside.tooCold,
         color: determineTempColor({
           val: feels_inside.tooCold,
@@ -98,6 +109,7 @@ const render_tempSettings = ({ feels }) => {
         color: determineTempColor({
           val: feels_inside.h_high,
           feelsObj,
+          inside: true,
           humidity: true,
         }),
       },
@@ -110,6 +122,7 @@ const render_tempSettings = ({ feels }) => {
         color: determineTempColor({
           val: feels_inside.h_low + 1,
           feelsObj,
+          inside: true,
           humidity: true,
         }),
       },
@@ -119,13 +132,14 @@ const render_tempSettings = ({ feels }) => {
         color: determineTempColor({
           val: feels_inside.h_low,
           feelsObj,
+          inside: true,
           humidity: true,
         }),
       },
     ],
     coldDay: [
       {
-        display: "Hot",
+        display: "Warm",
         val: feels_coldDay.hot,
         color: determineTempColor({
           val: feels_coldDay.hot,
@@ -135,7 +149,20 @@ const render_tempSettings = ({ feels }) => {
         }),
       },
       {
-        display: "Cold",
+        display: "Okay",
+        val:
+          (feels_coldDay.cold + 1).toString() +
+          " - " +
+          (feels_coldDay.hot - 1).toString(),
+        color: determineTempColor({
+          val: feels_coldDay.cold + 1,
+          feelsObj,
+          overrideDayFeel: true,
+          coldDay: true,
+        }),
+      },
+      {
+        display: "Chilly",
         val: feels_coldDay.cold,
         color: determineTempColor({
           val: feels_coldDay.cold,
@@ -182,10 +209,22 @@ const render_tempSettings = ({ feels }) => {
     ],
     hotDay: [
       {
-        display: "Hot",
+        display: "Too Hot",
         val: feels_hotDay.hot,
         color: determineTempColor({
           val: feels_hotDay.hot,
+          feelsObj,
+          overrideDayFeel: true,
+        }),
+      },
+      {
+        display: "Warm",
+        val:
+          (feels_hotDay.cold + 1).toString() +
+          " - " +
+          (feels_hotDay.hot - 1).toString(),
+        color: determineTempColor({
+          val: feels_hotDay.cold + 1,
           feelsObj,
           overrideDayFeel: true,
         }),
