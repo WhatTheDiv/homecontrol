@@ -157,7 +157,7 @@ app.get('/initialState', async (req, res) => {
   const irServices = IrManager.services
 
 
-  res.status(400).send({ ...HomeState, irServices, audio, video }).end();
+  res.status(200).send({ ...HomeState, irServices, audio, video }).end();
 })
 
 app.post('/test', async (req, res) => {
