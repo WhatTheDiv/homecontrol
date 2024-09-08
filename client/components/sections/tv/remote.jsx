@@ -185,7 +185,7 @@ const remote = () => {
           <Text style={[gs.text_xlarge, gs.text_gray, {}]}>+</Text>
         </Pressable>
         {/*  Compact Options display  */}
-        {/* <Animated.View
+        <Animated.View
           style={[
             gs.absolute,
             gs.align_center,
@@ -195,22 +195,54 @@ const remote = () => {
         >
           <Text
             style={[
+              gs.text_gray,
+              gs.text_xsmall,
+              {
+                borderBottomColor: gray_a,
+                borderBottomWidth: 1,
+              },
+            ]}
+          >
+            Target
+          </Text>
+          <Text
+            style={[
               gs.text_orange,
               gs.text_medium,
               gs.text_right,
-              { marginBottom: 10 },
+              { marginBottom: 15 },
             ]}
           >
             {
-              sourceList.find((source) => source.Id === videoControlTarget)
-                .SourceName
+              video_sourceList.find(
+                (source) => source.id === videoControlTarget
+              ).name
+            }
+          </Text>
+          <Text
+            style={[
+              gs.text_gray,
+              gs.text_xsmall,
+              {
+                borderBottomColor: gray_a,
+                borderBottomWidth: 1,
+              },
+            ]}
+          >
+            Audio Source
+          </Text>
+          <Text style={[gs.text_orange, gs.text_medium, { marginBottom: 15 }]}>
+            {
+              audio_sourceList.find(
+                (source) => source.id === audio_lastSourceSelected
+              ).name
             }
           </Text>
           <Text
             style={[
               gs.align_end,
               gs.text_gray,
-              gs.text_medium,
+              gs.text_xsmall,
               gs.text_right,
               {
                 borderBottomColor: gray_a,
@@ -220,19 +252,17 @@ const remote = () => {
           >
             Active Zones
           </Text>
-          {[...Object.keys(audioZoneList)]
-            .filter(
-              (RawAudioSourceName) => audioZoneList[RawAudioSourceName].active
-            )
-            .map((RawAudioSourceName, index) => (
+          {audio_zoneList
+            .filter((zoneObj) => zoneObj.active)
+            .map((zoneObj, index) => (
               <Text
-                style={[gs.text_gray, gs.text_medium, gs.text_right]}
+                style={[gs.text_orange, gs.text_medium, gs.text_right]}
                 key={index}
               >
-                {audioZoneList[RawAudioSourceName].name}
+                {zoneObj.name}
               </Text>
             ))}
-        </Animated.View> */}
+        </Animated.View>
         {/* Power */}
         <View style={[gs.flex_row, styles.tv_section]}>
           {/* - - - - - - - - - - - - - - - - - - - POWER - - - - - - - - - - - - - - - - - - - */}
@@ -273,12 +303,16 @@ const remote = () => {
             onPress={() =>
               pressButton(
                 bus,
-                passedSourceIsTarget(bus, "Living Room") ? "Home" : "Menu"
+                passedSourceIsTarget(bus.video, "Living Room Tv")
+                  ? "Home"
+                  : "Menu"
               )
             }
           >
             <Text style={[btnTxtColor]}>
-              {passedSourceIsTarget(bus, "Living Room") ? "Home" : "Menu"}
+              {passedSourceIsTarget(bus.video, "Living Room Tv")
+                ? "Home"
+                : "Menu"}
             </Text>
           </Pressable>
           {/* - - - - - - - - - - - - - - - - - - - BACK - - - - - - - - - - - - - - - - - - - */}
@@ -394,7 +428,7 @@ const remote = () => {
           </Pressable>
         </View>
         {/* Quick Link Set for Living Room*/}
-        {passedSourceIsTarget(bus, "Living Room") && (
+        {passedSourceIsTarget(bus.video, "Living Room Tv") && (
           <View style={[gs.flex_row, gs.align_center, styles.tv_section]}>
             {/* - - - - - - - - - - - - - - - - - - - PLEX - - - - - - - - - - - - - - - - - - - */}
             <Pressable
@@ -459,7 +493,7 @@ const remote = () => {
           </View>
         )}
         {/* Quick Link Set for Bedroom*/}
-        {passedSourceIsTarget(bus, "Bedroom") && (
+        {passedSourceIsTarget(bus.video, "Bedroom Tv") && (
           <View style={[gs.flex_row, gs.align_center, styles.tv_section]}>
             {/* - - - - - - - - - - - - - - - - - - - SLEEP - - - - - - - - - - - - - - - - - - - */}
             <Pressable
@@ -871,15 +905,17 @@ const indicateButtonState = ({ video }) => {
   //                                        Return false if Living Room Tv power is off
   if (!tvState.power) return false;
   //                                        Return false if Bedroom Tv source is selected
-  // else if (passedSourceIsTarget(source, "Bedroom")) return false;
+  else if (passedSourceIsTarget(video, "Bedroom Tv")) return false;
   //                                        Otherwise return true
   else return true;
 };
 
-const passedSourceIsTarget = ({ video }, sourceName) => {
-  const { videoControlTarget, video_sourceList } = video;
+const passedSourceIsTarget = (
+  { videoControlTarget, video_sourceList },
+  sourceName
+) => {
   if (
-    sourceList.find((source) => source.Id === videoControlTarget).SourceName ===
+    video_sourceList.find((source) => source.id === videoControlTarget).name ===
     sourceName
   )
     return true;
