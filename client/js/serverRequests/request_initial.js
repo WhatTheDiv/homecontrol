@@ -75,6 +75,8 @@ export default async function request_initial(dispatch) {
       await getServerState({ timeout: 5000 }).then(({ lights, temp, tv, audio, ir, irServices, video }) => {
         const { indoorTemp, indoorHumidity } = temp
 
+        console.log("request initial : ", video)
+
         dispatch(setTvState({ power: tv.power, input: tv.input }))
         dispatch(updateWeather({ indoorTemp, indoorHumidity }))
         dispatch(setSource({ ...video }))

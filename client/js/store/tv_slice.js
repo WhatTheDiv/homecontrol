@@ -3,11 +3,6 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
   power: false,
   input: { id: 'null', name: 'null' },
-  sources: {
-    list: [],
-    defaultSource: 0,
-    defaultSourceType: 'last'
-  },
   video: {
     videoSources: [],
     lastSource_id: 0,

@@ -132,6 +132,8 @@ const remote = () => {
     },
   };
 
+  console.log(bus);
+
   return (
     <ScrollView style={[gs.relative]}>
       {/*  Options Drawer  */}
@@ -170,7 +172,7 @@ const remote = () => {
           <Text style={[gs.text_xlarge, gs.text_gray, {}]}>+</Text>
         </Pressable>
         {/*  Compact Options display  */}
-        <Animated.View
+        {/* <Animated.View
           style={[
             gs.absolute,
             gs.align_center,
@@ -217,7 +219,7 @@ const remote = () => {
                 {audioZoneList[RawAudioSourceName].name}
               </Text>
             ))}
-        </Animated.View>
+        </Animated.View> */}
         {/* Power */}
         <View style={[gs.flex_row, styles.tv_section]}>
           {/* - - - - - - - - - - - - - - - - - - - POWER - - - - - - - - - - - - - - - - - - - */}
@@ -258,16 +260,12 @@ const remote = () => {
             onPress={() =>
               pressButton(
                 bus,
-                passedSourceIsTarget(bus.source, "Living Room")
-                  ? "Home"
-                  : "Menu"
+                passedSourceIsTarget(bus, "Living Room") ? "Home" : "Menu"
               )
             }
           >
             <Text style={[btnTxtColor]}>
-              {passedSourceIsTarget(bus.source, "Living Room")
-                ? "Home"
-                : "Menu"}
+              {passedSourceIsTarget(bus, "Living Room") ? "Home" : "Menu"}
             </Text>
           </Pressable>
           {/* - - - - - - - - - - - - - - - - - - - BACK - - - - - - - - - - - - - - - - - - - */}
@@ -383,7 +381,7 @@ const remote = () => {
           </Pressable>
         </View>
         {/* Quick Link Set for Living Room*/}
-        {passedSourceIsTarget(bus.source, "Living Room") && (
+        {passedSourceIsTarget(bus, "Living Room") && (
           <View style={[gs.flex_row, gs.align_center, styles.tv_section]}>
             {/* - - - - - - - - - - - - - - - - - - - PLEX - - - - - - - - - - - - - - - - - - - */}
             <Pressable
@@ -448,7 +446,7 @@ const remote = () => {
           </View>
         )}
         {/* Quick Link Set for Bedroom*/}
-        {passedSourceIsTarget(bus.source, "Bedroom") && (
+        {passedSourceIsTarget(bus, "Bedroom") && (
           <View style={[gs.flex_row, gs.align_center, styles.tv_section]}>
             {/* - - - - - - - - - - - - - - - - - - - SLEEP - - - - - - - - - - - - - - - - - - - */}
             <Pressable
@@ -694,7 +692,6 @@ const render_options = ({ animations, video, audio, dispatch }) => {
 
         <View style={[gs.flex1, gs.marginV10, gs.relative]}>
           {audio_zoneList.map((zone, index) => {
-            const zoneObj = audioZoneList[zoneName];
             const zoneActiveHighlighter = useSharedValue(zone.active);
             const ZoneActiveHighlighter_AnimationStyle = useAnimatedStyle(
               () => ({
@@ -710,7 +707,6 @@ const render_options = ({ animations, video, audio, dispatch }) => {
             return (
               <View style={[gs.flex1]} key={index}>
                 <Pressable
-                  key={source.Id}
                   style={[
                     gs.paddingH30,
                     gs.justify_center,
@@ -859,29 +855,28 @@ const setAudioSource = async ({ commandName, anim }) => {
 const flashStatusButton = ({ statusButtonFlash }) =>
   (statusButtonFlash.value = true);
 
-const indicateButtonState = ({ tvState, source }) => {
-  const { videoControlTarget, sourceList } = source;
+const indicateButtonState = ({ video }) => {
+  const { tvState } = video;
+  // const { videoControlTarget, sourceList } = source;
 
   console.log("tv state: ", tvState);
 
   //                                        Return false if Living Room Tv power is off
   if (!tvState.power) return false;
   //                                        Return false if Bedroom Tv source is selected
-  else if (passedSourceIsTarget(source, "Bedroom")) return false;
+  // else if (passedSourceIsTarget(source, "Bedroom")) return false;
   //                                        Otherwise return true
   else return true;
 };
 
-const passedSourceIsTarget = (
-  { videoControlTarget, sourceList },
-  sourceName
-) => {
-  if (
-    sourceList.find((source) => source.Id === videoControlTarget).SourceName ===
-    sourceName
-  )
-    return true;
-  else return false;
+const passedSourceIsTarget = (bus, sourceName) => {
+  // if (
+  //   sourceList.find((source) => source.Id === videoControlTarget).SourceName ===
+  //   sourceName
+  // )
+  //   return true;
+  // else return false;
+  return true;
 };
 
 const styles = StyleSheet.create({
