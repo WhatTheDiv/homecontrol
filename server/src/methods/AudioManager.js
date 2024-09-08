@@ -133,7 +133,7 @@ class audioManager {
     try {
       if (!IrManager.isAlive)
         throw new Error(`IrManager is not alive`)
-      else if (audioSwitch === undefined)
+      else if (source === undefined)
         throw new Error(`Audio Switch details not loaded`)
 
       if (source === undefined)
