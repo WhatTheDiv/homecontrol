@@ -261,7 +261,9 @@ app.post('/espSource_set', async (req, res) => {
 app.post('/video_setLastControlTarget', (req, res) => {
   const { lastSourceId } = req.body
 
-  VideoControlManager.updateLastSource({ videoSourceIndex: lastSourceId })
+  console.log("lastSourceId: ", lastSourceId)
+  // VideoControlManager.updateLastSource({ videoSourceIndex: lastSourceId })
+  VideoControlManager.lastSource_id = lastSourceId
 
   res.status(200).end();
 })
