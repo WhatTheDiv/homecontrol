@@ -144,7 +144,7 @@ const overview = () => {
       {/* lights */}
       {render_lights(bus)}
       {/* Audio */}
-      {render_audio(bus)}
+      {audioZones.length >= 1 && render_audio(bus)}
       {/* Ir Commands */}
       {/* {render_ir(bus)} */}
       {/* ardTest */}

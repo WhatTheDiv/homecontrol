@@ -21,8 +21,7 @@ const loading = () => {
 };
 
 const handle_initialLoad = async (dispatch) => {
-  const response = await RequestServer(dispatch);
-  if (response) router.replace("(app)");
+  if (await RequestServer(dispatch)) router.replace("(app)");
   else router.replace("/fallback");
 };
 

@@ -75,7 +75,6 @@ export default async function request_initial(dispatch) {
       await getServerState({ timeout: 5000 }).then(({ lights, temp, tv, audio, ir, irServices, video }) => {
         const { indoorTemp, indoorHumidity, isWarmDayTrigger } = temp
 
-        console.log("request initial : ", video)
 
         dispatch(setTvState({ power: tv.power, input: tv.input }))
         dispatch(updateWeather({ indoorTemp, indoorHumidity }))
@@ -90,7 +89,7 @@ export default async function request_initial(dispatch) {
           defaultOffAnimation: lights.defaultOffAnimation,
         }))
       }).catch(e => {
-        console.error('Failed to get update from server')
+        console.error(`Failed to get update from server (${e.message})`)
       })
 
       dispatch(setLoaded(true))
@@ -258,8 +257,6 @@ const getServerState = async ({ timeout = 7000 }) => {
 
     const url = `${process.env.EXPO_PUBLIC_SERVER_URL}/initialState`
 
-    console.log('Getting server data from ...', process.env.EXPO_PUBLIC_SERVER_URL)
-
     const controller = new AbortController()
     const id = setTimeout(() => controller.abort(), timeout)
 
@@ -268,9 +265,8 @@ const getServerState = async ({ timeout = 7000 }) => {
     })
     clearTimeout(id)
 
-    if (!response.ok) {
-      console.error('Server response not OK')
-      return DEFAULTS.serverState
+    if (response.status !== 200) {
+      throw new Error(`Fail response returned from server (${response.status})`)
     }
 
     const { lights, temp, tv, audio, ir, irServices, video } = await response.json()

@@ -113,4 +113,4 @@ const weather = createSlice({
 
 export default weather.reducer
 
-export const { updateWeather } = weather.actions
+export const { updateWeather, updateFeels } = weather.actions
