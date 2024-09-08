@@ -45,3 +45,29 @@ export default async function request_tv(button, dispatch) {
     }
   })
 }
+
+export async function request_updateLastTarget({ lastSourceId }) {
+  const status = { success: false, errorMessage: '' }
+
+  try {
+    const url = `${process.env.EXPO_PUBLIC_SERVER_URL}/video_setLastControlTarget`
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ lastSourceId })
+    }
+    const response = await fetch(url, options)
+
+    if (response.status !== 200)
+      throw new Error(`Error code from server: ${response.status}`)
+
+    status.success = true
+
+  } catch (e) {
+    status.errorMessage = `Failed to update last video target variable (${e.message})`
+  } finally {
+    return status
+  }
+}

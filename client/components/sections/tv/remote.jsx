@@ -9,7 +9,9 @@ import gs, {
   orangeColor,
 } from "../../../assets/styles/globalStyles";
 import React, { useState, useEffect } from "react";
-import RequestTv from "../../../js/serverRequests/request_tv";
+import RequestTv, {
+  request_updateLastTarget,
+} from "../../../js/serverRequests/request_tv";
 import RequestAudio, {
   changeAudioSource,
 } from "../../../js/serverRequests/request_audio";
@@ -790,9 +792,13 @@ const pressButton_Ir = async (bus, button) => {
   }
 };
 
-const changeTarget = (target, anim_selectionIndex) => {
-  console.log(target);
+const changeTarget = async (target, anim_selectionIndex) => {
   anim_selectionIndex.value = target.id;
+
+  const { success, errorMessage } = await request_updateLastTarget({
+    lastSourceId: target.id,
+  });
+  if (!success) alert(`Failed to sync with server: ${errorMessage}`);
 };
 
 const setAudioZoneActive = async ({

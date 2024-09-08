@@ -13,7 +13,7 @@ export default async function request_audio({ zoneId, newState }) {
 
     const result = await fetch(url, options)
 
-    if (result.status === 400)
+    if (result.status === 404)
       throw new Error(`Failed to reach server`)
 
     const { audio, errorMessage } = await result.json()
@@ -82,7 +82,7 @@ export async function changeAudioSource({ sourceName }) {
 
     const result = await fetch(url, options)
 
-    if (result.status === 400)
+    if (result.status === 404)
       throw new Error(`Failed to reach server`)
 
     const { success, errorMessage } = await result.json()

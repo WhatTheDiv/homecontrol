@@ -258,6 +258,14 @@ app.post('/espSource_set', async (req, res) => {
   res.status(success ? 200 : 500).send({ success, errorMessage }).end()
 })
 
+app.post('/video_setLastControlTarget', (req, res) => {
+  const { lastSourceId } = req.body
+
+  VideoControlManager.updateLastSource({ videoSourceIndex: lastSourceId })
+
+  res(200).end();
+})
+
 app.post('/epsIr_emit', async (req, res) => {
   const { source, commandName } = req.body
 
