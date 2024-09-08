@@ -102,7 +102,7 @@ const remote = () => {
   }));
 
   //            Animation - Highlight-Selected-Target
-  const sourceHighlighter_selectedId = useSharedValue(-1);
+  const sourceHighlighter_selectedId = useSharedValue(video_lastSourceId);
   //            Animation - Highlight-Selected-AudioSource
   const audioSelectionHighlighter_cmdName = useSharedValue("");
 

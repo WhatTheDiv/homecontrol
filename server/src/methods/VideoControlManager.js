@@ -17,7 +17,7 @@ class videoControlManager {
   }
 
   updateLastSource({ videoSourceIndex }) {
-    console.log('updating last source ... ')
+    console.log('updating last source to ', videoSourceIndex)
     if (videoSourceIndex >= 0)
       this.lastSource_id = videoSourceIndex
   }
