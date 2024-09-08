@@ -126,10 +126,10 @@ class audioManager {
   }
 
   async audioSource_changeSource({ IrManager, targetSourceName }) {
-    console.log('checkpoint', this.audio.sources)
     const status = { success: false, error: false, errorMessage: '' }
     const source = this.audio.sources.find(source => source.name === targetSourceName)
 
+    console.log('checkpoint', this.audio.sources)
     try {
       if (!IrManager.isAlive)
         throw new Error(`IrManager is not alive`)
