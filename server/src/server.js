@@ -254,6 +254,7 @@ app.post('/espSource_set', async (req, res) => {
 
   const { success, error, errorMessage } = await AudioManager[audioSource_Function]({ IrManager, targetSourceName: sourceName, newState: newStateOnlyForPower })
 
+  console.log('Success at set source: ', { success, error, errorMessage })
   res.status(success ? 200 : 500).send({ success, errorMessage }).end()
 })
 
