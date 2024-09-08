@@ -146,7 +146,7 @@ class audioManager {
       this.audio.lastSourceSelected_id = source.id
       status.success = true
 
-      VideoControlManager.updateLastSource({ videoSourceIndex: source.id })
+      VideoControlManager.lastSource_id = source.id
 
     } catch (e) {
       status.error = true
