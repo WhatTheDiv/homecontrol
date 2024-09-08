@@ -145,6 +145,7 @@ class audioManager {
         throw new Error(error)
 
       this.audio.lastSourceSelected_id = source.id
+      status.success = true
 
     } catch (e) {
       status.error = true
