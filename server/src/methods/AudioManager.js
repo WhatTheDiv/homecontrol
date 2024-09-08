@@ -6,7 +6,7 @@ class audioManager {
     this.audio = {
       zones: [],
       sources: [],
-      lastSourceSelected_id: 0,
+      lastSourceSelected_id: 1,
       active: true
     }
   }
@@ -64,6 +64,8 @@ class audioManager {
         throw new Error(`IrManager is not alive`)
 
       const { success, zoneNumber_state, error, errorMessage } = await IrManager.new_sendCommand_audio({ command: 'getAudio' })
+
+      console.log({ zoneNumber_state })
 
       if (error)
         throw new Error(errorMessage)

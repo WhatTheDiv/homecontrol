@@ -21,7 +21,7 @@ class videoControlManager {
       this.video.lastSource_id = videoSourceIndex
   }
 
-  setDefaultSaurce(newSource) {
+  setDefaultSorce(newSource) {
     const defaultSourceOptionIndex = this.defaultSourceOptions.indexOf(newSource)
     if (defaultSourceOptionIndex >= 0)
       this.video.defaultSource = this.defaultSourceOptions[defaultSourceOptionIndex]

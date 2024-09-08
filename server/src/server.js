@@ -151,11 +151,9 @@ app.get('/initialState', async (req, res) => {
   const audio = AudioManager.audio
 
   const video = VideoControlManager.video
-  console.log('video in init: ', video)
 
   // format ir services
   const irServices = IrManager.services
-
 
 
   res.status(200).send({ ...HomeState, irServices, audio, video }).end();
@@ -262,9 +260,10 @@ app.post('/espSource_set', async (req, res) => {
 app.post('/video_setLastControlTarget', (req, res) => {
   const { lastSourceId } = req.body
 
-  console.log("lastSourceId: ", lastSourceId)
-  VideoControlManager.updateLastSource.bind(VideoControlManager)(lastSourceId)
+  if (lastSourceId === undefined)
+    return res.status(500).end();
 
+  VideoControlManager.updateLastSource.bind(VideoControlManager)(lastSourceId)
 
   res.status(200).end();
 })

@@ -104,15 +104,22 @@ const remote = () => {
   //            Animation - Highlight-Selected-Target
   const sourceHighlighter_selectedId = useSharedValue(video_lastSourceId);
   //            Animation - Highlight-Selected-AudioSource
-  const audioSelectionHighlighter_cmdName = useSharedValue("");
+  const audioSelectionHighlighter_cmdName = useSharedValue(
+    audio_sourceList.find((source) => source.id === audio_lastSourceSelected)
+      .name
+  );
 
-  useEffect(() => {
-    console.log("videoControlTarget: ", videoControlTarget);
-    sourceHighlighter_selectedId.value = videoControlTarget;
-    // first
-  }, []);
+  // useEffect(() => {
+  //   console.log("videoControlTarget: ", videoControlTarget);
+  //   sourceHighlighter_selectedId.value = videoControlTarget;
+  //   // first
+  // }, []);
 
-  console.log({ videoControlTarget, video_defaultSource, video_lastSourceId });
+  console.log(`test variables: `, {
+    audioSelectionHighlighter_cmdName: audioSelectionHighlighter_cmdName.value,
+    audio_lastSourceSelected,
+    audio_sourceList,
+  });
   const bus = {
     dispatch,
     video: {
@@ -142,8 +149,6 @@ const remote = () => {
       statusButtonFlash,
     },
   };
-
-  console.log(bus);
 
   return (
     <ScrollView style={[gs.relative]}>
@@ -698,6 +703,7 @@ const render_options = ({ animations, video, audio, dispatch }) => {
 
         <View style={[gs.flex1, gs.marginV10, gs.relative]}>
           {audio_zoneList.map((zone, index) => {
+            console.log("zones ... ", zone);
             const zoneActiveHighlighter = useSharedValue(zone.active);
             const ZoneActiveHighlighter_AnimationStyle = useAnimatedStyle(
               () => ({
