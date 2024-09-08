@@ -86,7 +86,7 @@ const remote = () => {
   }));
 
   //            Animation - Expand-Options-Section
-  const optionsButtonExpanded = useSharedValue(true);
+  const optionsButtonExpanded = useSharedValue(false);
   const optionsButton_AnimationStyle = useAnimatedStyle(() => ({
     height: optionsButtonExpanded.value
       ? withTiming(drawerMaxHeight, { duration: 275 })
@@ -115,11 +115,6 @@ const remote = () => {
   //   // first
   // }, []);
 
-  console.log(`test variables: `, {
-    audioSelectionHighlighter_cmdName: audioSelectionHighlighter_cmdName.value,
-    audio_lastSourceSelected,
-    audio_sourceList,
-  });
   const bus = {
     dispatch,
     video: {
@@ -149,6 +144,8 @@ const remote = () => {
       statusButtonFlash,
     },
   };
+
+  console.log("bus: ", bus);
 
   return (
     <ScrollView style={[gs.relative]}>
@@ -591,7 +588,11 @@ const render_options = ({ animations, video, audio, dispatch }) => {
                   ]}
                   onPress={() => {
                     console.log(source);
-                    changeTarget(source, sourceHighlighter_selectedId);
+                    changeTarget(
+                      source,
+                      sourceHighlighter_selectedId,
+                      setVideoControlTarget
+                    );
                   }}
                 >
                   <Animated.Text
@@ -752,7 +753,9 @@ const render_options = ({ animations, video, audio, dispatch }) => {
 };
 
 const pressButton = async (bus, button) => {
-  const { videoControlTarget, sourceList } = bus.source;
+  const { videoControlTarget } = bus.video;
+
+  console.log(`PressButton - videoControlTarget: ${videoControlTarget}`);
 
   if (videoControlTarget === 0)
     // Living Room Tv Id:0
@@ -762,10 +765,10 @@ const pressButton = async (bus, button) => {
     pressButton_Ir(bus, button);
 };
 
-const pressButton_Ip = async (
-  { statusButtonFlash, tvState, _setTvState, dispatch, source },
-  button
-) => {
+const pressButton_Ip = async ({ animations, dispatch, video }, button) => {
+  const { statusButtonFlash } = animations;
+  const { _setTvState } = video;
+
   const response = await RequestTv(button, dispatch);
 
   if (!response || !response.success) return;
@@ -784,26 +787,34 @@ const pressButton_Ip = async (
   }));
   dispatch(setTvState({ power, input }));
 };
-const pressButton_Ir = async (bus, button) => {
+const pressButton_Ir = async ({ animations }, button) => {
+  const { statusButtonFlash } = animations;
   const { success, error } = await requestIr_emit({
-    source: "Tv",
+    source: "Bedroom Tv",
     commandName: button,
   });
 
-  if (success) flashStatusButton({ statusButtonFlash: bus.statusButtonFlash });
+  if (success) flashStatusButton({ statusButtonFlash });
   else {
     alert(`Ir failed: ${error}`);
     console.log(`%cIr failed: ${error}`, f_err);
   }
 };
 
-const changeTarget = async (target, anim_selectionIndex) => {
+const changeTarget = async (
+  target,
+  anim_selectionIndex,
+  setVideoControlTarget
+) => {
   anim_selectionIndex.value = target.id;
+  setVideoControlTarget(target.id);
 
   const { success, errorMessage } = await request_updateLastTarget({
     lastSourceId: target.id,
-  });
-  if (!success) alert(`Failed to sync with server: ${errorMessage}`);
+  }).then(
+    ({ success, errorMessage }) =>
+      !success && alert(`Failed to sync with server: ${errorMessage}`)
+  );
 };
 
 const setAudioZoneActive = async ({
@@ -824,16 +835,15 @@ const setAudioZoneActive = async ({
     newState,
   });
 
-  if (!success) alert(errorMessage);
-  else
+  if (!success) {
+    zoneActiveHighlighter.value = originalState;
+    alert(errorMessage);
+  } else
     dispatch(
       setZone({
         zone: audio.zones.find((zone) => zone.id === zoneObj.id),
       })
     );
-
-  if (success) {
-  } else zoneActiveHighlighter.value = originalState;
 };
 
 const setAudioSource = async ({ sourceName, anim }) => {
@@ -866,14 +876,14 @@ const indicateButtonState = ({ video }) => {
   else return true;
 };
 
-const passedSourceIsTarget = (bus, sourceName) => {
-  // if (
-  //   sourceList.find((source) => source.Id === videoControlTarget).SourceName ===
-  //   sourceName
-  // )
-  //   return true;
-  // else return false;
-  return true;
+const passedSourceIsTarget = ({ video }, sourceName) => {
+  const { videoControlTarget, video_sourceList } = video;
+  if (
+    sourceList.find((source) => source.Id === videoControlTarget).SourceName ===
+    sourceName
+  )
+    return true;
+  else return false;
 };
 
 const styles = StyleSheet.create({
