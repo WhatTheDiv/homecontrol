@@ -104,6 +104,8 @@ class irManager {
       if (arduinoResponse.indexOf("fail") >= 0)
         throw new Error(arduinoResponse.slice(arduinoResponse.indexOf("fail") + 5) || "noreason:'(")
 
+      console.log('arduino response: ', arduinoResponse)
+
 
       // "success/z1-{active?}/z2-{active}"
       if (command === 'getAudio') {
