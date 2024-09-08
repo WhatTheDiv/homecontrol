@@ -3,7 +3,7 @@ class videoControlManager {
   constructor() {
     this.video = {
       videoSources: [],
-      lastSource_id: -1,
+      lastSource_id: 0,
       defaultSource: 'last'
     }
     this.defaultSourceOptions = [
@@ -16,7 +16,7 @@ class videoControlManager {
       this.video.videoSources = VideoSources
   }
 
-  updateLastSource({ videoSourceIndex }) {
+  updateLastSource(videoSourceIndex) {
     if (videoSourceIndex >= 0)
       this.video.lastSource_id = videoSourceIndex
   }
