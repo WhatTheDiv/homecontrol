@@ -67,7 +67,7 @@ export default async function request_initial(dispatch) {
   return new Promise(async (res) => {
     try {
       await getWeather().then(({ outdoorTemp, outdoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low, }) => {
-        dispatch(updateWeather({ outdoorTemp, outdoorHumidity, indoorTemp, indoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low }))
+        dispatch(updateWeather({ outdoorTemp, outdoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low }))
       }).catch(e => {
         console.error('Failed to get weather')
       })

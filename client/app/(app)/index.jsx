@@ -14,7 +14,7 @@ import { useSelector } from "react-redux";
 import { router, Redirect } from "expo-router";
 
 const index = () => {
-  const [section, setSection] = useState("tv");
+  const [section, setSection] = useState("overview");
   // sections are [ overview, lights, tv, temp, camera, routine ]
   // @ts-ignore
   const loaded = useSelector((state) => state.ui.loaded.value);
