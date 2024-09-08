@@ -129,7 +129,7 @@ class audioManager {
     const status = { success: false, error: false, errorMessage: '' }
     const source = this.audio.sources.find(source => source.name === targetSourceName)
 
-    console.log('checkpoint', this.audio.sources)
+    console.log('checkpoint', source)
     try {
       if (!IrManager.isAlive)
         throw new Error(`IrManager is not alive`)
@@ -146,6 +146,8 @@ class audioManager {
 
       this.audio.lastSourceSelected_id = source.id
       status.success = true
+
+      console.log('Success')
 
     } catch (e) {
       status.error = true
