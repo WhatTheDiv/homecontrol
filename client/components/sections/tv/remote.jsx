@@ -703,7 +703,6 @@ const render_options = ({ animations, video, audio, dispatch }) => {
 
         <View style={[gs.flex1, gs.marginV10, gs.relative]}>
           {audio_zoneList.map((zone, index) => {
-            console.log("zones ... ", zone);
             const zoneActiveHighlighter = useSharedValue(zone.active);
             const ZoneActiveHighlighter_AnimationStyle = useAnimatedStyle(
               () => ({
