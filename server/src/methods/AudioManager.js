@@ -151,7 +151,7 @@ class audioManager {
 
     } catch (e) {
       status.error = true
-      status.errorMessage`---> Failed to toggle audio power (${e.message})`
+      status.errorMessage = `---> Failed to toggle audio power (${e.message})`
       console.error(status.errorMessage)
 
     } finally {
