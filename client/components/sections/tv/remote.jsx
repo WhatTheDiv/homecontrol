@@ -106,11 +106,11 @@ const remote = () => {
   //            Animation - Highlight-Selected-AudioSource
   const audioSelectionHighlighter_cmdName = useSharedValue("");
 
-  // useEffect(() => {
-  //   console.log("videoControlTarget: ", videoControlTarget);
-  //   sourceHighlighter_selectedId.value = videoControlTarget;
-  //   // first
-  // }, []);
+  useEffect(() => {
+    console.log("videoControlTarget: ", videoControlTarget);
+    sourceHighlighter_selectedId.value = videoControlTarget;
+    // first
+  }, []);
 
   console.log({ videoControlTarget, video_defaultSource, video_lastSourceId });
   const bus = {
