@@ -263,8 +263,7 @@ app.post('/video_setLastControlTarget', (req, res) => {
   const { lastSourceId } = req.body
 
   console.log("lastSourceId: ", lastSourceId)
-  // VideoControlManager.updateLastSource({ videoSourceIndex: lastSourceId })
-  VideoControlManager.video.lastSource_id = lastSourceId
+  VideoControlManager.updateLastSource.bind(VideoControlManager)(lastSourceId)
 
 
   res.status(200).end();

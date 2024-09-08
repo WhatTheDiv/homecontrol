@@ -17,11 +17,8 @@ class videoControlManager {
   }
 
   updateLastSource({ videoSourceIndex }) {
-    console.log('updating last source to ', videoSourceIndex)
     if (videoSourceIndex >= 0)
-      this.lastSource_id = videoSourceIndex
-
-    console.log('videoControlManager now:', this.video)
+      this.video.lastSource_id = videoSourceIndex
   }
 
   setDefaultSaurce(newSource) {
