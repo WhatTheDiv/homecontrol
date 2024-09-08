@@ -644,7 +644,7 @@ const render_options = ({ animations, video, audio, dispatch }) => {
                   ]}
                   onPress={() =>
                     setAudioSource({
-                      commandName: command,
+                      sourceName: command,
                       anim: audioSelectionHighlighter_cmdName,
                     })
                   }
@@ -846,9 +846,7 @@ const setAudioSource = async ({ sourceName, anim }) => {
   console.log(sourceName);
   const originalValue = anim.value;
   anim.value = sourceName;
-  const { success, errorMessage } = await changeAudioSource({
-    sourceName,
-  });
+  const { success, errorMessage } = await changeAudioSource({ sourceName });
 
   if (!success) {
     anim.value = originalValue;
