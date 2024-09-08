@@ -65,8 +65,6 @@ class audioManager {
 
       const { success, zoneNumber_state, error, errorMessage } = await IrManager.new_sendCommand_audio({ command: 'getAudio' })
 
-      console.log({ zoneNumber_state })
-
       if (error)
         throw new Error(errorMessage)
 
