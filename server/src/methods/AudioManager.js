@@ -126,7 +126,7 @@ class audioManager {
   }
 
   async audioSource_changeSource({ IrManager, targetSourceName }) {
-    console.log('checkpoint', this)
+    console.log('checkpoint', this.audio.sources)
     const status = { success: false, error: false, errorMessage: '' }
     const source = this.audio.sources.find(source => source.name === targetSourceName)
 
