@@ -23,7 +23,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSelector, useDispatch } from "react-redux";
 import { setTvState } from "../../../js/store/tv_slice";
-import { setActive } from "../../../js/store/audio_slice";
+import { setActive, setZone } from "../../../js/store/audio_slice";
 
 const rippleColor = "green";
 
@@ -100,10 +100,17 @@ const remote = () => {
   }));
 
   //            Animation - Highlight-Selected-Target
-  const sourceHighlighter_selectedId = useSharedValue(0);
+  const sourceHighlighter_selectedId = useSharedValue(-1);
   //            Animation - Highlight-Selected-AudioSource
   const audioSelectionHighlighter_cmdName = useSharedValue("");
 
+  // useEffect(() => {
+  //   console.log("videoControlTarget: ", videoControlTarget);
+  //   sourceHighlighter_selectedId.value = videoControlTarget;
+  //   // first
+  // }, []);
+
+  console.log({ videoControlTarget, video_defaultSource, video_lastSourceId });
   const bus = {
     dispatch,
     video: {
@@ -709,16 +716,12 @@ const render_options = ({ animations, video, audio, dispatch }) => {
                     gs.justify_center,
                     { height: sourceOptionHeight },
                   ]}
-                  onPress={
-                    () => {}
-                    // setAudioZoneActive({
-                    //   zoneName: zone.name,
-                    //   audioZoneList,
-                    //   newState: !zone.active,
-                    //   zoneActiveHighlighter,
-                    //   dispatch,
-                    //   event,
-                    // })
+                  onPress={() =>
+                    setAudioZoneActive({
+                      zoneActiveHighlighter,
+                      zoneObj: zone,
+                      dispatch,
+                    })
                   }
                 >
                   <Animated.Text
@@ -793,48 +796,32 @@ const changeTarget = (target, anim_selectionIndex) => {
 };
 
 const setAudioZoneActive = async ({
-  zoneName,
-  audioZoneList,
-  newState,
   zoneActiveHighlighter,
+  zoneObj,
   dispatch,
-  event,
 }) => {
-  const RawZoneNameArray = Object.keys(audioZoneList);
-  const RawZoneName_selected = RawZoneNameArray.find(
-    (rawZoneName) => audioZoneList[rawZoneName].name === zoneName
-  );
+  // [x] update animation
+  // [x] tell server to turn off zone
 
-  if (RawZoneName_selected === undefined)
-    return alert(
-      `Failed at setAudioZoneActive() - bad input (zoneName: ${zoneName})`
-    );
+  const originalState = zoneObj.active;
+  const newState = !originalState;
 
-  const zone = Number(
-    RawZoneName_selected.slice(RawZoneName_selected.indexOf("_") + 1)
-  );
-
-  if (isNaN(zone) || newState === undefined || zone === undefined)
-    return alert(
-      `Failed at setAudioZoneActive() - input not what was expected (zone = undefined (${
-        zone === undefined
-      }) , newState = undefined (${
-        newState === undefined
-      }), zone = NaN (${isNaN(zone)}))`
-    );
-
-  const originalState = audioZoneList[RawZoneName_selected].active;
   zoneActiveHighlighter.value = newState;
 
-  console.log(event.target.disabled);
+  const { success, errorMessage, audio } = await RequestAudio({
+    zoneId: zoneObj.id,
+    newState,
+  });
 
-  if (await RequestAudio({ zone, newState })) {
+  if (!success) alert(errorMessage);
+  else
     dispatch(
-      setActive({
-        [`zone${zone}_active`]: newState,
-        [`zone${zone}_updated`]: true,
+      setZone({
+        zone: audio.zones.find((zone) => zone.id === zoneObj.id),
       })
     );
+
+  if (success) {
   } else zoneActiveHighlighter.value = originalState;
 };
 
@@ -859,9 +846,6 @@ const flashStatusButton = ({ statusButtonFlash }) =>
 
 const indicateButtonState = ({ video }) => {
   const { tvState } = video;
-  // const { videoControlTarget, sourceList } = source;
-
-  console.log("tv state: ", tvState);
 
   //                                        Return false if Living Room Tv power is off
   if (!tvState.power) return false;

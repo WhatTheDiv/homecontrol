@@ -252,7 +252,7 @@ app.post('/espSource_set', async (req, res) => {
     ? 'audioSource_togglePower'
     : 'audioSource_changeSource'
 
-  const { success, error, errorMessage } = await AudioManager[audioSource_Function]({ IrManager, targetSourceName: sourceName, newState: newStateOnlyForPower })
+  const { success, error, errorMessage } = await AudioManager[audioSource_Function]({ IrManager, targetSourceName: sourceName, newState: newStateOnlyForPower, VideoControlManager })
 
   console.log('Success at set source: ', { success, error, errorMessage })
   res.status(success ? 200 : 500).send({ success, errorMessage }).end()

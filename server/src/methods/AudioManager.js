@@ -125,11 +125,10 @@ class audioManager {
     return true
   }
 
-  async audioSource_changeSource({ IrManager, targetSourceName }) {
+  async audioSource_changeSource({ IrManager, targetSourceName, VideoControlManager }) {
     const status = { success: false, error: false, errorMessage: '' }
     const source = this.audio.sources.find(source => source.name === targetSourceName)
 
-    console.log('checkpoint', source)
     try {
       if (!IrManager.isAlive)
         throw new Error(`IrManager is not alive`)
@@ -147,7 +146,7 @@ class audioManager {
       this.audio.lastSourceSelected_id = source.id
       status.success = true
 
-      console.log('Success')
+      VideoControlManager.updateLastSource({ videoSourceIndex: source.id })
 
     } catch (e) {
       status.error = true
