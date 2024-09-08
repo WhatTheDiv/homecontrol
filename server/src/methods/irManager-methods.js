@@ -110,7 +110,7 @@ class irManager {
       if (command === 'getAudio') {
         console.log('(getAudio) arduino response: ', arduinoResponse)
         const stringIndex_z1 = arduinoResponse.indexOf("z1-") + 3
-        const stringIndex_z2 = arduinoResponse.indexOf("z1-") + 3
+        const stringIndex_z2 = arduinoResponse.indexOf("z2-") + 3
 
         status.zoneNumber_state = {
           1: arduinoResponse.slice(stringIndex_z1, stringIndex_z1 + 1) === '0' ? false : true,
