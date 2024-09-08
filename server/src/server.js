@@ -151,6 +151,7 @@ app.get('/initialState', async (req, res) => {
   const audio = AudioManager.audio
 
   const video = VideoControlManager.video
+  console.log('video in init: ', video)
 
   // format ir services
   const irServices = IrManager.services
