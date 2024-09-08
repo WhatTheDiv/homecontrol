@@ -838,13 +838,17 @@ const setAudioZoneActive = async ({
   } else zoneActiveHighlighter.value = originalState;
 };
 
-const setAudioSource = async ({ commandName, anim }) => {
+const setAudioSource = async ({ sourceName, anim }) => {
   // [x] set animation values
   // [ ] send server request to push button
   // [ ] modify last request sent
+
+  console.log(sourceName);
   const originalValue = anim.value;
-  anim.value = commandName;
-  const { success, errorMessage } = await changeAudioSource({ commandName });
+  anim.value = sourceName;
+  const { success, errorMessage } = await changeAudioSource({
+    sourceName,
+  });
 
   if (!success) {
     anim.value = originalValue;
