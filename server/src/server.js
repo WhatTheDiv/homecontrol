@@ -263,7 +263,7 @@ app.post('/video_setLastControlTarget', (req, res) => {
 
   VideoControlManager.updateLastSource({ videoSourceIndex: lastSourceId })
 
-  res(200).end();
+  res.status(200).end();
 })
 
 app.post('/epsIr_emit', async (req, res) => {
