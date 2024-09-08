@@ -10,7 +10,9 @@ import gs, {
 } from "../../../assets/styles/globalStyles";
 import React, { useState, useEffect } from "react";
 import RequestTv from "../../../js/serverRequests/request_tv";
-import RequestAudio from "../../../js/serverRequests/request_audio";
+import RequestAudio, {
+  changeAudioSource,
+} from "../../../js/serverRequests/request_audio";
 import { requestIr_emit } from "../../../js/serverRequests/request_ir";
 import Animated, {
   useSharedValue,
@@ -98,7 +100,7 @@ const remote = () => {
   }));
 
   //            Animation - Highlight-Selected-Target
-  const sourceHighlighter_selectedIndex = useSharedValue(0);
+  const sourceHighlighter_selectedId = useSharedValue(0);
   //            Animation - Highlight-Selected-AudioSource
   const audioSelectionHighlighter_cmdName = useSharedValue("");
 
@@ -126,7 +128,7 @@ const remote = () => {
       optionsButtonExpanded,
       optionsButton_AnimationStyle,
       drawerMaxHeight,
-      sourceHighlighter_selectedIndex,
+      sourceHighlighter_selectedId,
       audioSelectionHighlighter_cmdName,
       statusButtonFlash,
     },
@@ -495,7 +497,7 @@ const render_options = ({ animations, video, audio, dispatch }) => {
     optionsButtonExpanded,
     optionsButton_AnimationStyle,
     drawerMaxHeight,
-    sourceHighlighter_selectedIndex,
+    sourceHighlighter_selectedId,
     audioSelectionHighlighter_cmdName,
     statusButtonFlash,
   } = animations;
@@ -552,35 +554,31 @@ const render_options = ({ animations, video, audio, dispatch }) => {
         </Text>
 
         <View style={[gs.flex1, gs.marginV10, gs.relative]}>
-          {video_sourceList.map((source) => {
+          {video_sourceList.map((source, index) => {
             // ----------------------               Animation Style
             const sourceHighlighter_AnimationStyle = useAnimatedStyle(() => ({
               color:
-                sourceHighlighter_selectedIndex.value === source.Id
+                sourceHighlighter_selectedId.value === source.id
                   ? withTiming(orangeColor, { duration: 250 })
                   : withTiming("gray", { duration: 250 }),
               opacity:
-                sourceHighlighter_selectedIndex.value === source.Id
+                sourceHighlighter_selectedId.value === source.id
                   ? withTiming(1, { duration: 250 })
                   : withTiming(unselectedOpacity, { duration: 250 }),
             }));
 
             return (
-              <View style={[gs.flex1]} key={source.Id}>
+              <View style={[gs.flex1]} key={index}>
                 <Pressable
                   style={[
                     gs.paddingH30,
                     gs.justify_center,
                     { height: sourceOptionHeight },
                   ]}
-                  onPress={
-                    () => {}
-                    // changeTarget(
-                    //   source.Id,
-                    //   sourceHighlighter_selectedIndex,
-                    //   setVideoControlTarget
-                    // )
-                  }
+                  onPress={() => {
+                    console.log(source);
+                    changeTarget(source, sourceHighlighter_selectedId);
+                  }}
                 >
                   <Animated.Text
                     style={[
@@ -644,12 +642,11 @@ const render_options = ({ animations, video, audio, dispatch }) => {
                     gs.justify_center,
                     { height: sourceOptionHeight },
                   ]}
-                  onPress={
-                    () => {}
-                    // setAudioSource({
-                    //   commandName: command,
-                    //   anim: audioSelectionHighlighter_cmdName,
-                    // })
+                  onPress={() =>
+                    setAudioSource({
+                      commandName: command,
+                      anim: audioSelectionHighlighter_cmdName,
+                    })
                   }
                 >
                   <Animated.Text
@@ -790,13 +787,9 @@ const pressButton_Ir = async (bus, button) => {
   }
 };
 
-const changeTarget = (
-  newIndex,
-  animationValue_index,
-  setVideoControlTarget_index
-) => {
-  animationValue_index.value = newIndex;
-  setVideoControlTarget_index(newIndex);
+const changeTarget = (target, anim_selectionIndex) => {
+  console.log(target);
+  anim_selectionIndex.value = target.id;
 };
 
 const setAudioZoneActive = async ({
@@ -845,11 +838,18 @@ const setAudioZoneActive = async ({
   } else zoneActiveHighlighter.value = originalState;
 };
 
-// XXX Finish this
 const setAudioSource = async ({ commandName, anim }) => {
-  // [ ] set animation values
+  // [x] set animation values
   // [ ] send server request to push button
   // [ ] modify last request sent
+  const originalValue = anim.value;
+  anim.value = commandName;
+  const { success, errorMessage } = await changeAudioSource({ commandName });
+
+  if (!success) {
+    anim.value = originalValue;
+    alert(errorMessage);
+  }
 };
 
 const flashStatusButton = ({ statusButtonFlash }) =>

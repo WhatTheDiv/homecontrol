@@ -278,7 +278,7 @@ const getServerState = async ({ timeout = 7000 }) => {
       return DEFAULTS.serverState
     }
 
-    const { lights, temp, tv, audio, ir, irServices } = await response.json()
+    const { lights, temp, tv, audio, ir, irServices, video } = await response.json()
 
 
     return {
@@ -307,7 +307,8 @@ const getServerState = async ({ timeout = 7000 }) => {
       },
       audio,
       ir,
-      irServices
+      irServices,
+      video
     }
   } catch (error) {
     console.log('Failed to hit server - ', error.message)

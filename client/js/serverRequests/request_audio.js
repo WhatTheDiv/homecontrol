@@ -63,3 +63,41 @@ export async function change_zone_name({ newName, zone }) {
     return false
   }
 }
+
+export async function changeAudioSource({ sourceName }) {
+  const status = { success: false, errorMessage: '' }
+
+  try {
+    if (sourceName === undefined)
+      throw new Error('No source given')
+
+    const url = `${process.env.EXPO_PUBLIC_SERVER_URL}/espSource_set`
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ sourceName })
+    }
+
+    const result = await fetch(url, options)
+
+    if (result.status === 400)
+      throw new Error(`Failed to reach server`)
+
+    const { success, errorMessage } = await result.json()
+
+    if (result.status !== 200)
+      throw new Error(`Server responded with fail code ${result.status} (${errorMessage})`)
+
+    status.success = true
+
+  } catch (e) {
+    status.errorMessage = `(RequestAudio) Failed to change audio source (${e.message})`
+    console.log(status.errorMessage)
+  } finally {
+
+    return status
+
+  }
+}

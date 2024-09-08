@@ -1,4 +1,3 @@
-const fs = require('node:fs/promises');
 
 class videoControlManager {
   constructor() {
