@@ -9,47 +9,15 @@ class audioManager {
       lastSourceSelected_id: 0,
       active: true
     }
-
   }
 
   // returns { av:this, success, errorMessage }
-  async activate() {
-    const extractAudioData = async () => {
-      const status = { AudioZones: [], AudioSources: [], error: false, errorMessage: '' }
-      try {
-        const res = await fs.readFile('src/StoredData/avData.json', { encoding: 'utf-8' })
-        const audioData = JSON.parse(res)
-        status.AudioZones = audioData.AudioZones
-        status.AudioSources = audioData.AudioSources
-
-      } catch (e) {
-        status.error = true
-        status.errorMessage = `--> Failed to extract audioData: (${e.message})`
-      }
-      finally {
-        return status
-      }
-    }
-
-    const status = { av: {}, success: false, errorMessage: '' }
-
-    try {
-      const { AudioZones, AudioSources, error, errorMessage } = await extractAudioData()
-
-      if (error)
-        throw new Error(errorMessage)
-
+  async activate({ AudioZones, AudioSources }) {
+    if (AudioZones !== undefined)
       this.audio.zones = AudioZones
+
+    if (AudioSources !== undefined)
       this.audio.sources = AudioSources
-
-    } catch (e) {
-      console.error(e)
-
-    } finally {
-      status.av = this
-      return status
-
-    }
   }
 
   // returns { success, error, errorMessage }
@@ -186,6 +154,8 @@ class audioManager {
       return status
     }
   }
+
+
 
 
 }

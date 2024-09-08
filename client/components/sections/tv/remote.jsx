@@ -26,29 +26,44 @@ import { setActive } from "../../../js/store/audio_slice";
 const rippleColor = "green";
 
 const remote = () => {
+  const dispatch = useDispatch();
+
   const btnTxtSize = gs.text_medium;
   const btnTxtColor = gs.text_white;
   const drawerMaxHeight = 140;
 
-  const dispatch = useDispatch();
-
-  const sourceList = useSelector((state) => state.tv.sources.list);
   const irServices = useSelector((state) => state.ir.services);
+
+  //            Video Variables
+  const video_defaultSource = useSelector(
+    (state) => state.tv.video.defaultSource
+  );
+  const video_sourceList = useSelector((state) => state.tv.video.videoSources);
+  const video_lastSourceId = useSelector(
+    (state) => state.tv.video.lastSource_id
+  );
+  const [videoControlTarget, setVideoControlTarget] = useState(
+    video_defaultSource === "last"
+      ? video_lastSourceId
+      : video_sourceList.find((s) => s.name === video_defaultSource).id
+  );
+  const [tvState, _setTvState] = useState(useSelector((state) => state.tv));
+
+  //            Audio Variables
+  const audio_sourceList = useSelector((state) => state.audio.sources);
+  const audio_zoneList = useSelector((state) => state.audio.zones);
+  const audio_lastSourceSelected = useSelector(
+    (state) => state.audio.lastSourceSelected_id
+  );
+  const audio_active = useSelector((state) => state.audio.active);
+  const [lastAudioSwitchCommand, setLastAudioSwitchCommand] = useState(
+    audio_lastSourceSelected
+  );
   const audioSwitchObj =
     irServices.find((service) => service.Source === "Audio Switch").commands ||
     {};
-  console.log("audio switch object: ", audioSwitchObj);
-  const audioZoneList = useSelector((state) => state.audio);
-  const defaultSourceType = useSelector(
-    (state) => state.tv.sources.defaultSourceType
-  );
-  const defaultSource = useSelector((state) => state.tv.sources.defaultSource);
 
-  const [tvState, _setTvState] = useState(useSelector((state) => state.tv));
-  const [videoControlTarget, setVideoControlTarget] = useState(0); // set this to default
-  const [lastAudioSwitchCommand, setLastAudioSwitchCommand] = useState(0); // set this to default
-
-  // Animation - Flash-Bar-On-Click
+  //            Animation - Flash-Bar-On-Click
   const statusButtonFlash = useSharedValue(false);
   const statusButton_AnimationStyle = useAnimatedStyle(() => ({
     opacity: statusButtonFlash.value
@@ -66,7 +81,7 @@ const remote = () => {
       : 0,
   }));
 
-  // Animation - Expand-Options-Section
+  //            Animation - Expand-Options-Section
   const optionsButtonExpanded = useSharedValue(true);
   const optionsButton_AnimationStyle = useAnimatedStyle(() => ({
     height: optionsButtonExpanded.value
@@ -82,32 +97,38 @@ const remote = () => {
       : withTiming(1, { duration: 275 }),
   }));
 
-  // Animation - Highlight-Selected-Source
+  //            Animation - Highlight-Selected-Target
   const sourceHighlighter_selectedIndex = useSharedValue(0);
+  //            Animation - Highlight-Selected-AudioSource
   const audioSelectionHighlighter_cmdName = useSharedValue("");
 
   const bus = {
-    statusButtonFlash,
-    tvState,
-    _setTvState,
     dispatch,
+    video: {
+      video_defaultSource,
+      video_sourceList,
+      video_lastSourceId,
+      videoControlTarget,
+      setVideoControlTarget,
+      tvState,
+      _setTvState,
+    },
+    audio: {
+      audio_sourceList,
+      audio_zoneList,
+      audio_lastSourceSelected,
+      audio_active,
+      lastAudioSwitchCommand,
+      setLastAudioSwitchCommand,
+      audioSwitchObj,
+    },
     animations: {
       optionsButtonExpanded,
       optionsButton_AnimationStyle,
       drawerMaxHeight,
       sourceHighlighter_selectedIndex,
       audioSelectionHighlighter_cmdName,
-    },
-    source: {
-      sourceList,
-      defaultSource,
-      defaultSourceType,
-      audioZoneList,
-      videoControlTarget,
-      setVideoControlTarget,
-      audioSwitchObj,
-      lastAudioSwitchCommand,
-      setLastAudioSwitchCommand,
+      statusButtonFlash,
     },
   };
 
@@ -471,25 +492,34 @@ const remote = () => {
 
 export default remote;
 
-const render_options = ({ animations, source, dispatch }) => {
-  console.log(source);
+const render_options = ({ animations, video, audio, dispatch }) => {
   const {
+    optionsButtonExpanded,
     optionsButton_AnimationStyle,
     drawerMaxHeight,
     sourceHighlighter_selectedIndex,
     audioSelectionHighlighter_cmdName,
+    statusButtonFlash,
   } = animations;
   const {
-    sourceList,
-    defaultSource,
-    defaultSourceType,
-    audioZoneList,
+    video_defaultSource,
+    video_sourceList,
+    video_lastSourceId,
     videoControlTarget,
     setVideoControlTarget,
-    audioSwitchObj,
+    tvState,
+    _setTvState,
+  } = video;
+  const {
+    audio_sourceList,
+    audio_zoneList,
+    audio_lastSourceSelected,
+    audio_active,
     lastAudioSwitchCommand,
     setLastAudioSwitchCommand,
-  } = source;
+    audioSwitchObj,
+  } = audio;
+
   const sourceOptionHeight = 45;
   const unselectedOpacity = 0.3;
 
@@ -502,6 +532,7 @@ const render_options = ({ animations, source, dispatch }) => {
         { overflow: "hidden", borderBottomWidth: 1, borderBottomColor: "gray" },
       ]}
     >
+      {/* Command Target */}
       <View
         style={[
           gs.flex1,
@@ -519,12 +550,11 @@ const render_options = ({ animations, source, dispatch }) => {
             { borderBottomWidth: 1, borderBottomColor: "gray" },
           ]}
         >
-          Video Source
+          Target
         </Text>
 
-        {/* Video Source */}
         <View style={[gs.flex1, gs.marginV10, gs.relative]}>
-          {sourceList.map((source) => {
+          {video_sourceList.map((source) => {
             // ----------------------               Animation Style
             const sourceHighlighter_AnimationStyle = useAnimatedStyle(() => ({
               color:
@@ -540,20 +570,18 @@ const render_options = ({ animations, source, dispatch }) => {
             return (
               <View style={[gs.flex1]} key={source.Id}>
                 <Pressable
-                  key={source.Id}
                   style={[
                     gs.paddingH30,
                     gs.justify_center,
                     { height: sourceOptionHeight },
                   ]}
                   onPress={
-                    () =>
-                      changeTarget(
-                        source.Id,
-                        sourceHighlighter_selectedIndex,
-                        setVideoControlTarget
-                      )
-                    // (sourceHighlighter_selectedIndex.value = source.Id)
+                    () => {}
+                    // changeTarget(
+                    //   source.Id,
+                    //   sourceHighlighter_selectedIndex,
+                    //   setVideoControlTarget
+                    // )
                   }
                 >
                   <Animated.Text
@@ -564,7 +592,7 @@ const render_options = ({ animations, source, dispatch }) => {
                       sourceHighlighter_AnimationStyle,
                     ]}
                   >
-                    {source.SourceName}
+                    {source.name}
                   </Animated.Text>
                 </Pressable>
               </View>
@@ -573,6 +601,7 @@ const render_options = ({ animations, source, dispatch }) => {
         </View>
       </View>
       <View style={[gs.marginV10, { width: 1, backgroundColor: gray_a }]} />
+      {/* Audio Source */}
       <View
         style={[
           gs.flex1,
@@ -593,7 +622,6 @@ const render_options = ({ animations, source, dispatch }) => {
           Audio Source
         </Text>
 
-        {/* Audio Source */}
         <View style={[gs.flex1, gs.marginV10, gs.relative]}>
           {[...Object.keys(audioSwitchObj)].map((command, index) => {
             // ----------------------               Animation Style
@@ -618,12 +646,12 @@ const render_options = ({ animations, source, dispatch }) => {
                     gs.justify_center,
                     { height: sourceOptionHeight },
                   ]}
-                  // XXX Finish this
-                  onPress={() =>
-                    setAudioSource({
-                      commandName: command,
-                      anim: audioSelectionHighlighter_cmdName,
-                    })
+                  onPress={
+                    () => {}
+                    // setAudioSource({
+                    //   commandName: command,
+                    //   anim: audioSelectionHighlighter_cmdName,
+                    // })
                   }
                 >
                   <Animated.Text
@@ -643,6 +671,7 @@ const render_options = ({ animations, source, dispatch }) => {
         </View>
       </View>
       <View style={[gs.marginV10, { width: 1, backgroundColor: gray_a }]} />
+      {/* Zones */}
       <View
         style={[
           gs.flex1,
@@ -662,18 +691,11 @@ const render_options = ({ animations, source, dispatch }) => {
         >
           Zones
         </Text>
-        {/* Zones */}
 
         <View style={[gs.flex1, gs.marginV10, gs.relative]}>
-          {[...Object.keys(audioZoneList)].map((zoneName, index) => {
+          {audio_zoneList.map((zone, index) => {
             const zoneObj = audioZoneList[zoneName];
-            console.log(
-              "setting zone ",
-              zoneObj.name,
-              " active - ",
-              zoneObj.active
-            );
-            const zoneActiveHighlighter = useSharedValue(zoneObj.active);
+            const zoneActiveHighlighter = useSharedValue(zone.active);
             const ZoneActiveHighlighter_AnimationStyle = useAnimatedStyle(
               () => ({
                 color: zoneActiveHighlighter.value
@@ -694,15 +716,16 @@ const render_options = ({ animations, source, dispatch }) => {
                     gs.justify_center,
                     { height: sourceOptionHeight },
                   ]}
-                  onPress={(event) =>
-                    setAudioZoneActive({
-                      zoneName: zoneObj.name,
-                      audioZoneList,
-                      newState: !zoneObj.active,
-                      zoneActiveHighlighter,
-                      dispatch,
-                      event,
-                    })
+                  onPress={
+                    () => {}
+                    // setAudioZoneActive({
+                    //   zoneName: zone.name,
+                    //   audioZoneList,
+                    //   newState: !zone.active,
+                    //   zoneActiveHighlighter,
+                    //   dispatch,
+                    //   event,
+                    // })
                   }
                 >
                   <Animated.Text
@@ -713,7 +736,7 @@ const render_options = ({ animations, source, dispatch }) => {
                       ZoneActiveHighlighter_AnimationStyle,
                     ]}
                   >
-                    {zoneObj.name}
+                    {zone.name}
                   </Animated.Text>
                 </Pressable>
               </View>

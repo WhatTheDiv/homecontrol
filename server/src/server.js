@@ -1,4 +1,5 @@
 // @ts-nocheck
+const fs = require('node:fs/promises');
 const express = require('express')
 const cors = require('cors')
 const app = express()
@@ -8,6 +9,7 @@ const { getIndoorTempReading } = require('./methods/gpio-methods.js')
 const { DaemonClass } = require('./methods/Daemon')
 const { irManager } = require('./methods/irManager-methods.js')
 const audioManager = require('./methods/AudioManager.js')
+const videoControlManager = require('./methods/VideoControlManager.js')
 
 
 app.use(cors())
@@ -58,8 +60,8 @@ const HomeState = {
     tvURL: 'http://192.168.10.109:8060',
     sources: {
       list: [
-        { SourceName: 'Living Room', Id: 0 },
-        { SourceName: 'Bedroom', Id: 1 }
+        { SourceName: 'Living Room Tv', Id: 0 },
+        { SourceName: 'Bedroom Tv', Id: 1 }
       ],
       defaultSource: 0,
       defaultSourceType: 'last' /*        || 'favorite'          */
@@ -93,6 +95,7 @@ const HomeState = {
 const Daemon = new DaemonClass()
 const IrManager = new irManager({ ip: '192.168.2.116', port: 80 })
 const AudioManager = new audioManager()
+const VideoControlManager = new videoControlManager()
 
 app.get('/initialState', async (req, res) => {
   // Get tv state // 
@@ -147,12 +150,14 @@ app.get('/initialState', async (req, res) => {
   await AudioManager.audioZone_updatetState({ IrManager })
   const audio = AudioManager.audio
 
+  const video = VideoControlManager.video
+
   // format ir services
   const irServices = IrManager.services
 
 
 
-  res.status(200).send({ ...HomeState, irServices, audio }).end();
+  res.status(200).send({ ...HomeState, irServices, audio, video }).end();
 })
 
 app.post('/test', async (req, res) => {
@@ -449,9 +454,23 @@ app.post('/remote', async (req, res) => {
 })
 
 app.listen(port, async () => {
+  const avData = await fs
+    .readFile('src/StoredData/avData.json', { encoding: 'utf-8' })
+    .then(res => ({ ...JSON.parse(res) }))
+    .catch(e => {
+      console.error("Failed to extract AvData.")
+      return {
+        IrCommands: [],
+        AudioZones: [],
+        AudioSources: [],
+        VideoSources: []
+      }
+    })
+
   Daemon.init.bind(Daemon)()
-  await IrManager.activate.bind(IrManager)()
-  await AudioManager.activate.bind(AudioManager)()
+  IrManager.activate.bind(IrManager)(avData)
+  AudioManager.activate.bind(AudioManager)(avData)
+  VideoControlManager.activate.bind(VideoControlManager)(avData)
 
   console.log('Starting server on port [', port, '] ')
 })

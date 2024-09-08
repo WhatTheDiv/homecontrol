@@ -73,13 +73,57 @@
   "AudioSources": [
     {
       "name": "Bedroom Tv",
-      "id": 0,
-      "controlMethod": "ir"
+      "id": 0
     },
     {
       "name": "Computer",
-      "id": 1,
-      "controlMethod": "none"
+      "id": 1
     }
+  ],
+  "VideoSources": [
+    {
+      "name": "Living Room Tv",
+      "id": 0,
+      "controlMethod": "ip"
+    },
+    {
+      "name": "Bedroom Tv",
+      "id": 1,
+      "controlMethod": "ir",
+      "commands": {
+        "Power": 18,
+        "Menu Up": 130,
+        "Menu Down": 131,
+        "Menu Right": 25,
+        "Menu Left": 29,
+        "Volume Up": 26,
+        "Volume Down": 30,
+        "Mute": 16,
+        "Back": 23,
+        "Menu": 128,
+        "Select": 137,
+        "Exit": 88,
+        "Sleep Timer": 21,
+        "Stop": 78,
+        "Sources": 15,
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "4": 4,
+        "5": 5,
+        "6": 6,
+        "7": 7,
+        "8": 8,
+        "9": 9,
+        "Freeze Screen": 76,
+        "Channel Up": 130,
+        "Channel Down": 131,
+        "CC Toggle": 87,
+        "TheaterWide1": 193,
+        "TheaterWide3": 195,
+        "Aspect Ratio Toggle": 84
+      }
+    },
+    {}
   ]
 }

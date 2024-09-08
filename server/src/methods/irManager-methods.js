@@ -9,24 +9,11 @@ class irManager {
     this.services = []
     return this
   }
-  async activate() {
+  async activate({ IrCommands }) {
     this.isAlive = true
-    this.services = await this.extractIrCommands();
-    return this
-  }
 
-  extractSourceList() {
-  }
-  // extracts ir commands and returns them
-  async extractIrCommands() {
-    try {
-      const res = await fs.readFile('src/StoredData/avData.json', { encoding: 'utf-8' })
-      return (JSON.parse(res)).IrCommands
-
-    } catch (e) {
-      console.error(`Failed to extract ir commands: (${e.message})`)
-      return []
-    }
+    if (IrCommands !== undefined)
+      this.services = IrCommands
   }
 
   // returns status { success, fail, error, state}

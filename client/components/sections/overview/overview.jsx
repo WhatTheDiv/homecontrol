@@ -35,7 +35,7 @@ import {
   toggleLights_color,
   lights_setInitial,
 } from "../../../js/store/lights_slice";
-import { setZones } from "../../../js/store/audio_slice";
+import { setZone } from "../../../js/store/audio_slice";
 import { addCommand } from "../../../js/store/ir_slice";
 import { SelectList } from "react-native-dropdown-select-list";
 const light_actions = {
@@ -176,6 +176,7 @@ const render_lights = ({
         ]}
       >
         <Pressable
+          disabled={true}
           onPress={() =>
             lights_toggleState(
               "toggleLightsActive",
@@ -276,7 +277,7 @@ const render_tv = ({
       </View>
       <View style={[gs.flex_row, gs.justify_between]}>
         <Pressable
-          onPress={() => tv_pressButton("power", bus)}
+          onPress={() => tv_pressButton("Power", bus)}
           style={[
             tvPower ? gs.border_green : gs.border_gray,
             gs.padding10,
@@ -331,7 +332,7 @@ const render_tv = ({
       </View>
       <View style={[gs.flex_row, gs.justify_between, gs.marginV5]}>
         <Pressable
-          onPress={() => tv_pressButton("volDown", bus)}
+          onPress={() => tv_pressButton("Volume Down", bus)}
           disabled={!tvPower}
           style={[
             tvPower ? gs.border_green : gs.border_gray,
@@ -348,7 +349,7 @@ const render_tv = ({
           </Text>
         </Pressable>
         <Pressable
-          onPress={() => tv_pressButton("mute", bus)}
+          onPress={() => tv_pressButton("Mute", bus)}
           disabled={!tvPower}
           style={[
             tvPower ? gs.border_green : gs.border_gray,
@@ -366,7 +367,7 @@ const render_tv = ({
           </Text>
         </Pressable>
         <Pressable
-          onPress={() => tv_pressButton("volUp", bus)}
+          onPress={() => tv_pressButton("Volume Up", bus)}
           disabled={!tvPower}
           style={[
             tvPower ? gs.border_green : gs.border_gray,
@@ -641,54 +642,6 @@ const render_audio = ({ audio, dispatch }) => {
             </Pressable>
           </View>
         ))}
-        {/* <View style={[gs.flex1, {}]}>
-          <Pressable
-            style={[
-              gs.flex1,
-              z1.active ? gs.border_green : gs.border_gray,
-              gs.padding10,
-              gs.border_rad5,
-              { opacity: z1.updated ? 1 : 0.5 },
-            ]}
-            onPress={() =>
-              audio_toggleZone({
-                zone: 1,
-                newState: !z1.active,
-                dispatch,
-                AnimatedFade_audio,
-                setLoading_toggleAudio,
-              })
-            }
-          >
-            <Text style={[gs.text_center, gs.text_large, gs.text_white, {}]}>
-              {z1.name}
-            </Text>
-          </Pressable>
-        </View>
-        <View style={[gs.flex1, {}]}>
-          <Pressable
-            style={[
-              gs.flex1,
-              z2.active ? gs.border_green : gs.border_gray,
-              gs.padding10,
-              gs.border_rad5,
-              { opacity: z2.updated ? 1 : 0.5 },
-            ]}
-            onPress={() =>
-              audio_toggleZone({
-                zone: 2,
-                newState: !z2.active,
-                dispatch,
-                AnimatedFade_audio,
-                setLoading_toggleAudio,
-              })
-            }
-          >
-            <Text style={[gs.text_center, gs.text_large, gs.text_white, {}]}>
-              {z2.name}
-            </Text>
-          </Pressable>
-        </View> */}
       </Animated.View>
     </View>
   );
@@ -1199,12 +1152,12 @@ const audio_toggleZone = async ({
   });
 
   if (success) {
-    dispatch(setZones({ zones: audio.zones }));
+    dispatch(setZone({ zone: audio.zones.find((z) => z.id === zone.id) }));
+    setAudioZones([...audio.zones]);
   } else {
     console.error(errorMessage);
   }
 
-  setAudioZones;
   toggleAudioLoading(false, setLoading_toggleAudio);
 };
 

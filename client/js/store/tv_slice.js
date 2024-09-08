@@ -7,6 +7,11 @@ const initialState = {
     list: [],
     defaultSource: 0,
     defaultSourceType: 'last'
+  },
+  video: {
+    videoSources: [],
+    lastSource_id: 0,
+    defaultSource: 'last'
   }
 }
 
@@ -19,14 +24,14 @@ const tv = createSlice({
       if (action.payload.input !== undefined) state.input = action.payload.input
     },
     setSource: (state, action) => {
-      if (action.payload.list !== undefined && action.payload.list.length >= 1)
-        state.sources.list = action.payload.list
+      if (action.payload.videoSources !== undefined && action.payload.videoSources.length >= 1)
+        state.video.videoSources = action.payload.videoSources
 
       if (action.payload.defaultSource !== undefined)
-        state.sources.defaultSource = action.payload.defaultSource
+        state.video.defaultSource = action.payload.defaultSource
 
-      if (action.payload.list.default !== undefined)
-        state.sources.defaultSourceType = action.payload.defaultSourceType
+      if (action.payload.lastSource_id !== undefined)
+        state.video.lastSource_id = action.payload.lastSource_id
     }
   }
 })

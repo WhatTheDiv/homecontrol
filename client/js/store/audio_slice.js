@@ -34,14 +34,13 @@ const audio = createSlice({
       if (action.payload.audioActive !== undefined)
         state.active = action.payload.audioActive
     },
-    setZones: (state, action) => {
-      if (action.payload.zones !== undefined)
-        state.zones = action.payload.zones
-
+    setZone: (state, action) => {
+      if (action.payload.zone !== undefined)
+        state.zones[state.zones.findIndex(z => z.id === action.payload.zone.id)] = action.payload.zone
     }
   }
 })
 
 export default audio.reducer
 
-export const { setLastSourceSelected_id, setAudioActive, setInitialAudio, setZones } = audio.actions
+export const { setLastSourceSelected_id, setAudioActive, setInitialAudio, setZone } = audio.actions

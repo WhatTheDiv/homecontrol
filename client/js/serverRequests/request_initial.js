@@ -72,11 +72,12 @@ export default async function request_initial(dispatch) {
         console.error('Failed to get weather')
       })
 
-      await getServerState({ timeout: 5000 }).then(({ lights, temp, tv, audio, ir, irServices }) => {
+      await getServerState({ timeout: 5000 }).then(({ lights, temp, tv, audio, ir, irServices, video }) => {
         const { indoorTemp, indoorHumidity } = temp
 
         dispatch(setTvState({ power: tv.power, input: tv.input }))
-        dispatch(setSource({ list: [...tv.sources.list], defaultSource: tv.sources.defaultSource, defaultSourceType: tv.sources.defaultSourceType }))
+        dispatch(updateWeather({ indoorTemp, indoorHumidity }))
+        dispatch(setSource({ ...video }))
         dispatch(setInitialAudio({ ...audio }))
         dispatch(setServices_replace({ services: [...irServices] }))
         dispatch(lights_setInitial({ ...lights }))
