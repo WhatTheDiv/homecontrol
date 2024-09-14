@@ -1,5 +1,5 @@
 
-export function isValidFeelValue({ newValue, feelsObj_all, feels_setting, feels_value }) {
+function isValidFeelValue({ newValue, feelsObj_all, feels_setting, feels_value }) {
   const status = { isValid: false, feelsValueToEdit: '', errorMessage: '' }
 
   try {
@@ -70,7 +70,7 @@ export function isValidFeelValue({ newValue, feelsObj_all, feels_setting, feels_
   }
 }
 
-export function createFeelsObj({ feelsObj }) {
+function createFeelsObj({ feelsObj }) {
   const feels_inside = feelsObj.inside
   const feels_hotDay = feelsObj.hotDay
   const feels_coldDay = feelsObj.coldDay
