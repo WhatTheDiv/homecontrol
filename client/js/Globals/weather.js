@@ -80,34 +80,47 @@ export function isValidFeelValue({ newValue, feelsObj_all, feels_setting, feels_
     else if (feels_setting === undefined || !feels_setting)
       throw new Error(`Malformed request (tempSetting:${feels_setting})`)
 
-    else if (feelsObj_all[feels_setting] === undefined || !feelsObj_all[feels_setting] || feelsObj_all[feels_setting][feels_value] === undefined)
-      throw new Error(`Cannot find temp setting`)
+    else if (feelsObj_all[feels_setting] === undefined || !feelsObj_all[feels_setting])
+      throw new Error(`Cannot find existing temp setting`)
 
-    const { tooHot, hot, cold, tooCold, h_high, h_low } = feelsObj_all[feels_setting]
+    const feelsObj = feelsObj_all[feels_setting].find(item => item.display === feels_value)
 
+    if (feelsObj === undefined)
+      throw new Error(`cannot find existing temp value`)
+
+    const feels_key = feelsObj.key
+
+    const val = Number(newValue)
+
+    const feelsItem = {}
+    feelsObj_all[feels_setting].forEach(item => {
+      if (item.key) feelsItem[item.key] = item.val
+    });
+
+    const { tooHot, hot, cold, tooCold, h_high, h_low } = feelsItem
 
     if (feels_setting === 'inside' && (tooHot === undefined || tooCold === undefined))
       throw new Error(`Internal Error incorrect feels object`)
 
     else if (feels_setting === 'inside') {
-      if (feels_value === 'tooHot' && newValue <= hot)
-        throw new Error(`New value (${newValue}) >= lower bounds (hot:${hot})`)
-      else if (feels_value === 'tooCold' && newValue > cold)
-        throw new Error(`New value (${newValue} > lower bounds (cold:${cold}))`)
-      else if (feels_value === 'hot' && newValue >= tooHot)
-        throw new Error(`New value (${newValue} >= upper bounds (tooHot:${tooHot}))`)
-      else if (feels_value === 'cold' && newValue < tooCold)
-        throw new Error(`New value (${newValue} < lower bounds (tooCold:${tooCold}))`)
+      if (feels_key === 'tooHot' && val <= hot)
+        throw new Error(`New value (${val}) >= lower bounds (hot:${hot})`)
+      else if (feels_key === 'tooCold' && val >= cold)
+        throw new Error(`New value (${val} >= lower bounds (cold:${cold}))`)
+      else if (feels_key === 'hot' && val >= tooHot)
+        throw new Error(`New value (${val} >= upper bounds (tooHot:${tooHot}))`)
+      else if (feels_key === 'cold' && val <= tooCold)
+        throw new Error(`New value (${val} < lower bounds (tooCold:${tooCold}))`)
     }
 
-    else if (feels_value === 'hot' && newValue <= cold)
-      throw new Error(`New value (${newValue} < lower bounds (cold:${cold}))`)
-    else if (feels_value === 'cold' && (newValue >= hot))
-      throw new Error(`New value (${newValue} >= upper bounds (hot:${hot}))`)
-    else if (feels_value === 'h_high' && newValue <= h_low)
-      throw new Error(`New value (${newValue} >= upper bounds (h_low:${h_low}))`)
-    else if (feels_value === 'h_low' && newValue > h_high)
-      throw new Error(`New value (${newValue} > upper bounds (h_low:${h_low}))`)
+    if (feels_key === 'hot' && val <= cold)
+      throw new Error(`New value (${val} <= lower bounds (cold:${cold}))`)
+    else if (feels_key === 'cold' && (val >= hot))
+      throw new Error(`New value (${val} >= upper bounds (hot:${hot}))`)
+    else if (feels_key === 'h_high' && val <= h_low)
+      throw new Error(`New value (${val} >= upper bounds (h_low:${h_low}))`)
+    else if (feels_key === 'h_low' && val > h_high)
+      throw new Error(`New value (${val} > upper bounds (h_low:${h_low}))`)
 
     status.isValid = true
 
@@ -121,4 +134,244 @@ export function isValidFeelValue({ newValue, feelsObj_all, feels_setting, feels_
   }
 }
 
-module.exports = { determineTempColor }
+export function createFeelsObj({ feelsObj }) {
+  const feels_inside = feelsObj.inside
+  const feels_hotDay = feelsObj.hotDay
+  const feels_coldDay = feelsObj.coldDay
+  return {
+    inside: [
+      {
+        display: "Too Hot",
+        key: "tooHot",
+        val: feels_inside.tooHot,
+        color: determineTempColor({
+          val: feels_inside.tooHot,
+          feelsObj,
+          inside: true,
+        }),
+      },
+      {
+        display: "Hot",
+        key: "hot",
+        val: feels_inside.hot,
+        color: determineTempColor({
+          val: feels_inside.hot,
+          feelsObj,
+          inside: true,
+        }),
+      },
+      {
+        display: "Warm",
+        val:
+          (feels_inside.cold + 1).toString() +
+          " - " +
+          (feels_inside.hot - 1).toString(),
+        color: determineTempColor({
+          val: feels_inside.cold + 1,
+          feelsObj,
+          inside: true,
+        }),
+      },
+      {
+        display: "Cold",
+        key: "cold",
+        val: feels_inside.cold,
+        color: determineTempColor({
+          val: feels_inside.cold,
+          feelsObj,
+          inside: true,
+        }),
+      },
+      {
+        display: "Chilly",
+        key: "tooCold",
+        val: feels_inside.tooCold,
+        color: determineTempColor({
+          val: feels_inside.tooCold,
+          feelsObj,
+          inside: true,
+        }),
+      },
+      {
+        display: "Humid",
+        key: "h_high",
+        val: feels_inside.h_high,
+        color: determineTempColor({
+          val: feels_inside.h_high,
+          feelsObj,
+          inside: true,
+          humidity: true,
+        }),
+      },
+      {
+        display: "Good Humidity",
+        val:
+          (feels_inside.h_low + 1).toString() +
+          " - " +
+          (feels_inside.h_high - 1).toString(),
+        color: determineTempColor({
+          val: feels_inside.h_low + 1,
+          feelsObj,
+          inside: true,
+          humidity: true,
+        }),
+      },
+      {
+        display: "Dry",
+        key: "h_low",
+        val: feels_inside.h_low,
+        color: determineTempColor({
+          val: feels_inside.h_low,
+          feelsObj,
+          inside: true,
+          humidity: true,
+        }),
+      },
+    ],
+    coldDay: [
+      {
+        display: "Warm",
+        key: "hot",
+        val: feels_coldDay.hot,
+        color: determineTempColor({
+          val: feels_coldDay.hot,
+          feelsObj,
+          overrideDayFeel: true,
+          coldDay: true,
+        }),
+      },
+      {
+        display: "Okay",
+        val:
+          (feels_coldDay.cold + 1).toString() +
+          " - " +
+          (feels_coldDay.hot - 1).toString(),
+        color: determineTempColor({
+          val: feels_coldDay.cold + 1,
+          feelsObj,
+          overrideDayFeel: true,
+          coldDay: true,
+        }),
+      },
+      {
+        display: "Chilly",
+        key: "cold",
+        val: feels_coldDay.cold,
+        color: determineTempColor({
+          val: feels_coldDay.cold,
+          feelsObj,
+          overrideDayFeel: true,
+          coldDay: true,
+        }),
+      },
+      {
+        display: "Humid",
+        key: "h_high",
+        val: feels_coldDay.h_high,
+        color: determineTempColor({
+          val: feels_coldDay.h_high,
+          feelsObj,
+          humidity: true,
+          overrideDayFeel: true,
+          coldDay: true,
+        }),
+      },
+      {
+        display: "Good Humidity",
+        val:
+          (feels_coldDay.h_low + 1).toString() +
+          " - " +
+          (feels_coldDay.h_high - 1).toString(),
+        color: determineTempColor({
+          val: feels_coldDay.h_low + 1,
+          feelsObj,
+          humidity: true,
+          overrideDayFeel: true,
+        }),
+      },
+      {
+        display: "Dry",
+        key: "h_low",
+        val: feels_coldDay.h_low,
+        color: determineTempColor({
+          val: feels_coldDay.h_low,
+          feelsObj,
+          humidity: true,
+          overrideDayFeel: true,
+          coldDay: true,
+        }),
+      },
+    ],
+    hotDay: [
+      {
+        display: "Too Hot",
+        key: "hot",
+        val: feels_hotDay.hot,
+        color: determineTempColor({
+          val: feels_hotDay.hot,
+          feelsObj,
+          overrideDayFeel: true,
+        }),
+      },
+      {
+        display: "Warm",
+        val:
+          (feels_hotDay.cold + 1).toString() +
+          " - " +
+          (feels_hotDay.hot - 1).toString(),
+        color: determineTempColor({
+          val: feels_hotDay.cold + 1,
+          feelsObj,
+          overrideDayFeel: true,
+        }),
+      },
+      {
+        display: "Cold",
+        key: "cold",
+        val: feels_hotDay.cold,
+        color: determineTempColor({
+          val: feels_hotDay.cold,
+          feelsObj,
+          overrideDayFeel: true,
+        }),
+      },
+      {
+        display: "Humid",
+        key: "h_high",
+        val: feels_hotDay.h_high,
+        color: determineTempColor({
+          val: feels_hotDay.h_high,
+          feelsObj,
+          humidity: true,
+          overrideDayFeel: true,
+        }),
+      },
+      {
+        display: "Good Humidity",
+        val:
+          (feels_hotDay.h_low + 1).toString() +
+          " - " +
+          (feels_hotDay.h_high - 1).toString(),
+        color: determineTempColor({
+          val: feels_hotDay.h_low + 1,
+          feelsObj,
+          humidity: true,
+          overrideDayFeel: true,
+        }),
+      },
+      {
+        display: "Dry",
+        key: "h_low",
+        val: feels_hotDay.h_low,
+        color: determineTempColor({
+          val: feels_hotDay.h_low,
+          feelsObj,
+          humidity: true,
+          overrideDayFeel: true,
+        }),
+      },
+    ],
+  };
+}
+
+module.exports = { determineTempColor, isValidFeelValue, createFeelsObj }

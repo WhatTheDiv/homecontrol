@@ -21,9 +21,14 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setName } from "../../js/store/audio_slice";
 import { change_zone_name } from "../../js/serverRequests/request_audio";
-import { determineTempColor, isValidFeelValue } from "../../js/Globals/weather";
+import {
+  createFeelsObj,
+  determineTempColor,
+  isValidFeelValue,
+} from "../../js/Globals/weather";
 import { SelectList } from "react-native-dropdown-select-list";
 import { updateFeels } from "../../js/store/weather_slice";
+import { requestWeather_updateFeels } from "../../js/serverRequests/request_weather";
 
 const settings = () => {
   const dispatch = useDispatch();
@@ -40,240 +45,7 @@ const settings = () => {
 
   const temp_shownSubmitButton = useSharedValue(false);
 
-  const items = {
-    inside: [
-      {
-        display: "Too Hot",
-        key: "tooHot",
-        val: feels_inside.tooHot,
-        color: determineTempColor({
-          val: feels_inside.tooHot,
-          feelsObj,
-          inside: true,
-        }),
-      },
-      {
-        display: "Hot",
-        key: "hot",
-        val: feels_inside.hot,
-        color: determineTempColor({
-          val: feels_inside.hot,
-          feelsObj,
-          inside: true,
-        }),
-      },
-      {
-        display: "Warm",
-        val:
-          (feels_inside.cold + 1).toString() +
-          " - " +
-          (feels_inside.hot - 1).toString(),
-        color: determineTempColor({
-          val: feels_inside.cold + 1,
-          feelsObj,
-          inside: true,
-        }),
-      },
-      {
-        display: "Cold",
-        key: "cold",
-        val: feels_inside.cold,
-        color: determineTempColor({
-          val: feels_inside.cold,
-          feelsObj,
-          inside: true,
-        }),
-      },
-      {
-        display: "Chilly",
-        key: "tooCold",
-        val: feels_inside.tooCold,
-        color: determineTempColor({
-          val: feels_inside.tooCold,
-          feelsObj,
-          inside: true,
-        }),
-      },
-      {
-        display: "Humid",
-        key: "h_high",
-        val: feels_inside.h_high,
-        color: determineTempColor({
-          val: feels_inside.h_high,
-          feelsObj,
-          inside: true,
-          humidity: true,
-        }),
-      },
-      {
-        display: "Good Humidity",
-        val:
-          (feels_inside.h_low + 1).toString() +
-          " - " +
-          (feels_inside.h_high - 1).toString(),
-        color: determineTempColor({
-          val: feels_inside.h_low + 1,
-          feelsObj,
-          inside: true,
-          humidity: true,
-        }),
-      },
-      {
-        display: "Dry",
-        key: "h_low",
-        val: feels_inside.h_low,
-        color: determineTempColor({
-          val: feels_inside.h_low,
-          feelsObj,
-          inside: true,
-          humidity: true,
-        }),
-      },
-    ],
-    coldDay: [
-      {
-        display: "Warm",
-        key: "hot",
-        val: feels_coldDay.hot,
-        color: determineTempColor({
-          val: feels_coldDay.hot,
-          feelsObj,
-          overrideDayFeel: true,
-          coldDay: true,
-        }),
-      },
-      {
-        display: "Okay",
-        val:
-          (feels_coldDay.cold + 1).toString() +
-          " - " +
-          (feels_coldDay.hot - 1).toString(),
-        color: determineTempColor({
-          val: feels_coldDay.cold + 1,
-          feelsObj,
-          overrideDayFeel: true,
-          coldDay: true,
-        }),
-      },
-      {
-        display: "Chilly",
-        key: "cold",
-        val: feels_coldDay.cold,
-        color: determineTempColor({
-          val: feels_coldDay.cold,
-          feelsObj,
-          overrideDayFeel: true,
-          coldDay: true,
-        }),
-      },
-      {
-        display: "Humid",
-        key: "h_high",
-        val: feels_coldDay.h_high,
-        color: determineTempColor({
-          val: feels_coldDay.h_high,
-          feelsObj,
-          humidity: true,
-          overrideDayFeel: true,
-          coldDay: true,
-        }),
-      },
-      {
-        display: "Good Humidity",
-        val:
-          (feels_coldDay.h_low + 1).toString() +
-          " - " +
-          (feels_coldDay.h_high - 1).toString(),
-        color: determineTempColor({
-          val: feels_coldDay.h_low + 1,
-          feelsObj,
-          humidity: true,
-          overrideDayFeel: true,
-        }),
-      },
-      {
-        display: "Dry",
-        key: "h_low",
-        val: feels_coldDay.h_low,
-        color: determineTempColor({
-          val: feels_coldDay.h_low,
-          feelsObj,
-          humidity: true,
-          overrideDayFeel: true,
-          coldDay: true,
-        }),
-      },
-    ],
-    hotDay: [
-      {
-        display: "Too Hot",
-        key: "hot",
-        val: feels_hotDay.hot,
-        color: determineTempColor({
-          val: feels_hotDay.hot,
-          feelsObj,
-          overrideDayFeel: true,
-        }),
-      },
-      {
-        display: "Warm",
-        val:
-          (feels_hotDay.cold + 1).toString() +
-          " - " +
-          (feels_hotDay.hot - 1).toString(),
-        color: determineTempColor({
-          val: feels_hotDay.cold + 1,
-          feelsObj,
-          overrideDayFeel: true,
-        }),
-      },
-      {
-        display: "Cold",
-        key: "cold",
-        val: feels_hotDay.cold,
-        color: determineTempColor({
-          val: feels_hotDay.cold,
-          feelsObj,
-          overrideDayFeel: true,
-        }),
-      },
-      {
-        display: "Humid",
-        key: "h_high",
-        val: feels_hotDay.h_high,
-        color: determineTempColor({
-          val: feels_hotDay.h_high,
-          feelsObj,
-          humidity: true,
-          overrideDayFeel: true,
-        }),
-      },
-      {
-        display: "Good Humidity",
-        val:
-          (feels_hotDay.h_low + 1).toString() +
-          " - " +
-          (feels_hotDay.h_high - 1).toString(),
-        color: determineTempColor({
-          val: feels_hotDay.h_low + 1,
-          feelsObj,
-          humidity: true,
-          overrideDayFeel: true,
-        }),
-      },
-      {
-        display: "Dry",
-        key: "h_low",
-        val: feels_hotDay.h_low,
-        color: determineTempColor({
-          val: feels_hotDay.h_low,
-          feelsObj,
-          humidity: true,
-          overrideDayFeel: true,
-        }),
-      },
-    ],
-  };
+  const items = createFeelsObj({ feelsObj, needColor: true });
 
   const bus = {
     dispatch,
@@ -576,7 +348,7 @@ const render_tempSettings = ({ tempSettings, dispatch }) => {
   );
 };
 
-const button_submitChange = ({
+const button_submitChange = async ({
   newValue,
   items,
   tempSetting,
@@ -584,7 +356,6 @@ const button_submitChange = ({
   dispatch,
 }) => {
   try {
-    console.group(`%cSubmit change`, f_hlt);
     const { isValid, errorMessage } = isValidFeelValue({
       newValue,
       feelsObj_all: items,
@@ -592,23 +363,22 @@ const button_submitChange = ({
       feels_value: tempValue,
     });
 
-    console.log("Is valid? ", isValid);
-    console.log("error: ", errorMessage);
+    if (!isValid) throw new Error(`Not a valid number (${errorMessage})`);
 
-    // if (!isValid)
-    //   throw new Error(`Not a valid number (${errorMessage})`)
+    // run fetch
+    const { success, feels, serverErrorMessage } =
+      await requestWeather_updateFeels({
+        newValue,
+        feels_setting,
+        feels_value,
+      });
 
-    // // run fetch
+    if (!success)
+      throw new Error(`${tempSetting}:${tempValue} - ${serverErrorMessage}`);
 
-    // if (success) {
-    //   dispatch(updateFeels({ [tempSetting]: { [tempValue]: newValue } }));
-    // } else {
-    //   alert(`Failed to update ${tempSetting}:${tempValue} - ${errorMessage}`);
-    // }
+    dispatch(updateFeels({ ...feels }));
   } catch (e) {
-    console.log("just failed.");
-  } finally {
-    console.groupEnd();
+    alert(`Failed to set feels (${e.message})`);
   }
 };
 

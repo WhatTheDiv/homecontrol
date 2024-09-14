@@ -6,6 +6,7 @@ const app = express()
 const port = 3000 //process.argv[2] === 'live' ? 3000 : 3001
 const { handleButtonPress, getTvState, test } = require('./methods/tv-methods.js')
 const { getIndoorTempReading } = require('./methods/gpio-methods.js')
+const { isValidFeelValue, createFeelsObj } = require('./methods/serverMethods.js')
 const { DaemonClass } = require('./methods/Daemon')
 const { irManager } = require('./methods/irManager-methods.js')
 const audioManager = require('./methods/AudioManager.js')
@@ -498,6 +499,26 @@ app.post('/remote', async (req, res) => {
     power: HomeState.tv.power,
     input: HomeState.tv.input
   })
+})
+
+app.post('/setFeels', async (req, res) => {
+  try {
+    const { newValue, feels_setting, feels_value } = req.body
+    const { isValid, feelsValueToEdit, errorMessage } = isValidFeelValue({ newValue, feels_setting, feels_value, feelsObj_all: createFeelsObj({ feelsObj: HomeState.temp.feels }) })
+
+    if (!isValid)
+      throw new Error(`At server: (${errorMessage}) `)
+
+    const feels = HomeState.temp.feels
+
+    feels[feels_setting][feelsValueToEdit] = Number(newValue)
+
+    HomeState.temp.feels = feels
+  } catch (e) {
+    return res.status(500).send({ success: false, serverErrorMessage: e.message })
+  }
+
+  return res.status(200).send({ success: true, feels: HomeState.temp.feels })
 })
 
 app.listen(port, async () => {
