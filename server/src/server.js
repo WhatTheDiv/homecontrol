@@ -51,7 +51,30 @@ const HomeState = {
     indoor_humidity: 0,
     showTwoDay: true,
     updated: false,
-    isWarmDayTrigger: 75
+    isWarmDayTrigger: 75,
+    feels: {
+      warmDay: 70,
+      hotDay: {
+        hot: 80,
+        cold: 65,
+        h_high: 60,
+        h_low: 50
+      },
+      coldDay: {
+        hot: 65,
+        cold: 50,
+        h_high: 40,
+        h_low: 30
+      },
+      inside: {
+        tooHot: 81,
+        hot: 75,
+        cold: 70,
+        tooCold: 65,
+        h_high: 60,
+        h_low: 50
+      }
+    }
   },
   tv: {
     power: false,

@@ -73,12 +73,12 @@ export default async function request_initial(dispatch) {
       })
 
       await getServerState({ timeout: 5000 }).then(({ lights, temp, tv, audio, ir, irServices, video }) => {
-        const { indoorTemp, indoorHumidity, isWarmDayTrigger } = temp
+        const { indoorTemp, indoorHumidity, isWarmDayTrigger, feels } = temp
 
 
         dispatch(setTvState({ power: tv.power, input: tv.input }))
         dispatch(updateWeather({ indoorTemp, indoorHumidity }))
-        dispatch(updateFeels({ warmDay: isWarmDayTrigger }))
+        dispatch(updateFeels({ ...feels }))
         dispatch(setSource({ ...video }))
         dispatch(setInitialAudio({ ...audio }))
         dispatch(setServices_replace({ services: [...irServices] }))

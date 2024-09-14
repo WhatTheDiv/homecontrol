@@ -1,23 +1,14 @@
 import { createSlice, createReducer } from '@reduxjs/toolkit'
 
 const initialState = {
-  // currTemp: 0,
   outdoorTemp: 0,
   outdoorHumidity: 0,
   indoorTemp: 0,
   indoorHumidity: 0,
-  // outdoorHigh: 0,
-  // outdoorLow: 0,
-  // outdoorHighTomorrow: 0,
-  // outdoorLowTomorrow: 0,
   outdoorTemp_high: 0,
   outdoorTemp_low: 0,
   outdoorTemp_tomorrow_high: 0,
   outdoorTemp_tomorrow_low: 0,
-  hot_feelsCold: 65,
-  hot_feelsHot: 80,
-  cold_feelsCold: 50,
-  cold_feelsHot: 65,
   warmDay: 90,
   isWarmDay: true,
   feels: {
@@ -84,29 +75,57 @@ const weather = createSlice({
         state.feels.isWarmDay = state.outdoorTemp_high >= action.payload.warmDay ? true : false
       }
 
-      if (action.payload.hotDay?.hot !== undefined)
-        state.feels.hotDay.hot = action.payload.hotDay?.hot
+      // HotDay
+      if (action.payload.hotDay !== undefined) {
+        if (action.payload.hotDay.hot !== undefined)
+          state.feels.hotDay.hot = action.payload.hotDay.hot
 
-      if (action.payload.hotDay?.cold !== undefined)
-        state.feels.hotDay.cold = action.payload.hotDay.cold
+        if (action.payload.hotDay.cold !== undefined)
+          state.feels.hotDay.cold = action.payload.hotDay.cold
 
-      if (action.payload.coldDay?.hot !== undefined)
-        state.feels.coldDay.hot = action.payload.coldDay.hot
+        if (action.payload.hotDay.h_high !== undefined)
+          state.feels.hotDay.h_high = action.payload.hotDay.h_high
 
-      if (action.payload.coldDay?.cold !== undefined)
-        state.feels.coldDay.cold = action.payload.coldDay.cold
+        if (action.payload.hotDay.h_low !== undefined)
+          state.feels.hotDay.h_low = action.payload.hotDay.h_low
+      }
 
-      if (action.payload.inside?.tooHot !== undefined)
-        state.feels.inside.tooHot = action.payload.inside.tooHot
+      // ColdDay
+      if (action.payload.coldDay !== undefined) {
+        if (action.payload.coldDay.hot !== undefined)
+          state.feels.coldDay.hot = action.payload.coldDay.hot
 
-      if (action.payload.inside?.hot !== undefined)
-        state.feels.inside.hot = action.payload.inside.hot
+        if (action.payload.coldDay.cold !== undefined)
+          state.feels.coldDay.cold = action.payload.coldDay.cold
 
-      if (action.payload.inside?.cold !== undefined)
-        state.feels.inside.cold = action.payload.inside.cold
+        if (action.payload.coldDay.h_high !== undefined)
+          state.feels.coldDay.h_high = action.payload.coldDay.h_high
 
-      if (action.payload.inside?.tooCold !== undefined)
-        state.feels.inside.tooCold = action.payload.inside.tooCold
+        if (action.payload.coldDay.h_low !== undefined)
+          state.feels.coldDay.h_low = action.payload.coldDay.h_low
+      }
+
+      // Inside
+      if (action.payload.inside !== undefined) {
+        if (action.payload.inside.tooHot !== undefined)
+          state.feels.inside.tooHot = action.payload.inside.tooHot
+
+        if (action.payload.inside.hot !== undefined)
+          state.feels.inside.hot = action.payload.inside.hot
+
+        if (action.payload.inside.cold !== undefined)
+          state.feels.inside.cold = action.payload.inside.cold
+
+        if (action.payload.inside.tooCold !== undefined)
+          state.feels.inside.tooCold = action.payload.inside.tooCold
+
+        if (action.payload.inside.h_high !== undefined)
+          state.feels.inside.h_high = action.payload.inside.h_high
+
+        if (action.payload.inside.h_low !== undefined)
+          state.feels.inside.h_low = action.payload.inside.h_low
+      }
+
     }
   }
 })

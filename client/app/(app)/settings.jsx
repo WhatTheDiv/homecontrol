@@ -1,11 +1,29 @@
 // @ts-nocheck
-import { StyleSheet, Text, View, TextInput } from "react-native";
-import gs, { text_medium, text_small } from "../../assets/styles/globalStyles";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  Pressable,
+  Platform,
+} from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import gs, {
+  f_hlt,
+  text_medium,
+  text_small,
+} from "../../assets/styles/globalStyles";
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setName } from "../../js/store/audio_slice";
 import { change_zone_name } from "../../js/serverRequests/request_audio";
-import { determineTempColor } from "../../js/Globals/weather";
+import { determineTempColor, isValidFeelValue } from "../../js/Globals/weather";
+import { SelectList } from "react-native-dropdown-select-list";
+import { updateFeels } from "../../js/store/weather_slice";
 
 const settings = () => {
   const dispatch = useDispatch();
@@ -16,47 +34,17 @@ const settings = () => {
   const feels_hotDay = useSelector((state) => state.weather.feels.hotDay);
   const feels_warmDayAt = useSelector((state) => state.weather.feels.warmDay);
 
-  // TODO integrate this
+  const [temp_select_setting, setTemp_select_setting] = useState(-1);
+  const [temp_select_value, setTemp_select_value] = useState(-1);
+  const [temp_newValue, setTemp_NewValue] = useState("");
 
-  const bus = {
-    dispatch,
-    feels: {
-      feelsObj,
-      feels_inside,
-      feels_coldDay,
-      feels_hotDay,
-      feels_warmDayAt,
-    },
-  };
+  const temp_shownSubmitButton = useSharedValue(false);
 
-  return (
-    <View
-      style={[
-        gs.appBackground,
-        gs.flex1,
-        gs.align_center,
-        { borderTopWidth: 1, borderTopColor: "gray", paddingTop: 20 },
-      ]}
-    >
-      {/* Temperature Settings */}
-      {render_tempSettings(bus)}
-    </View>
-  );
-};
-
-const render_tempSettings = ({ feels }) => {
-  const {
-    feels_inside,
-    feels_coldDay,
-    feels_hotDay,
-    feels_warmDayAt,
-    feelsObj,
-  } = feels;
-  const ls = styles.tempSettings;
   const items = {
     inside: [
       {
         display: "Too Hot",
+        key: "tooHot",
         val: feels_inside.tooHot,
         color: determineTempColor({
           val: feels_inside.tooHot,
@@ -66,6 +54,7 @@ const render_tempSettings = ({ feels }) => {
       },
       {
         display: "Hot",
+        key: "hot",
         val: feels_inside.hot,
         color: determineTempColor({
           val: feels_inside.hot,
@@ -87,6 +76,7 @@ const render_tempSettings = ({ feels }) => {
       },
       {
         display: "Cold",
+        key: "cold",
         val: feels_inside.cold,
         color: determineTempColor({
           val: feels_inside.cold,
@@ -96,6 +86,7 @@ const render_tempSettings = ({ feels }) => {
       },
       {
         display: "Chilly",
+        key: "tooCold",
         val: feels_inside.tooCold,
         color: determineTempColor({
           val: feels_inside.tooCold,
@@ -105,6 +96,7 @@ const render_tempSettings = ({ feels }) => {
       },
       {
         display: "Humid",
+        key: "h_high",
         val: feels_inside.h_high,
         color: determineTempColor({
           val: feels_inside.h_high,
@@ -128,6 +120,7 @@ const render_tempSettings = ({ feels }) => {
       },
       {
         display: "Dry",
+        key: "h_low",
         val: feels_inside.h_low,
         color: determineTempColor({
           val: feels_inside.h_low,
@@ -140,6 +133,7 @@ const render_tempSettings = ({ feels }) => {
     coldDay: [
       {
         display: "Warm",
+        key: "hot",
         val: feels_coldDay.hot,
         color: determineTempColor({
           val: feels_coldDay.hot,
@@ -163,6 +157,7 @@ const render_tempSettings = ({ feels }) => {
       },
       {
         display: "Chilly",
+        key: "cold",
         val: feels_coldDay.cold,
         color: determineTempColor({
           val: feels_coldDay.cold,
@@ -173,6 +168,7 @@ const render_tempSettings = ({ feels }) => {
       },
       {
         display: "Humid",
+        key: "h_high",
         val: feels_coldDay.h_high,
         color: determineTempColor({
           val: feels_coldDay.h_high,
@@ -197,6 +193,7 @@ const render_tempSettings = ({ feels }) => {
       },
       {
         display: "Dry",
+        key: "h_low",
         val: feels_coldDay.h_low,
         color: determineTempColor({
           val: feels_coldDay.h_low,
@@ -210,6 +207,7 @@ const render_tempSettings = ({ feels }) => {
     hotDay: [
       {
         display: "Too Hot",
+        key: "hot",
         val: feels_hotDay.hot,
         color: determineTempColor({
           val: feels_hotDay.hot,
@@ -231,6 +229,7 @@ const render_tempSettings = ({ feels }) => {
       },
       {
         display: "Cold",
+        key: "cold",
         val: feels_hotDay.cold,
         color: determineTempColor({
           val: feels_hotDay.cold,
@@ -240,6 +239,7 @@ const render_tempSettings = ({ feels }) => {
       },
       {
         display: "Humid",
+        key: "h_high",
         val: feels_hotDay.h_high,
         color: determineTempColor({
           val: feels_hotDay.h_high,
@@ -263,6 +263,7 @@ const render_tempSettings = ({ feels }) => {
       },
       {
         display: "Dry",
+        key: "h_low",
         val: feels_hotDay.h_low,
         color: determineTempColor({
           val: feels_hotDay.h_low,
@@ -273,12 +274,130 @@ const render_tempSettings = ({ feels }) => {
       },
     ],
   };
-  console.groupEnd();
+
+  const bus = {
+    dispatch,
+    tempSettings: {
+      feelsObj,
+      items,
+      feels_inside,
+      feels_coldDay,
+      feels_hotDay,
+      feels_warmDayAt,
+      temp_select_setting,
+      setTemp_select_setting,
+      temp_select_value,
+      setTemp_select_value,
+      temp_newValue,
+      setTemp_NewValue,
+      temp_shownSubmitButton,
+    },
+  };
+
+  useEffect(() => {
+    if (temp_select_setting !== -1 && temp_select_value !== -1) {
+      if (
+        Number(temp_newValue) !==
+        Number(
+          items[temp_select_setting].find(
+            (item) => item.display === temp_select_value
+          ).val
+        )
+      )
+        temp_shownSubmitButton.value = true;
+      else temp_shownSubmitButton.value = false;
+    }
+  }, [temp_newValue]);
+
+  return (
+    <View
+      style={[
+        gs.appBackground,
+        gs.flex1,
+        gs.align_center,
+        { borderTopWidth: 1, borderTopColor: "gray", paddingTop: 20 },
+      ]}
+    >
+      {/* Temperature Settings */}
+      {render_tempSettings(bus)}
+    </View>
+  );
+};
+
+const render_tempSettings = ({ tempSettings, dispatch }) => {
+  const {
+    feels_inside,
+    feels_coldDay,
+    feels_hotDay,
+    feels_warmDayAt,
+    feelsObj,
+    temp_select_setting,
+    setTemp_select_setting,
+    temp_select_value,
+    setTemp_select_value,
+    temp_newValue,
+    setTemp_NewValue,
+    temp_shownSubmitButton,
+    items,
+  } = tempSettings;
+
+  const ls = styles.tempSettings;
+  const selectRowHeight = 40;
+  const temp_shownSubmitButton_style = useAnimatedStyle(() => ({
+    opacity: temp_shownSubmitButton.value
+      ? withTiming(1, { duration: 250 })
+      : withTiming(0, { duration: 250 }),
+    height: temp_shownSubmitButton.value
+      ? withTiming(selectRowHeight, { duration: 250 })
+      : withTiming(0, { duration: 250 }),
+  }));
+
+  const select_settingList = {
+    data: [
+      { value: "Select a setting", key: -1 },
+      ...Object.keys(items).map((item) => {
+        const split = item.split("");
+        const indexOfUppercase = split.findIndex(
+          (letter) => letter.toUpperCase() === letter
+        );
+        indexOfUppercase >= 0 && split.splice(indexOfUppercase, 0, " ");
+        split[0] = split[0].toUpperCase();
+        const join = split.join("");
+
+        return {
+          key: item,
+          value: join,
+        };
+      }),
+    ],
+    selected: temp_select_setting,
+  };
+
+  const select_valueList_data =
+    temp_select_setting === -1
+      ? [{ value: "Select a value", key: -1 }]
+      : [
+          { value: "Select a value", key: -1 },
+          ...items[temp_select_setting]
+            .filter(
+              (value, index) =>
+                !(
+                  value.display === "Warm" && temp_select_setting !== "coldDay"
+                ) &&
+                value.display !== "Okay" &&
+                value.display !== "Good Humidity"
+            )
+            .map((value) => ({
+              key: value.display,
+              value: value.display,
+            })),
+        ];
+
   return (
     <View style={[styles.section]}>
       <Text style={[ls.header]}>Temp settings</Text>
       {/* Defaults */}
-      <View style={[gs.flex_row, gs.width100, { height: 50 }]}>
+      <View style={[gs.flex_row, gs.width100, { marginBottom: 20 }]}>
         {/* Inside Preferences  */}
         <View style={[gs.flex1]}>
           <Text style={[ls.title]}>Inside</Text>
@@ -318,8 +437,179 @@ const render_tempSettings = ({ feels }) => {
           </View>
         </View>
       </View>
+      {/* Adjustments */}
+      <View style={[gs.marginH5]}>
+        <View style={[gs.flex_row, { gap: 10 }]}>
+          <View style={[gs.flex1]}>
+            <SelectList
+              data={select_settingList.data}
+              defaultOption={select_settingList.data.find(
+                (obj) => obj.key === temp_select_setting
+              )}
+              setSelected={(key) => {
+                setTemp_select_value(-1);
+                setTemp_select_setting(key);
+                setTemp_NewValue("");
+              }}
+              save="key"
+              arrowicon={<View style={[{ width: 0 }]} />}
+              search={false}
+              boxStyles={[
+                gs.justify_center,
+                gs.border_rad5,
+                { height: selectRowHeight },
+              ]}
+              inputStyles={{ color: "gray" }}
+              dropdownStyles={{}}
+              dropdownTextStyles={{ color: "gray" }}
+              dropdownItemStyles={{}}
+              showsHorizontalScrollIndicator={false}
+            />
+          </View>
+          <View style={[gs.flex1]}>
+            <SelectList
+              data={select_valueList_data}
+              disable={true}
+              defaultOption={select_valueList_data.find((obj) => {
+                obj.key === temp_select_value;
+              })}
+              setSelected={(key) => {
+                setTemp_select_value(key);
+
+                setTemp_NewValue(
+                  key === -1
+                    ? ""
+                    : items[temp_select_setting].find(
+                        (prop) => prop.display === key
+                      ).val
+                );
+              }}
+              save="key"
+              arrowicon={<View style={[{ width: 0 }]} />}
+              search={false}
+              boxStyles={[
+                gs.justify_center,
+                gs.border_rad5,
+                { height: selectRowHeight },
+              ]}
+              inputStyles={{ color: "gray" }}
+              dropdownStyles={{}}
+              dropdownTextStyles={{ color: "gray" }}
+              dropdownItemStyles={{}}
+            />
+          </View>
+          <View
+            style={[
+              gs.border_gray,
+              gs.border_rad5,
+              gs.justify_center,
+              gs.align_center,
+              { width: "25%", height: selectRowHeight },
+            ]}
+          >
+            {temp_select_value !== -1 && (
+              <TextInput
+                disabled={temp_select_value === -1}
+                style={[
+                  gs.text_orange,
+                  gs.text_medium,
+                  gs.text_center,
+                  Platform.OS === "web" ? { outline: "none" } : {},
+                ]}
+                value={temp_newValue.toString()}
+                placeholderTextColor={"gray"}
+                onFocus={(e) => {
+                  console.log("focusing ... ");
+                  if (Platform.OS === "web") e.currentTarget.select();
+                  else if (Platform.OS === "android")
+                    e.currentTarget.setSelection(
+                      0,
+                      temp_newValue.toString().length
+                    );
+                }}
+                keyboardType="numeric"
+                placeholder={
+                  temp_select_value !== -1 &&
+                  "Curr: " +
+                    items[temp_select_setting]
+                      .find((prop) => prop.display === temp_select_value)
+                      .val.toString()
+                }
+                onChangeText={(val) => {
+                  if (!isNaN(val)) setTemp_NewValue(val);
+                }}
+              />
+            )}
+          </View>
+        </View>
+        {/* Submit button */}
+        <Animated.View
+          style={[
+            gs.marginV10,
+            temp_shownSubmitButton_style,
+            { overflow: "hidden" },
+          ]}
+        >
+          <Pressable
+            style={[
+              gs.background_green,
+              gs.border_rad5,
+              gs.justify_center,
+              gs.align_center,
+              { height: selectRowHeight },
+            ]}
+            onPress={() =>
+              button_submitChange({
+                newValue: temp_newValue,
+                items,
+                tempSetting: temp_select_setting,
+                tempValue: temp_select_value,
+                dispatch,
+              })
+            }
+          >
+            <Text style={[gs.text_large, gs.text_bold]}>Submit change</Text>
+          </Pressable>
+        </Animated.View>
+      </View>
     </View>
   );
+};
+
+const button_submitChange = ({
+  newValue,
+  items,
+  tempSetting,
+  tempValue,
+  dispatch,
+}) => {
+  try {
+    console.group(`%cSubmit change`, f_hlt);
+    const { isValid, errorMessage } = isValidFeelValue({
+      newValue,
+      feelsObj_all: items,
+      feels_setting: tempSetting,
+      feels_value: tempValue,
+    });
+
+    console.log("Is valid? ", isValid);
+    console.log("error: ", errorMessage);
+
+    // if (!isValid)
+    //   throw new Error(`Not a valid number (${errorMessage})`)
+
+    // // run fetch
+
+    // if (success) {
+    //   dispatch(updateFeels({ [tempSetting]: { [tempValue]: newValue } }));
+    // } else {
+    //   alert(`Failed to update ${tempSetting}:${tempValue} - ${errorMessage}`);
+    // }
+  } catch (e) {
+    console.log("just failed.");
+  } finally {
+    console.groupEnd();
+  }
 };
 
 export default settings;
