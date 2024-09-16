@@ -42,18 +42,47 @@ void loop() {
   lights.runEffect();
 }
 
+// void wire_receiveMessage(int howMany) {
+//   char* str = request;
+//   unsigned int i = 0;
+
+//   if (howMany < 1) return;
+
+//   while (Wire.available()) {
+//     str[i] = Wire.read();
+
+//     i++;
+//   }
+
+//   str[i] = '\0';
+
+
+//   Serial.println("");
+//   Serial.print("-- Inc from master ( ");
+//   Serial.print(howMany);
+//   Serial.print(" ) [");
+//   Serial.print(str);
+//   Serial.println("]");
+// }
+
 void wire_receiveMessage(int howMany) {
   char* str = request;
   unsigned int i = 0;
 
-  if (howMany < 1) return;
-
   while (Wire.available()) {
     str[i] = Wire.read();
-    i++;
+    Serial.println(str[i]);
+    if (str[i] != '\0')
+      i++;
   }
-
+  Serial.print("str 0: ");
+  Serial.println(str[1]);
   str[i] = '\0';
+
+  if (howMany < 1)
+    return;
+
+  Serial.println(request);
 
 
   Serial.println("");
@@ -65,6 +94,8 @@ void wire_receiveMessage(int howMany) {
 }
 
 void wire_response() {
+  Serial.println("cp");
+  Serial.flush();
   char* req = request;
   String response;
 

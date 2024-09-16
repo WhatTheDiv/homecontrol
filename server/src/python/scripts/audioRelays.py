@@ -144,7 +144,7 @@ try:
               else:
                 return f"{count}:success-false"
 
-          except RuntimeError as err:
+          except:
             return f"{count}:success-false"
           # return f"{count}:l-{0}/a-{1}"
           # return f"{count}:l-{lights_active}/a-{animation_index}"
