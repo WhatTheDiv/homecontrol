@@ -127,7 +127,7 @@ try:
               t = bytes("state", "utf-8")
 
               bus.write_i2c_block_data(lights_slave, 0, t)
-              block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
+              block = bus.read_i2c_block_data(lights_slave, 0, 10)
 
               string = ''.join(chr(x) for x in block)
 
@@ -160,7 +160,7 @@ try:
               t = bytes("lightsToggle/" + action[input.find('-') + 1], "utf-8")
 
               bus.write_i2c_block_data(lights_slave, 0, t)
-              block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
+              block = bus.read_i2c_block_data(lights_slave, 0, 10)
 
               string = ''.join(chr(x) for x in block)
 
@@ -177,7 +177,7 @@ try:
               else:
                 return f"{count}:success-false"
 
-          except RuntimeError as err:
+          except:
             return f"{count}:success-false"
         
         # [ ] Set Color
