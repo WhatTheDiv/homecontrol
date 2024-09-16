@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { updateWeather, updateFeels } from "../store/weather_slice";
+import { requestWeather_getWeather } from "../serverRequests/request_weather"
 import { setLoaded, setFailMessage } from '../store/ui_slice'
 import { setRGB, lights_setInitial, lights_setDefaults } from "../store/lights_slice";
 import { setLastSourceSelected_id, setAudioActive, setInitialAudio } from "../store/audio_slice";
@@ -66,7 +67,7 @@ const DEFAULTS = {
 export default async function request_initial(dispatch) {
   return new Promise(async (res) => {
     try {
-      await getWeather().then(({ outdoorTemp, outdoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low, }) => {
+      await requestWeather_getWeather().then(({ outdoorTemp, outdoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low, }) => {
         dispatch(updateWeather({ outdoorTemp, outdoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low }))
       }).catch(e => {
         console.error(`Failed to get weather (${e.message})`)
@@ -101,57 +102,6 @@ export default async function request_initial(dispatch) {
       res(false)
     }
   })
-}
-
-// export default async function request_initial(dispatch) {
-//   return new Promise(async (res) => {
-//     setTimeout(async () => {
-//       try {
-
-//         const { outdoorTemp, outdoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low, } = await getWeather()
-//         const { lights, temp, tv, audio, ir, irServices } = await getServerState({ timeout: 5000 })
-
-//         const { indoorTemp, indoorHumidity } = temp
-
-//         // throw new Error('test fail')
-//         // [ ] use redux default state instead of custom object
-
-//         dispatch(setTvState({ power: tv.power, input: tv.input }))
-//         dispatch(setSource({ list: [...tv.sources.list], defaultSource: tv.sources.defaultSource, defaultSourceType: tv.sources.defaultSourceType }))
-//         dispatch(setInitialAudio({ ... audio }))
-
-//         dispatch(updateWeather({ outdoorTemp, outdoorHumidity, indoorTemp, indoorHumidity, outdoorTemp_high, outdoorTemp_low, outdoorTemp_tomorrow_high, outdoorTemp_tomorrow_low }))
-//         dispatch(addCommands({ commands: [...ir.commands] })) // delete these
-//         dispatch(addSources({ sources: [...ir.sources] })) // delete these
-//         dispatch(setServices_replace({ services: [...irServices] }))
-//         dispatch(setLastCommand({ lastCommand: ir.lastCommand })) // delete these
-//         dispatch(lights_setInitial({ ...lights }))
-//         dispatch(lights_setDefaults({
-//           defaultAnimation: lights.defaultAnimation,
-//           defaultOnAnimation: lights.defaultOnAnimation,
-//           defaultOffAnimation: lights.defaultOffAnimation,
-//         }))
-//         dispatch(setLoaded(true))
-//         res(true)
-
-//       } catch (e) {
-//         //XXX KEEP DEFAULTS UPDATED !!!
-//         console.log('error: ', e)
-//         dispatch(setFailMessage(e.message))
-//         res(false)
-//       }
-
-
-
-//       // base function return true or false ONLY 
-//       // dispatch required: 
-//       // - setLoaded = true 
-//     }, loadDelay);
-//   })
-// }
-
-export async function request_periodic() {
-
 }
 
 const getWeather = async () => {
@@ -290,7 +240,9 @@ const getServerState = async ({ timeout = 7000 }) => {
       temp: {
         indoorTemp: temp.indoor_temp,
         indoorHumidity: temp.indoor_humidity,
-        isWarmDayTrigger: temp.isWarmDayTrigger
+        isWarmDayTrigger: temp.isWarmDayTrigger,
+        updated: temp.updated,
+        feels: temp.feels
       },
       tv: {
         power: tv.power,

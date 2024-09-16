@@ -291,7 +291,6 @@ const render_tempSettings = ({ tempSettings, dispatch }) => {
                 value={temp_newValue.toString()}
                 placeholderTextColor={"gray"}
                 onFocus={(e) => {
-                  console.log("focusing ... ");
                   if (Platform.OS === "web") e.currentTarget.select();
                   else if (Platform.OS === "android")
                     e.currentTarget.setSelection(
@@ -369,14 +368,15 @@ const button_submitChange = async ({
     const { success, feels, serverErrorMessage } =
       await requestWeather_updateFeels({
         newValue,
-        feels_setting,
-        feels_value,
+        feels_setting: tempSetting,
+        feels_value: tempValue,
       });
 
     if (!success)
       throw new Error(`${tempSetting}:${tempValue} - ${serverErrorMessage}`);
 
     dispatch(updateFeels({ ...feels }));
+    console.log("Update successful");
   } catch (e) {
     alert(`Failed to set feels (${e.message})`);
   }

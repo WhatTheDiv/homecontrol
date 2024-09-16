@@ -16,6 +16,7 @@ try:
     aht20 = adafruit_ahtx0.AHTx0(board.I2C())
     slave_nano_addr = 0x8
     slave_bedroom_nano = 0x22
+    lights_slave = 0x24
 
 
     def get_Audio_State():
@@ -121,7 +122,31 @@ try:
 
         
         elif command == 'l' and action == 's': #                        Get Lights State          ***** 
-          return f"{count}:l-{0}/a-{1}"
+          try:
+            with SMBus(1) as bus:
+              t = bytes("state")
+
+              bus.write_i2c_block_data(lights_slave, 0, t)
+              block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
+
+              string = ''.join(chr(x) for x in block)
+
+              if(string.find("fail") >= 0):
+                return f"{count}:success-false"
+              
+              elif(string.find("success") >= 0):
+                #  "success/s{ active? }/a{ animationId }"
+                indLightsActice = string.find('/')+2
+                indAnimation = string.find('/', indLightsActice)+2
+                lightsActive = string[indLightsActice:indLightsActice+1]
+                animationId = string[indAnimation: indAnimation+1] 
+                return f"{count}:l-{lightsActive}/a-{animationId}"
+              else:
+                return f"{count}:success-false"
+
+          except RuntimeError as err:
+            return f"{count}:success-false"
+          # return f"{count}:l-{0}/a-{1}"
           # return f"{count}:l-{lights_active}/a-{animation_index}"
         
         # [ ] Set animation
@@ -130,8 +155,30 @@ try:
         
         # [ ] Toggle Lights
         elif command == 'l' and action[:input.find('-')] == 'l': #     Toggle Lights             *****            #--------- 
-          return f"{count}:l-{1}/a-{1}"
-          # return f"{count}:l-{lights_active}/a-{animation_index}"
+          try:
+            with SMBus(1) as bus:
+              t = bytes("lightsToggle/" + action[input.find('-') + 1])
+
+              bus.write_i2c_block_data(lights_slave, 0, t)
+              block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
+
+              string = ''.join(chr(x) for x in block)
+
+              if(string.find("fail") >= 0):
+                return f"{count}:success-false"
+              
+              elif(string.find("success") >= 0):
+                #  "success/s{ active? }/a{ animationId }"
+                indLightsActice = string.find('/')+2
+                indAnimation = string.find('/', indLightsActice)+2
+                lightsActive = string[indLightsActice:indLightsActice+1]
+                animationId = string[indAnimation: indAnimation+1] 
+                return f"{count}:l-{lightsActive}/a-{animationId}"
+              else:
+                return f"{count}:success-false"
+
+          except RuntimeError as err:
+            return f"{count}:success-false"
         
         # [ ] Set Color
         elif command == 'l' and action[:input.find('-')] == 'c': #     Set Color                 *****            #--------- 

@@ -38,6 +38,7 @@ import {
 import { setZone } from "../../../js/store/audio_slice";
 import { addCommand } from "../../../js/store/ir_slice";
 import { SelectList } from "react-native-dropdown-select-list";
+import { determineTempColor } from "../../../js/Globals/weather.js";
 const light_actions = {
   toggleLights_white,
   toggleLights_color,
@@ -145,10 +146,6 @@ const overview = () => {
       {render_lights(bus)}
       {/* Audio */}
       {audioZones.length >= 1 && render_audio(bus)}
-      {/* Ir Commands */}
-      {/* {render_ir(bus)} */}
-      {/* ardTest */}
-      {/* {render_ardTest(bus)} */}
     </ScrollView>
   );
 };
@@ -400,50 +397,50 @@ const render_temp = ({ weather, dispatch }) => {
     feels,
   } = weather;
 
-  const determineColor = (val, f, inside = false, humidity = false) => {
-    if (val !== 0 && (!val || isNaN(Number(val)))) {
-      console.log(`%cnon-number passed to determine color: '${val}'`, {
-        color: "blue",
-      });
-      return f.isWarmDay ? orangeColor : mid_coldColor;
-    }
+  // const determineColor = (val, f, inside = false, humidity = false) => {
+  //   if (val !== 0 && (!val || isNaN(Number(val)))) {
+  //     console.log(`%cnon-number passed to determine color: '${val}'`, {
+  //       color: "blue",
+  //     });
+  //     return f.isWarmDay ? orangeColor : mid_coldColor;
+  //   }
 
-    const feelScale = inside ? f.inside : f.isWarmDay ? f.hotDay : f.coldDay;
+  //   const feelScale = inside ? f.inside : f.isWarmDay ? f.hotDay : f.coldDay;
 
-    const feelsHot = feelScale.hot;
-    const feelsCold = feelScale.cold;
+  //   const feelsHot = feelScale.hot;
+  //   const feelsCold = feelScale.cold;
 
-    const v = Number(val);
-    const schemeWarm = f.isWarmDay;
+  //   const v = Number(val);
+  //   const schemeWarm = f.isWarmDay;
 
-    if (humidity) {
-      if (v >= feelScale.h_high)
-        return inside
-          ? hot_hotColor
-          : schemeWarm
-          ? hot_hotColor
-          : hot_coldColor;
-      else if (v >= feelScale.h_low)
-        return inside ? orangeColor : schemeWarm ? orangeColor : mid_coldColor;
-      else return schemeWarm ? cold_hotColor : cold_coldColor;
-    }
+  //   if (humidity) {
+  //     if (v >= feelScale.h_high)
+  //       return inside
+  //         ? hot_hotColor
+  //         : schemeWarm
+  //         ? hot_hotColor
+  //         : hot_coldColor;
+  //     else if (v >= feelScale.h_low)
+  //       return inside ? orangeColor : schemeWarm ? orangeColor : mid_coldColor;
+  //     else return schemeWarm ? cold_hotColor : cold_coldColor;
+  //   }
 
-    if (inside) {
-      if (v >= feelScale.tooHot) return hot_hotColor;
-      else if (v >= feelScale.hot) return orangeColor;
-      else if (v >= feelScale.cold) return cold_hotColor;
-      else if (v >= feelScale.tooCold) return mid_coldColor;
-      else return cold_coldColor;
-    }
+  //   if (inside) {
+  //     if (v >= feelScale.tooHot) return hot_hotColor;
+  //     else if (v >= feelScale.hot) return orangeColor;
+  //     else if (v >= feelScale.cold) return cold_hotColor;
+  //     else if (v >= feelScale.tooCold) return mid_coldColor;
+  //     else return cold_coldColor;
+  //   }
 
-    const hotColor = schemeWarm ? hot_hotColor : hot_coldColor;
-    const midColor = schemeWarm ? orangeColor : mid_coldColor;
-    const coldColor = schemeWarm ? cold_hotColor : cold_coldColor;
+  //   const hotColor = schemeWarm ? hot_hotColor : hot_coldColor;
+  //   const midColor = schemeWarm ? orangeColor : mid_coldColor;
+  //   const coldColor = schemeWarm ? cold_hotColor : cold_coldColor;
 
-    if (v >= feelsHot) return hotColor;
-    else if (v <= feelsCold) return coldColor;
-    else return midColor;
-  };
+  //   if (v >= feelsHot) return hotColor;
+  //   else if (v <= feelsCold) return coldColor;
+  //   else return midColor;
+  // };
 
   return (
     <View style={[styles.section]}>
@@ -465,7 +462,13 @@ const render_temp = ({ weather, dispatch }) => {
               <Text
                 style={[
                   gs.text_xlarge,
-                  { color: determineColor(indoorTemp, feels, true) },
+                  {
+                    color: determineTempColor({
+                      val: indoorTemp,
+                      feelsObj: feels,
+                      inside: true,
+                    }),
+                  },
                 ]}
               >
                 {indoorTemp}°
@@ -481,7 +484,14 @@ const render_temp = ({ weather, dispatch }) => {
                   gs.text_xlarge,
                   gs.text_center,
                   gs.text_white,
-                  { color: determineColor(indoorTemp, feels, true, true) },
+                  {
+                    color: determineTempColor({
+                      val: indoorHumidity,
+                      feelsObj: feels,
+                      inside: true,
+                      humidity: true,
+                    }),
+                  },
                 ]}
               >
                 {Math.round(indoorHumidity)}%
@@ -497,7 +507,12 @@ const render_temp = ({ weather, dispatch }) => {
               style={[
                 gs.text_center,
                 gs.text_xlarge,
-                { color: determineColor(outdoorTemp, feels) },
+                {
+                  color: determineTempColor({
+                    val: outdoorTemp,
+                    feelsObj: feels,
+                  }),
+                },
               ]}
             >
               {outdoorTemp}°
@@ -511,7 +526,13 @@ const render_temp = ({ weather, dispatch }) => {
                 gs.text_center,
                 gs.text_xlarge,
                 { color: "white" },
-                { color: determineColor(outdoorTemp, feels, false, true) },
+                {
+                  color: determineTempColor({
+                    val: outdoorHumidity,
+                    feelsObj: feels,
+                    humidity: true,
+                  }),
+                },
               ]}
             >
               {outdoorHumidity}%
@@ -531,7 +552,12 @@ const render_temp = ({ weather, dispatch }) => {
               <Text
                 style={[
                   gs.text_large,
-                  { color: determineColor(outdoorTemp_low, feels) },
+                  {
+                    color: determineTempColor({
+                      val: outdoorTemp_low,
+                      feelsObj: feels,
+                    }),
+                  },
                 ]}
               >
                 {outdoorTemp_low}°
@@ -542,7 +568,12 @@ const render_temp = ({ weather, dispatch }) => {
               <Text
                 style={[
                   gs.text_xlarge,
-                  { color: determineColor(outdoorTemp_high, feels) },
+                  {
+                    color: determineTempColor({
+                      val: outdoorTemp_high,
+                      feelsObj: feels,
+                    }),
+                  },
                 ]}
               >
                 {outdoorTemp_high}°
@@ -561,7 +592,12 @@ const render_temp = ({ weather, dispatch }) => {
               <Text
                 style={[
                   gs.text_large,
-                  { color: determineColor(outdoorTemp_tomorrow_low, feels) },
+                  {
+                    color: determineTempColor({
+                      val: outdoorTemp_tomorrow_low,
+                      feelsObj: feels,
+                    }),
+                  },
                 ]}
               >
                 {outdoorTemp_tomorrow_low}°
@@ -572,7 +608,12 @@ const render_temp = ({ weather, dispatch }) => {
               <Text
                 style={[
                   gs.text_xlarge,
-                  { color: determineColor(outdoorTemp_tomorrow_high, feels) },
+                  {
+                    color: determineTempColor({
+                      val: outdoorTemp_tomorrow_high,
+                      feelsObj: feels,
+                    }),
+                  },
                 ]}
               >
                 {outdoorTemp_tomorrow_high}°
@@ -1164,77 +1205,6 @@ const audio_toggleZone = async ({
 const updateAppData = async (dispatch) => {
   const response = await RequestServer(dispatch);
 };
-
-// const ardTest = async () => {
-//   console.log("running arduino test");
-//   const options = {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify({ command: "setAudio/z1-0" }),
-//   };
-//   const response = await fetch("http://192.168.2.114:3000/espTouch", options);
-//   if (!response.ok) return console.error("Bad request!");
-
-//   const data = await response.json();
-//   console.log(`data from ESP8266: '${data.response}'`);
-// };
-
-// const learnIr = async (vars, dispatch, setState) => {
-//   console.log("Learning with vars: ", vars);
-//   const success = await requestIr_learn(
-//     { source: vars.source, commandName: vars.command },
-//     dispatch
-//   );
-
-//   setState((oldState) => ({
-//     ...oldState,
-//     command: "",
-//     source: "",
-//   }));
-// };
-
-// const emitIr = async ({ source, commandName, dispatch }) => {
-//   if (source === undefined) alert(`No source provided (${source})`);
-//   else if (!commandName || commandName === "" || commandName === -1)
-//     alert(`No command provided (${commandName})`);
-//   else console.log(`Sending command (${commandName}) from source (${source})`);
-
-//   const { success, error } = await requestIr_emit({ source, commandName });
-
-//   if (success) {
-//     // dispatch(setLastCommand({ lastCommand: command }));
-//     console.log("Ir Emitted!");
-//   } else alert(`Emit Ir failed (${error})`);
-// };
-
-// const testIr = async ({ source, code }) => {
-//   console.log(`Running testIr with source:${source}, code:${code}`);
-//   const { success, error } = await requestIr_custom({
-//     source,
-//     code,
-//   });
-
-//   if (!success) alert(`Failed to test ir: ${error}`);
-//   else console.log("Successful test");
-// };
-
-// const macro = async (test, setTest) => {
-//   let i = 99;
-//   const maxNumber = 20000;
-//   let inter;
-
-//   inter = setInterval(async () => {
-//     if (!(await requestIr_custom({ source: "Tv", code: i }))) {
-//       alert("Stopped before complete");
-//       clearInterval(inter);
-//     }
-
-//     if (i < maxNumber) i += 1;
-//     else clearInterval(inter);
-//   }, 1600);
-// };
 
 export default overview;
 

@@ -36,7 +36,7 @@ server -> python
 - lights
 
 
-    Get State *****
+    Get State ***** DONE
           (Message) ------------------------- {count}:l/  s
           (Response - Success) --------------               {count}:  l-{active?}/  a-{animation_index}
           (Response - Fail) -----------------                             {count}:success-false
@@ -114,6 +114,36 @@ server -> python
 
 
 
+- Lights
+    Get lights state ******
+          (Message) ------------------------- "state"
+          (Response - Success) --------------               "success/l{ active? }/a{ animationId }"
+          (Response - Fail) -----------------                             "fail-{reason}"
+
+    Turn lights on ******
+          (Message) ------------------------- "lightsOn"
+          (Response - Success) --------------               "success"
+          (Response - Fail) -----------------                             "fail-{reason}"
+
+    Toggle lights state ******
+          (Message) ------------------------- "lightsToggle/{ newState }"
+          (Response - Success) --------------               "success"
+          (Response - Fail) -----------------                             "fail-{reason}"
+
+    Turn lights off ******
+          (Message) ------------------------- "lightsOff"
+          (Response - Success) --------------               "success"
+          (Response - Fail) -----------------                             "fail-{reason}"
+
+    Start animation ******
+          (Message) ------------------------- "animStart#{ animation id }"
+          (Response - Success) --------------               "success"
+          (Response - Fail) -----------------                             "fail-{reason}"
+
+    Stop Animation ******
+          (Message) ------------------------- "animStop"
+          (Response - Success) --------------               "success"
+          (Response - Fail) -----------------                             "fail-{reason}"
 
 
 
@@ -122,40 +152,6 @@ server -> python
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-$355.41 made
-gas cost: $35.40   (250 miles @ 25mpg @ $3.54/gal = 10 gal)
-$320.01 net
-
-
-28 trips
-250 miles
-$11.42 / trip avg ( Net )
-8.9 miles / trip avg
-$1.28 / mile
-
-Total Time Spent: 
-- 17.25 hours
-- 1035 minutes
-- $20.6 / hour
-
-
-Active Time:
-- 9.4 hours
-- 564 minutes
-- $37.81 / hour - ( Gross )
-- $34.04 / hour - ( Net )
-- $6.30 / 10 minute interval ( Gross )
 
 
 

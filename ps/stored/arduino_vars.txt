@@ -1,5 +1,5 @@
-LastAccessedScript=bedroom_slave_new
+LastAccessedScript=lights_slave
 LastUsedCommand=5
-LastUsedFQBN=Arduino.Uno/arduino:avr:uno
+LastUsedFQBN=Arduino.Nano/arduino:avr:nano
 fqbnList=Arduino.Nano/arduino:avr:nano,Arduino.Uno/arduino:avr:uno
-LastUsedPort=(COM4)
+LastUsedPort=(COM3)

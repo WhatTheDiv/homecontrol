@@ -160,24 +160,24 @@ void animate_spot(uint32_t del, uint8_t halfSpotSize, uint8_t ramp_steps) {
   else if (col_w > 0) {
     ramp_step_w = 1;
   }
-  Serial.print("check: ");
-  Serial.println(check());
-  Serial.print("ramp_step_r: ");
-  Serial.println(ramp_step_r);
-  Serial.print("ramp_step_g: ");
-  Serial.println(ramp_step_g);
-  Serial.print("ramp_step_b: ");
-  Serial.println(ramp_step_b);
-  Serial.print("ramp_step_w: ");
-  Serial.println(ramp_step_w);
-  Serial.print("ramp_steps: ");
-  Serial.println(ramp_steps);
-  Serial.print("halfSpotSize: ");
-  Serial.println(halfSpotSize);
-  Serial.print("max: ");
-  Serial.println(max);
-  Serial.print("min: ");
-  Serial.println(min);
+  // Serial.print("check: ");
+  // Serial.println(check());
+  // Serial.print("ramp_step_r: ");
+  // Serial.println(ramp_step_r);
+  // Serial.print("ramp_step_g: ");
+  // Serial.println(ramp_step_g);
+  // Serial.print("ramp_step_b: ");
+  // Serial.println(ramp_step_b);
+  // Serial.print("ramp_step_w: ");
+  // Serial.println(ramp_step_w);
+  // Serial.print("ramp_steps: ");
+  // Serial.println(ramp_steps);
+  // Serial.print("halfSpotSize: ");
+  // Serial.println(halfSpotSize);
+  // Serial.print("max: ");
+  // Serial.println(max);
+  // Serial.print("min: ");
+  // Serial.println(min);
 
   bool ch = true;
   while (ch) {
