@@ -124,7 +124,7 @@ try:
         elif command == 'l' and action == 's': #                        Get Lights State          ***** 
           try:
             with SMBus(1) as bus:
-              t = bytes("state")
+              t = bytes("state", "utf-8")
 
               bus.write_i2c_block_data(lights_slave, 0, t)
               block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
@@ -157,7 +157,7 @@ try:
         elif command == 'l' and action[:input.find('-')] == 'l': #     Toggle Lights             *****            #--------- 
           try:
             with SMBus(1) as bus:
-              t = bytes("lightsToggle/" + action[input.find('-') + 1])
+              t = bytes("lightsToggle/" + action[input.find('-') + 1], "utf-8")
 
               bus.write_i2c_block_data(lights_slave, 0, t)
               block = bus.read_i2c_block_data(slave_bedroom_nano, 0, 10)
