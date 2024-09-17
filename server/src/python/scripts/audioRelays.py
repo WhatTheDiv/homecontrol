@@ -133,6 +133,7 @@ try:
               
 
               if(string.find("fail") >= 0):
+                print('* failed', flush=True)
                 return f"{count}:success-false"
               
               elif(string.find("success") >= 0):
@@ -143,7 +144,7 @@ try:
                 animationId = string[indAnimation: indAnimation+1] 
                 return f"{count}:l-{lightsActive}/a-{animationId}"
               else:
-                print('* failed', flush=True)
+                print('* oob', flush=True)
                 return f"{count}:success-false"
 
           except:
