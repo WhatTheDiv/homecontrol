@@ -13,12 +13,14 @@ void setup() {
 
 void loop() {
 
-  char a = '9';
+  String response;
 
-  int n = int(a) - 48;
+  response = "success/l";
+  response.concat(0);
+  response.concat('\0');
 
-  Serial.print("N is ");
-  Serial.println(n);
+  Serial.print("ex: ");
+  Serial.println(response);
 
 
 

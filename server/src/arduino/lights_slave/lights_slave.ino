@@ -46,6 +46,12 @@ void wire_receiveMessage(int howMany) {
   char* str = request;
   unsigned int i = 0;
 
+  if (howMany <= 1) {
+    while (Wire.available())
+      Wire.read();
+    return;
+  }
+
   while (Wire.available()) {
     str[i] = Wire.read();
     if (str[i] != '\0')
@@ -54,8 +60,7 @@ void wire_receiveMessage(int howMany) {
 
   str[i] = '\0';
 
-  if (howMany < 1)
-    return;
+
 
   Serial.println("");
   Serial.print("-- Inc from master ( ");
@@ -66,10 +71,27 @@ void wire_receiveMessage(int howMany) {
 }
 
 void wire_response() {
-  Serial.println("cp");
-  Serial.flush();
   char* req = request;
   String response;
+
+  Serial.print("request: ");
+  Serial.println(req);
+
+  if (strstr(req, "state")) {
+    bool l = lights.areLightsOn();
+    bool an = lights.isAnimationActive();
+    response = "success/l";
+    response.concat(l);
+    response.concat("/a");
+    response.concat(an);
+    response.concat('\0');
+
+    // Serial.print("Are lights on: ");
+    // Serial.println(l);
+    // Serial.print("Is animation active? : ");
+    // Serial.println(an);
+
+  }
 
   // if (strstr(req, "lightsOn")) {
   //   lights.turnLightsOn();
@@ -114,28 +136,40 @@ void wire_response() {
   //   response = "success\0";
   // }
   // else if (strstr(req, "state")) {
-  //   response = "success/l";
-  //   response.concat(lights.areLightsOn());
-  //   response.concat("/a");
-  //   response.concat(lights.isAnimationActive());
-  //   response.concat("\0");
+  // response = "success/l";
+  // response.concat(lights.areLightsOn());
+  // response.concat("/a");
+  // response.concat(lights.isAnimationActive());
+  // response.concat('\0');
   // }
   // else response = "fail-OOB!\0";
 
-  // // convert string to char array
-  // int resLen = response.length();
-  // char res[resLen + 1];
-  // for (int i = 0; i < resLen; i++)
-  //   res[i] = response[i];
+  // Serial.print("Response: ");
+  // Serial.println(response);
 
-  // res[resLen] = '\0';
+  // convert string to char array
+  int resLen = response.length();
+  char res[resLen + 1];
+  for (int i = 0; i < resLen; i++) {
+    res[i] = response[i];
+    // Serial.print("assigning - ");
+    // Serial.print(response[i]);
+    // Serial.print(" ... ");
+    // Serial.println(res);
+  }
 
-  // Wire.write(res);
+  res[resLen] = '\0';
+
+  // Serial.print("res: ");
+  // Serial.println(res);
 
   delay(100);
-  Serial.println("");
-  Serial.print("------ Response to master [");
-  Serial.print(response);
-  Serial.print("]");
-  Serial.println("");
+  Wire.write(res);
+
+  // delay(100);
+  // Serial.println("");
+  // Serial.print("------ Response to master [");
+  // Serial.print(res);
+  // Serial.print("]");
+  // Serial.println("");
 }
