@@ -74,18 +74,7 @@ void wire_response() {
   char* req = request;
   String response = "";
 
-  // Serial.print("request: ");
-  // Serial.println(req);
-
-  if (strstr(req, "lightsOn")) {
-    lights.turnLightsOn();
-    response.concat("success\0");
-  }
-  else if (strstr(req, "lightsOff")) {
-    lights.turnLightsOff();
-    response = "success\0";
-  }
-  else if (strstr(req, "lightsToggle")) {
+  if (strstr(req, "lightsToggle")) {
     char a = *((strchr(req, '/') + 1));
     bool newState;
 
@@ -96,7 +85,7 @@ void wire_response() {
 
     lights.toggleLights(newState);
 
-    response = "success/l";
+    response.concat("success/l");
     response.concat(a);
     response.concat("/a");
     response.concat(lights.isAnimationActive());
@@ -106,18 +95,18 @@ void wire_response() {
     char a = *((strchr(req, '#') + 1));
     int animId = int(a) - 48;
     if (animId < 0 || animId > 9) {
-      response = "fail-badAnimId[";
+      response.concat("fail-badAnimId[");
       response.concat(a);
       response.concat("]\0");
     }
     else {
-      response = "success\0";
+      response.concat("success\0");
       lights.setAnimation(animId);
     }
   }
   else if (strstr(req, "animStop")) {
-    // lights.stopAnimation();
-    response = "success\0";
+    lights.stopAnimation();
+    response.concat("success\0");
   }
   else if (strstr(req, "state")) {
     response.concat("success/l");
@@ -127,10 +116,8 @@ void wire_response() {
     response.concat('\0');
   }
   else
-    response = "fail-OOB!\0";
+    response.concat("fail-OOB!\0");
 
-  // Serial.print("Response: ");
-  // Serial.println(response);
 
   // convert string to char array
   int resLen = response.length();

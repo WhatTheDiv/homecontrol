@@ -133,26 +133,21 @@ try:
               
 
               if(string.find("fail") >= 0):
-                # print('* failed', flush=True)
                 return f"{count}:success-false"
               
               elif(string.find("success") >= 0):
-                #  "success/s{ active? }/a{ animationId }"
                 indLightsActice = string.find('/')+2
                 indAnimation = string.find('/', indLightsActice)+2
                 lightsActive = string[indLightsActice:indLightsActice+1]
                 animationId = string[indAnimation: indAnimation+1] 
                 return f"{count}:l-{lightsActive}/a-{animationId}"
               else:
-                # print('* oob', flush=True)
                 return f"{count}:success-false"
 
           except Exception as e:
 
             print(f'* exception: {e}', flush=True)
             return f"{count}:success-false"
-          # return f"{count}:l-{0}/a-{1}"
-          # return f"{count}:l-{lights_active}/a-{animation_index}"
         
         # [ ] Set animation
         elif command == 'l' and action[:input.find('-')] == 'a': #     Set Animation             *****            #--------- 

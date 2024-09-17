@@ -173,7 +173,6 @@ const render_lights = ({
         ]}
       >
         <Pressable
-          disabled={true}
           onPress={() =>
             lights_toggleState(
               "toggleLightsActive",
