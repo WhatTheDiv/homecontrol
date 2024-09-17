@@ -157,10 +157,10 @@ try:
         elif command == 'l' and action[:input.find('-')] == 'l': #     Toggle Lights             *****            #--------- 
           try:
             with SMBus(1) as bus:
-              t = bytes("lightsToggle/" + action[input.find('-') + 1], "utf-8")
+              t = bytes("lightsToggle/" + action[input.find('-') + 1:], "utf-8")
 
               bus.write_i2c_block_data(lights_slave, 0, t)
-              block = bus.read_i2c_block_data(lights_slave, 0, 10)
+              block = bus.read_i2c_block_data(lights_slave, 0, 20)
 
               string = ''.join(chr(x) for x in block)
 
