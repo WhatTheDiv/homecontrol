@@ -143,10 +143,11 @@ try:
                 animationId = string[indAnimation: indAnimation+1] 
                 return f"{count}:l-{lightsActive}/a-{animationId}"
               else:
-                
+                print('failed', flush=True)
                 return f"{count}:success-false"
 
           except:
+            print('exception', flush=True)
             return f"{count}:success-false"
           # return f"{count}:l-{0}/a-{1}"
           # return f"{count}:l-{lights_active}/a-{animation_index}"

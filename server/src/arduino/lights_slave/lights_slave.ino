@@ -166,10 +166,10 @@ void wire_response() {
   delay(100);
   Wire.write(res);
 
-  // delay(100);
-  // Serial.println("");
-  // Serial.print("------ Response to master [");
-  // Serial.print(res);
-  // Serial.print("]");
-  // Serial.println("");
+  delay(100);
+  Serial.println("");
+  Serial.print("------ Response to master [");
+  Serial.print(res);
+  Serial.print("]");
+  Serial.println("");
 }
