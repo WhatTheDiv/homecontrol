@@ -159,7 +159,7 @@ try:
             with SMBus(1) as bus:
               st = input[input.find('-') +1]
               
-              t = bytes("lightsToggle/" + action[input.find('-') + 1:], "utf-8")
+              t = bytes("lightsToggle/" + st, "utf-8")
 
               bus.write_i2c_block_data(lights_slave, 0, t)
               block = bus.read_i2c_block_data(lights_slave, 0, 20)
