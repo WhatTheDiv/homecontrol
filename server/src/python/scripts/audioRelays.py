@@ -158,11 +158,13 @@ try:
           try:
             with SMBus(1) as bus:
               st = action[input.find('-') + 1:]
-              print(f'* action: {st}', flush=True)
+              
               t = bytes("lightsToggle/" + action[input.find('-') + 1:], "utf-8")
 
               bus.write_i2c_block_data(lights_slave, 0, t)
               block = bus.read_i2c_block_data(lights_slave, 0, 20)
+
+              print(f'* action: {st}', flush=True)
 
               string = ''.join(chr(x) for x in block)
 
