@@ -130,8 +130,6 @@ try:
               block = bus.read_i2c_block_data(lights_slave, 0, 20)
 
               string = ''.join(chr(x) for x in block)
-
-              print(f'string: {string}', flush=True)
               
 
               if(string.find("fail") >= 0):

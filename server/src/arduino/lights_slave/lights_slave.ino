@@ -170,16 +170,13 @@ void wire_response() {
   }
 
   res[resLen] = '\0';
-
-  for (int j = 0; j < resLen; j++) {
-    Serial.println(res[j]);
-  }
+  // 
 
 
-  // Serial.print("res: ");
-  // Serial.println(res);
+    // Serial.print("res: ");
+    // Serial.println(res);
 
-  // delay(100);
+    // delay(100);
   Wire.write(res);
 
   // delay(100);
