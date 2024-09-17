@@ -136,7 +136,6 @@ try:
                 return f"{count}:success-false"
               
               elif(string.find("success") >= 0):
-                print(f'* got string - {string}',flush=True)
                 #  "success/s{ active? }/a{ animationId }"
                 indLightsActice = string.find('/')+2
                 indAnimation = string.find('/', indLightsActice)+2
