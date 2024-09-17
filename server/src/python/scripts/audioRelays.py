@@ -157,7 +157,7 @@ try:
         elif command == 'l' and action[:input.find('-')] == 'l': #     Toggle Lights             *****            #--------- 
           try:
             with SMBus(1) as bus:
-              st = action[input.find('-') + 1:]
+              st = action
               
               t = bytes("lightsToggle/" + action[input.find('-') + 1:], "utf-8")
 
