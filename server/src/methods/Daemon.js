@@ -73,7 +73,9 @@ class DaemonClass {
       this.process = process
       this.active = true
 
-    } catch (e) { this.onDaemonError.bind(this)(e, controller, 'CatchErr'); }
+    } catch (e) {
+      this.onDaemonError.bind(this)(e, controller, 'CatchErr');
+    }
   }
 
   inc = () => {
@@ -170,80 +172,6 @@ class DaemonClass {
         }
       }, duration);
     })
-  }
-
-  format_audio_and_temp_status_and_lights = ({ string, audio, lights }) => {
-    const parseString = (str) => {
-      console.log('Response from python Daemon === ', str)
-
-      if (str.indexOf("success") >= 0 && str.slice(str.indexOf("success-" + 8), str.indexOf(",z1-")) === 'false') {
-        console.log('Success false from python Daemon === ', str)
-
-        return {
-          z1_active: 'false',
-          z2_active: 'false',
-          temp: '98',
-          humidity: '98',
-          lights_active: 'false',
-          animation: 'walk'
-
-        }
-      }
-      else return {
-        z1_active: (str.slice(str.indexOf('z1-') + 3, str.indexOf(',z2-'))).toLowerCase() === 't',
-        z2_active: (str.slice(str.indexOf('z2-') + 3, str.indexOf(',t-'))).toLowerCase() === 't',
-        temp: str.slice(str.indexOf(',t-') + 3, str.indexOf(',h-')),
-        humidity: str.slice(str.indexOf(',h-') + 3, str.indexOf(',l-')),
-        lights_active: str.slice(str.indexOf(',l-') + 3, str.indexOf(',a-')),
-        animation: str.slice(str.indexOf(',a-') + 3)
-      }
-    }
-    // [ count : zone1, zone2, temp, humidity, lightsActive, animation ]
-    // 1:z1-True,z2-True,t-82.2,h-75.3,l-1,a-2
-
-    const { z1_active, z2_active, temp, humidity, lights_active, animation } = parseString(string)
-
-    const a = {
-      zone_1: {
-        ...audio.zone_1, updated: true, active: z1_active
-      },
-      zone_2: {
-        ...audio.zone_2, updated: true, active: z2_active
-      }
-    }
-    const t = {
-      temp, humidity
-    }
-
-    const anim_nameFromIndex = (Object.keys(lights.Animations)).find(name => lights.Animations[name] === Number(animation))
-
-    const l = {
-      ...lights.state,
-      lights_active: lights_active === '0' ? false : true,
-      animation: anim_nameFromIndex === undefined ? -1 : anim_nameFromIndex,
-      updated: true
-    }
-
-    return { a, t, l }
-  }
-
-  format_lights_state = ({ mode, name, value, lights }) => {
-    const getAnimationName = (n, v) => {
-      if (name !== undefined)
-        return name.indexOf('default') >= 0
-    }
-    const newState = { ...lights.state }
-    switch (m) {
-      case 'animation':
-
-        newState.animation_active = name && lights.ActiveAnimations.find(anim => anim === name) === undefined ? false : true
-        // newState.animation = name ? name : 
-        break;
-      case 'color':
-        break;
-      case 'toggle':
-        break;
-    }
   }
 
   sendCommand = async ({ name, audioConfig = {}, lightsConfig = {}, tvCommand = '', Daemon, extendedTimeout = 0 }) => {

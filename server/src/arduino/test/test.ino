@@ -13,11 +13,13 @@ void setup() {
 
 void loop() {
 
+  char arr[10][10] = { "spot", "walkk" };
   String response;
+  char st[] = "something";
 
-  response = "success/l";
-  response.concat(0);
-  response.concat('\0');
+  response.concat(st + arr[0]);
+
+
 
   Serial.print("ex: ");
   Serial.println(response);

@@ -2,6 +2,7 @@
 
 struct Lights {
   Adafruit_NeoPixel strip;
+  uint8_t charInNames{ 10 }; // string max length
   char animationStyles[10][10]{ "spot", "walk" };
   char changeStateStyles[10][10]{ "instant","fade","slide" };
   uint8_t selected_animation{ 0 }; // default "spot"

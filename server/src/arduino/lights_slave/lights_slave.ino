@@ -113,7 +113,33 @@ void wire_response() {
     response.concat(lights.areLightsOn());
     response.concat("/a");
     response.concat(lights.isAnimationActive());
-    response.concat('\0');
+    response.concat("\0");
+  }
+  else if (strstr(req, "getStyles")) {
+    // Serial.println("Checkpoint");
+    // response.concat("success/a:");
+
+    // for (int k = 0; k < sizeof(lights.animationStyles) / lights.charInNames; k++) {
+    //   if (strlen(lights.animationStyles[k]) < 1)
+    //     break;
+
+    //   if (k != 0)
+    //     response.concat(",");
+
+    //   response.concat(lights.animationStyles[k]);
+
+    // }
+    // // response.concat("/s:");
+    // // for (int k = 0; k < lights.changeStateStyles.length(); k++) {
+    // //   if (k != 0)
+    // //     response.concat(",");
+    // //   if (lights.changeStateStyles[k].length() >= 1)
+    // //     response.concat(lights.changeStateStyles[k]);
+    // // }
+
+    // response.concat('\0');
+    // Serial.print("Response: ");
+    // Serial.println(response);
   }
   else
     response.concat("fail-OOB!\0");

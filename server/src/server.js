@@ -45,7 +45,14 @@ const HomeState = {
     ActiveAnimations: [
       'walk', 'spot'
     ],
-    Zones: { all: 0, livingRoom: 1, kitchen: 2, bedroom: 3 }
+    Zones: { all: 0, livingRoom: 1, kitchen: 2, bedroom: 3 },
+
+  },
+  newLightsStructure: {
+    animationStyles: [],
+    changeStateStyles: [],
+    animationActive: false,
+    lightsOn: false
   },
   temp: {
     indoor_temp: 0,
