@@ -72,26 +72,26 @@ void wire_receiveMessage(int howMany) {
 
 void wire_response() {
   char* req = request;
-  String response;
+  String response = "";
 
-  Serial.print("request: ");
-  Serial.println(req);
+  // Serial.print("request: ");
+  // Serial.println(req);
 
-  if (strstr(req, "state")) {
-    bool l = lights.areLightsOn();
-    bool an = lights.isAnimationActive();
-    response = "success/l";
-    response.concat(l);
-    response.concat("/a");
-    response.concat(an);
-    response.concat('\0');
+  // if (strstr(req, "state")) {
+  //   bool l = lights.areLightsOn();
+  //   bool an = lights.isAnimationActive();
+  //   response = "success/l";
+  //   response.concat(l);
+  //   response.concat("/a");
+  //   response.concat(an);
+  //   response.concat('\0');
 
-    // Serial.print("Are lights on: ");
-    // Serial.println(l);
-    // Serial.print("Is animation active? : ");
-    // Serial.println(an);
+  //   // Serial.print("Are lights on: ");
+  //   // Serial.println(l);
+  //   // Serial.print("Is animation active? : ");
+  //   // Serial.println(an);
 
-  }
+  // }
 
   // if (strstr(req, "lightsOn")) {
   //   lights.turnLightsOn();
@@ -135,14 +135,25 @@ void wire_response() {
   //   lights.cancelAnimation();
   //   response = "success\0";
   // }
-  // else if (strstr(req, "state")) {
-  // response = "success/l";
-  // response.concat(lights.areLightsOn());
-  // response.concat("/a");
-  // response.concat(lights.isAnimationActive());
-  // response.concat('\0');
-  // }
-  // else response = "fail-OOB!\0";
+  if (strstr(req, "state")) {
+    // bool l = lights.areLightsOn();
+    // bool an = lights.isAnimationActive();
+
+    response.concat("success/l");
+    response.concat(lights.areLightsOn());
+    response.concat("/a");
+    response.concat(lights.isAnimationActive());
+    response.concat('\0');
+
+    // Serial.print("Are lights on: ");
+    // Serial.println(l);
+    // Serial.print("Is animation active? : ");
+    // Serial.println(an);
+    // Serial.print("Response: ");
+    // Serial.println(response);
+  }
+  // else
+  //   response = "fail-OOB!\0";
 
   // Serial.print("Response: ");
   // Serial.println(response);
