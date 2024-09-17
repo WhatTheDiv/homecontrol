@@ -130,12 +130,13 @@ try:
               block = bus.read_i2c_block_data(lights_slave, 0, 10)
 
               string = ''.join(chr(x) for x in block)
-              print(f'* got string - {string}',flush=True)
+              
 
               if(string.find("fail") >= 0):
                 return f"{count}:success-false"
               
               elif(string.find("success") >= 0):
+                print(f'* got string - {string}',flush=True)
                 #  "success/s{ active? }/a{ animationId }"
                 indLightsActice = string.find('/')+2
                 indAnimation = string.find('/', indLightsActice)+2
@@ -143,11 +144,11 @@ try:
                 animationId = string[indAnimation: indAnimation+1] 
                 return f"{count}:l-{lightsActive}/a-{animationId}"
               else:
-                print('failed', flush=True)
+                print('* failed', flush=True)
                 return f"{count}:success-false"
 
           except:
-            print('exception', flush=True)
+            print('* exception', flush=True)
             return f"{count}:success-false"
           # return f"{count}:l-{0}/a-{1}"
           # return f"{count}:l-{lights_active}/a-{animation_index}"
