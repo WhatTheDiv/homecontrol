@@ -131,7 +131,7 @@ try:
 
               string = ''.join(chr(x) for x in block)
 
-              print(f'string: {string}')
+              print(f'string: {string}', flush=True)
               
 
               if(string.find("fail") >= 0):
