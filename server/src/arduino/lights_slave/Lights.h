@@ -420,7 +420,7 @@ struct Lights {
     else
       turnLightsOff();
   }
-  void cancelAnimation() {
+  void stopAnimation() {
     interrupt = 1;
 
     animationActive = 0;
