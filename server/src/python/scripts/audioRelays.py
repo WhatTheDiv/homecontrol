@@ -149,9 +149,9 @@ try:
                 # print('* oob', flush=True)
                 return f"{count}:success-false"
 
-          except:
+          except Exception as e:
 
-            # print(f'* exception: {e}', flush=True)
+            print(f'* exception: {e}', flush=True)
             return f"{count}:success-false"
           # return f"{count}:l-{0}/a-{1}"
           # return f"{count}:l-{lights_active}/a-{animation_index}"
