@@ -174,7 +174,7 @@ void wire_response() {
   // Serial.print("res: ");
   // Serial.println(res);
 
-  delay(100);
+  // delay(100);
   Wire.write(res);
 
   delay(100);
