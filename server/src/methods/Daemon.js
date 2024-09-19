@@ -227,7 +227,7 @@ class DaemonClass {
           break;
         case 'lights_SetAnimation':
           obj.name = 'l'
-          obj.cmd = 'a-' + !lightsConfig.animationId ? "" : lightsConfig.animationId
+          obj.cmd = ('a-' + !lightsConfig.animationId ? "" : lightsConfig.animationId)
           break;
         case 'lights_Toggle':
           obj.name = 'l'
