@@ -137,8 +137,6 @@ void build_response() {
   }
   else if (strstr(req, "animStop")) {
     lights.stopAnimation();
-    Serial.println("Stopping animation");
-
     bool areLightsOn = lights.areLightsOn();
     bool isAnimationActive = lights.isAnimationActive();
 

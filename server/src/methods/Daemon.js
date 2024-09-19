@@ -198,7 +198,6 @@ class DaemonClass {
       // -------------------- Initialize variable object
       obj.count = Daemon.count
 
-      console.log('test: ', 'a-' + !lightsConfig.animationId ? "N" : lightsConfig.animationId)
       // -------------------- Configure variable object
       switch (name) {
         case 'audio_State':
@@ -310,7 +309,7 @@ class DaemonClass {
     // -------------------- Break output into sections
     const trimmedOutput = output.slice(output.indexOf(':') + 1)
     const sections = trimmedOutput.split('/')
-    console.log('name: ', name, 'sections: ', sections)
+    console.log('Got output: ', trimmedOutput)
 
     // -------------------- Initialize return object
     const r = { err: false, audio: {}, temp: {}, lights: {}, tv: {} }
