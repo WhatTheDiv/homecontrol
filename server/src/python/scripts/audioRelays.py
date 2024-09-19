@@ -205,7 +205,7 @@ try:
             with SMBus(1) as bus:
               animationIdIndex = input.find("-") + 1
               animationId = input[animationIdIndex:animationIdIndex + 1]
-              animationCommand = "animStop" if animationId < 0 else f"animStart#{animationId}"
+              animationCommand = "animStop" if animationId != 'x' and animationId < 0 else f"animStart#{animationId}"
               
               t = bytes(animationCommand, "utf-8")
 
