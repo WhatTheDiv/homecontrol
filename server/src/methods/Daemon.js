@@ -33,7 +33,7 @@ class DaemonClass {
 
   onDaemonError = (e, controller, type) => {
     console.error(`(Daemon) Daemon responded with error [${type}]: ${e.message}`)
-    console.log(`(Daemon) Error -> ${e}`)
+    console.log(`(Daemon) Error -> ${e}\n\n`)
     controller.abort()
     this.process = null
     this.active = false
