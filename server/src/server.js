@@ -442,11 +442,11 @@ app.post('/setLightsAnimation', async (req, res) => {
 
 app.post('/lights_animation', async (req, res) => {
   const getAnimationFromId = name => {
-    if (!name) return ''
+    if (!name) return 'x'
 
     const id = HomeState.lights.styles.animationStyles.findIndex(animName => animName === name)
 
-    return id ? id : ''
+    return id ? id : 'x'
 
   }
   const { animationNewState, animationName } = req.body

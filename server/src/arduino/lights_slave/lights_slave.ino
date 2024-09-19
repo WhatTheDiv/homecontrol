@@ -113,19 +113,29 @@ void build_response() {
   }
   else if (strstr(req, "animStart")) {
     char a = *((strchr(req, '#') + 1));
-    int animId = int(a) - 48;
 
-    if (animId < 0 || animId > 9) {
-      sprintf(res, "fail-badAnimId[%c]\0", a);
-    }
-    else {
-      lights.setAnimation(animId);
+    if (a == 'x') {
+      lights.setAnimation();
 
       bool areLightsOn = lights.areLightsOn();
       bool isAnimationActive = lights.isAnimationActive();
 
       sprintf(res, "success/l%d/a%d\0", areLightsOn, isAnimationActive);
+
     }
+    else if (int(a) - 48 >= 0 && int(a) - 48 <= 9) {
+      lights.setAnimation(int(a) - 48);
+
+      bool areLightsOn = lights.areLightsOn();
+      bool isAnimationActive = lights.isAnimationActive();
+
+      sprintf(res, "success/l%d/a%d\0", areLightsOn, isAnimationActive);
+
+    }
+    else {
+      sprintf(res, "fail-badAnimId[%c]\0", a);
+    }
+
   }
   else if (strstr(req, "animStop")) {
     lights.stopAnimation();
