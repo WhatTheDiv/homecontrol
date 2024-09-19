@@ -170,7 +170,8 @@ try:
               block2 = bus.read_i2c_block_data(lights_slave, 0, 32)
 
               changeStateStyles = ''.join(chr(x) for x in block2)
-              
+
+              print(f'{block2}', flush=True)
 
               if(animationStyles.find("fail") >= 0 or changeStateStyles.find("fail") >= 0 ):
                 return f"{count}:success-false"
