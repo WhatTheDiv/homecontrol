@@ -52,8 +52,12 @@ void wire_receiveMessage(int howMany) {
   char* str = request;
   unsigned int i = 0;
 
-  if (howMany <= 1)
+  if (howMany <= 1) {
+    while (Wire.available())
+      Wire.read();
+
     return;
+  }
 
   while (Wire.available()) {
     str[i] = Wire.read();
@@ -63,15 +67,6 @@ void wire_receiveMessage(int howMany) {
 
   str[i] = '\0';
   newMessage = 1;
-
-
-
-  Serial.println("");
-  Serial.print("-- Inc from master ( ");
-  Serial.print(howMany);
-  Serial.print(" ) [");
-  Serial.print(str);
-  Serial.println("]");
 }
 
 void wire_response() {
@@ -88,10 +83,15 @@ void wire_response() {
 }
 
 void build_response() {
-  newMessage = 0;
 
   char* req = request;
   char* res = response;
+
+  newMessage = 0;
+  Serial.println("");
+  Serial.print("-- Inc from master [");
+  Serial.print(req);
+  Serial.println("]");
 
   if (strstr(req, "state")) {
     bool areLightsOn = lights.areLightsOn();

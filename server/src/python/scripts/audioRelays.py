@@ -164,7 +164,7 @@ try:
               t = bytes("lightsToggle/" + st, "utf-8")
 
               bus.write_i2c_block_data(lights_slave, 0, t)
-              time.sleep(.1)
+              # time.sleep(.1)
               block = bus.read_i2c_block_data(lights_slave, 0, 20)
 
               print(f'* action: {st}', flush=True)
