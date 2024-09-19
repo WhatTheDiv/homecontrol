@@ -155,23 +155,32 @@ try:
         elif command == 'l' and action == 'x': #                        Get Lights StyleNames          ***** 
           try:
             with SMBus(1) as bus:
-              t = bytes("getStyles", "utf-8")
+              t = bytes("getStyles/a", "utf-8")
 
               bus.write_i2c_block_data(lights_slave, 0, t)
-              time.sleep(1.5)
+              time.sleep(.1)
               block = bus.read_i2c_block_data(lights_slave, 0, 50)
 
-              string = ''.join(chr(x) for x in block)
+              animationStyles = ''.join(chr(x) for x in block)
+
+              t2 = bytes("getStyles/a", "utf-8")
+
+              bus.write_i2c_block_data(lights_slave, 0, t2)
+              time.sleep(.1)
+              block2 = bus.read_i2c_block_data(lights_slave, 0, 50)
+
+              changeStateStyles = ''.join(chr(x) for x in block2)
               
 
-              if(string.find("fail") >= 0):
+              if(animationStyles.find("fail") >= 0 or changeStateStyles.find("fail") >= 0 ):
                 return f"{count}:success-false"
               
-              elif(string.find("success") >= 0):
-                trimmedString = string[string.find("success") + 8:]
-                return f"{count}:{trimmedString}"
+              elif(animationStyles.find("success") >= 0 and changeStateStyles.find("success") >= 0):
+                a = animationStyles[animationStyles.find("success") + 8:]
+                s = changeStateStyles[changeStateStyles.find("success") + 8:]
+                return f"{count}:{a}/{s}"
               else:
-                print(f'* string: {string}', flush=True)
+                print(f'* something failed: {string}', flush=True)
                 return f"{count}:success-false"
 
           except Exception as e:

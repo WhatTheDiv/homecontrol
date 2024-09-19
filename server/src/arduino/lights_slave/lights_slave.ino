@@ -128,38 +128,38 @@ void build_response() {
     lights.stopAnimation();
   }
   else if (strstr(req, "getStyles")) {
-    sprintf(res, "success/a:");
+    char t = *((strchr(req, '/') + 1));
+    sprintf(res, "success/");
 
-    for (int k = 0; k < sizeof(lights.animationStyles) / lights.charInNames; k++) {
-      if (strlen(lights.animationStyles[k]) < 1)
-        break;
+    if (t == 'a') {
+      strcat(res, "a:");
+      for (int k = 0; k < sizeof(lights.animationStyles) / lights.charInNames; k++) {
+        if (strlen(lights.animationStyles[k]) < 1)
+          break;
 
-      if (k != 0)
-        strcat(res, ",");
+        if (k != 0)
+          strcat(res, ",");
 
-      strcat(res, lights.animationStyles[k]);
+        strcat(res, lights.animationStyles[k]);
+      }
+    }
+    else if (t == 's') {
+      strcat(res, "s:");
+
+      for (int k = 0; k < sizeof(lights.changeStateStyles) / lights.charInNames; k++) {
+        if (strlen(lights.changeStateStyles[k]) < 1)
+          break;
+
+        if (k != 0)
+          strcat(res, ",");
+
+        strcat(res, lights.changeStateStyles[k]);
+      }
     }
 
-    strcat(res, "/s:");
 
     // success/a:spot,walk/s:instant,fade,slide
 
-    for (int k = 0; k < sizeof(lights.changeStateStyles) / lights.charInNames; k++) {
-      if (strlen(lights.changeStateStyles[k]) < 1)
-        break;
-
-      if (k != 0)
-        strcat(res, ",");
-
-      strcat(res, lights.changeStateStyles[k]);
-    }
-    res[strlen(res)] = '\0';
-
-    Serial.print("length: ");
-    Serial.print(strlen(res));
-
-    Serial.print("- res: ");
-    Serial.println(res);
   }
   else
     sprintf(res, "fail-OOB!\0");
