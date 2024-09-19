@@ -17,11 +17,13 @@ void loop() {
 
   char* res = response;
 
-  char a = 'a';
+  // char a[] = "a";
   char b[] = "else";
   int n = 15;
 
-  sprintf(res, "1:%c2:%s3:%d", a, b, n);
+  sprintf(res, "success:");
+
+  strcat(res, "a");
 
 
 

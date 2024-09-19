@@ -36,6 +36,12 @@ server -> python
 - lights
 
 
+    Get Styles *****
+          (Message) ------------------------- {count}:l/  x
+          (Response - Success) --------------               {count}:  "a:{ animStyle [, animStyle] }/s: { stateStyle [, stateStyle] }"
+          (Response - Fail) -----------------                             {count}:success-false
+
+
     Get State ***** DONE
           (Message) ------------------------- {count}:l/  s
           (Response - Success) --------------               {count}:  l-{active?}/  a-{animation_index}
@@ -48,7 +54,7 @@ server -> python
           (Response - Fail) -----------------                             {count}:success-false
 
 
-    Toggle Lights *****
+    Toggle Lights ***** DONE
           (Message) ------------------------- {count}:l/  l-{active?}
           (Response - Success) --------------               {count}:  l-{active?}/  a-{animation_index}
           (Response - Fail) -----------------                             {count}:success-false
@@ -115,6 +121,11 @@ server -> python
 
 
 - Lights
+    Get styles ******
+          (Message) ------------------------- "getStyles"
+          (Response - Success) --------------               "success/a:{ animStyle [, animStyle] }/s: { stateStyle [, stateStyle] }"
+          (Response - Fail) -----------------                             "fail-{reason}"
+
     Get lights state ******
           (Message) ------------------------- "state"
           (Response - Success) --------------               "success/l{ active? }/a{ animationId }"

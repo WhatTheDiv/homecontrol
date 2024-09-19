@@ -32,7 +32,7 @@ class DaemonClass {
   }
 
   onDaemonError = (e, controller, type) => {
-    console.error(`(Daemon) Daemon responded with error [${type}]: `)
+    console.error(`(Daemon) Daemon responded with error [${type}]: ${e.message}`)
     console.log(`(Daemon) Error -> ${e}`)
     controller.abort()
     this.process = null
@@ -73,8 +73,15 @@ class DaemonClass {
       this.process = process
       this.active = true
 
+      const { err, message, lights } = await this.sendCommand({ name: "lights_Styles", Daemon: this })
+
+      if (err)
+        throw new Error(message)
+
+      console.log(lights)
+
     } catch (e) {
-      this.onDaemonError.bind(this)(e, controller, 'CatchErr');
+      this.onDaemonError.bind(this)(e, controller, 'InitErr');
     }
   }
 
@@ -174,6 +181,7 @@ class DaemonClass {
     })
   }
 
+  // returns parseReceipt = { err, message, audio: {}, temp: {}, lights: {}, tv: {} }
   sendCommand = async ({ name, audioConfig = {}, lightsConfig = {}, tvCommand = '', Daemon, extendedTimeout = 0 }) => {
     // -------------------- Initialize variable object
     const obj = {}
@@ -209,6 +217,10 @@ class DaemonClass {
         case 'lights_State':
           obj.name = 'l'
           obj.cmd = 's'
+          break;
+        case 'lights_Styles':
+          obj.name = 'l'
+          obj.cmd = 'x'
           break;
         case 'lights_SetAnimation':
           if (lightsConfig.animationId === undefined) throw new Error(`Sending incomplete command, animationID: (${lightsConfig.animationId})`)
@@ -331,6 +343,16 @@ class DaemonClass {
         r.audio.updated = Number(e.slice(e.indexOf('-') + 1)) === 0 ? true : false
         r.temp.indoorTemp = t.slice(t.indexOf('-') + 1)
         r.temp.indoorHumidity = h.slice(h.indexOf('-') + 1)
+        break;
+      }
+      case 'lights_Styles': {
+        const [a, s] = sections
+        const animationStyles = a.split(',')
+        const changeStateStyles = s.split(',')
+
+        console.log("parseReceipt, sections: ", { animationStyles, changeStateStyles })
+        r.lights.animationStyles = [...animationStyles]
+        r.lights.changeStateStyles = [...changeStateStyles]
         break;
       }
       case 'lights_State':

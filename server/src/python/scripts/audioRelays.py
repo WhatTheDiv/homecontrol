@@ -121,7 +121,7 @@ try:
           else:
             return f"{count}:z{zone}-{state}/e-0"
 
-        
+        # [x] Get Lights State
         elif command == 'l' and action == 's': #                        Get Lights State          ***** 
           try:
             with SMBus(1) as bus:
@@ -151,11 +151,38 @@ try:
             print(f'* exception: {e}', flush=True)
             return f"{count}:success-false"
         
+        # [ ] Get Lights StyleNames
+        elif command == 'l' and action == 'x': #                        Get Lights StyleNames          ***** 
+          try:
+            with SMBus(1) as bus:
+              t = bytes("getStyles", "utf-8")
+
+              bus.write_i2c_block_data(lights_slave, 0, t)
+              time.sleep(.1)
+              block = bus.read_i2c_block_data(lights_slave, 0, 30)
+
+              string = ''.join(chr(x) for x in block)
+              
+
+              if(string.find("fail") >= 0):
+                return f"{count}:success-false"
+              
+              elif(string.find("success") >= 0):
+                trimmedString = string[string.find("success") + 8:]
+                return f"{count}:{trimmedString}"
+              else:
+                return f"{count}:success-false"
+
+          except Exception as e:
+
+            print(f'* exception: {e}', flush=True)
+            return f"{count}:success-false"
+        
         # [ ] Set animation
         elif command == 'l' and action[:input.find('-')] == 'a': #     Set Animation             *****            #--------- 
           return f"{count}:l-{0}/a-{1}"
         
-        # [ ] Toggle Lights
+        # [x] Toggle Lights
         elif command == 'l' and action[:input.find('-')] == 'l': #     Toggle Lights             *****            #--------- 
           try:
             with SMBus(1) as bus:

@@ -46,7 +46,6 @@ const HomeState = {
       'walk', 'spot'
     ],
     Zones: { all: 0, livingRoom: 1, kitchen: 2, bedroom: 3 },
-
   },
   newLightsStructure: {
     animationStyles: [],

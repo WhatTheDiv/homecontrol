@@ -73,8 +73,6 @@ void wire_response() {
   response[strlen(response)] = '\0';
   Wire.write(response);
 
-
-  delay(500);
   Serial.println("");
   Serial.print("------ Response to master [");
   Serial.print(response);
@@ -103,8 +101,6 @@ void build_response() {
     char a = *((strchr(req, '/') + 1));
     bool isAnimationActive = lights.isAnimationActive();
     bool newState;
-    Serial.print("a: ");
-    Serial.println(a);
 
     if (a == '0')
       newState = 0;
@@ -132,120 +128,34 @@ void build_response() {
     lights.stopAnimation();
   }
   else if (strstr(req, "getStyles")) {
-    sprintf(res, "success\0");
+    sprintf(res, "success/a:");
 
-    // for (int k = 0; k < sizeof(lights.animationStyles) / lights.charInNames; k++) {
-    //   if (strlen(lights.animationStyles[k]) < 1)
-    //     break;
+    for (int k = 0; k < sizeof(lights.animationStyles) / lights.charInNames; k++) {
+      if (strlen(lights.animationStyles[k]) < 1)
+        break;
 
-    //   if (k != 0)
-    //     response.concat(",");
+      if (k != 0)
+        strcat(res, ",");
 
-    //   response.concat(lights.animationStyles[k]);
+      strcat(res, lights.animationStyles[k]);
+    }
 
-    // }
-    // response.concat("/s:");
-    // for (int k = 0; k < lights.changeStateStyles.length(); k++) {
-    //   if (k != 0)
-    //     response.concat(",");
-    //   if (lights.changeStateStyles[k].length() >= 1)
-    //     response.concat(lights.changeStateStyles[k]);
-    // }
+    strcat(res, "/s:");
 
-    // response.concat('\0');
-    // Serial.print("Response: ");
-    // Serial.println(response);
+    for (int k = 0; k < sizeof(lights.changeStateStyles) / lights.charInNames; k++) {
+      if (strlen(lights.changeStateStyles[k]) < 1)
+        break;
+
+      if (k != 0 && strlen(lights.changeStateStyles[k + 1]) > 1)
+        strcat(res, ",");
+
+      strcat(res, lights.changeStateStyles[k]);
+    }
+
+    Serial.print("res: ");
+    Serial.println(res);
   }
   else
     sprintf(res, "fail-OOB!\0");
 
-  // if (strstr(req, "lightsToggle")) {
-    //   char a = *((strchr(req, '/') + 1));
-    //   bool newState;
-    //
-    //   if (a == '0')
-    //     newState = 0;
-    //   else
-    //     newState = 1;
-    //
-    //   lights.toggleLights(newState);
-    //
-    //   response.concat("success/l");
-    //   response.concat(a);
-    //   response.concat("/a");
-    //   response.concat(lights.isAnimationActive());
-    //   response.concat("\0");
-    // }
-    // else if (strstr(req, "animStart")) {
-    //   char a = *((strchr(req, '#') + 1));
-    //   int animId = int(a) - 48;
-    //   if (animId < 0 || animId > 9) {
-    //     response.concat("fail-badAnimId[");
-    //     response.concat(a);
-    //     response.concat("]\0");
-    //   }
-    //   else {
-    //     response.concat("success\0");
-    //     lights.setAnimation(animId);
-    //   }
-    // }
-    // else if (strstr(req, "animStop")) {
-    //   lights.stopAnimation();
-    //   response.concat("success\0");
-    // }
-    // else if (strstr(req, "state")) {
-    //   response.concat("success/l");
-    //   response.concat(lights.areLightsOn());
-    //   response.concat("/a");
-    //   response.concat(lights.isAnimationActive());
-    //   response.concat("\0");
-    // }
-    // else if (strstr(req, "getStyles")) {
-    //   Serial.println("Checkpoint");
-    //   response.concat("success/a:");
-    //
-    //   for (int k = 0; k < sizeof(lights.animationStyles) / lights.charInNames; k++) {
-    //     if (strlen(lights.animationStyles[k]) < 1)
-    //       break;
-    //
-    //     if (k != 0)
-    //       response.concat(",");
-    //
-    //     response.concat(lights.animationStyles[k]);
-    //
-    //   }
-    //   // response.concat("/s:");
-    //   // for (int k = 0; k < lights.changeStateStyles.length(); k++) {
-    //   //   if (k != 0)
-    //   //     response.concat(",");
-    //   //   if (lights.changeStateStyles[k].length() >= 1)
-    //   //     response.concat(lights.changeStateStyles[k]);
-    //   // }
-    //
-    //   response.concat('\0');
-    //   Serial.print("Response: ");
-    //   Serial.println(response);
-    // }
-    // else
-    //   response.concat("fail-OOB!\0");
-
-
-  // // convert string to char array
-  // int resLen = response.length();
-  // char res[resLen + 1];
-  // for (int i = 0; i < resLen; i++) {
-  //   res[i] = response[i];
-  // }
-
-  // res[resLen] = '\0';
-
-  // Wire.write(res);
-
-
-  // delay(500);
-  // Serial.println("");
-  // Serial.print("------ Response to master [");
-  // Serial.print(res);
-  // Serial.print("]");
-  // Serial.println("\n\n");
 }
