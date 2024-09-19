@@ -164,8 +164,9 @@ try:
 
               for x in block:
                 if(x != 255):
-                  blockTrimmed.append(chr(x))
+                  blockTrimmed.append(x)
 
+              print(f'{block2}', flush=True)
               animationStyles = ''.join(chr(x) for x in block)
 
               t2 = bytes("getStyles/s", "utf-8")
@@ -176,7 +177,7 @@ try:
 
               changeStateStyles = ''.join(chr(x) for x in block2)
 
-              print(f'{block2}', flush=True)
+              
 
               if(animationStyles.find("fail") >= 0 or changeStateStyles.find("fail") >= 0 ):
                 return f"{count}:success-false"
