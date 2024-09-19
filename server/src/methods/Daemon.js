@@ -309,7 +309,7 @@ class DaemonClass {
     // -------------------- Break output into sections
     const trimmedOutput = output.slice(output.indexOf(':') + 1)
     const sections = trimmedOutput.split('/')
-    console.log('sections: ', sections)
+    console.log('name: ', name, 'sections: ', sections)
 
     // -------------------- Initialize return object
     const r = { err: false, audio: {}, temp: {}, lights: {}, tv: {} }
