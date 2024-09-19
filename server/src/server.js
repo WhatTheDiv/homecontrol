@@ -144,12 +144,11 @@ app.get('/initialState', async (req, res) => {
     const { lights, err } = response
 
     if (!err) {
-      HomeState.lights.state.updated = true
-      HomeState.lights.state.lights_active = lights.active
+      const { lightsActive, animationActive } = lights
 
-      const a = HomeState.lights.Animations
-      HomeState.lights.state.animation = (Object.keys(a)).find(animName => a[animName] === lights.animation) || 'walk'
-      HomeState.lights.state.animation_active = HomeState.lights.ActiveAnimations.indexOf(HomeState.lights.state.animation) >= 0 ? true : false
+      HomeState.lights.state.updated = true
+      HomeState.lights.state.lights_active = lightsActive
+      HomeState.lights.state.animation_active = animationActive
     } else {
       HomeState.lights.state.updated = false
     }
@@ -439,6 +438,35 @@ app.post('/setLightsAnimation', async (req, res) => {
   //   lights,
   //   state: HomeState.lights.state
   // }
+
+})
+
+app.post('/lights_animation', async (req, res) => {
+  const getAnimationFromId = name => {
+    if (!name) return ''
+
+    const id = HomeState.lights.styles.animationStyles.findIndex(animName => animName === name)
+
+    return id ? id : ''
+
+  }
+  const { animationNewState, animationName } = req.body
+  const lightsConfig = {
+    animationId: !animationNewState ? -1 : getAnimationId(animationName)
+  }
+  const { err, message, lights } = await Daemon.sendCommand({ name: "lights_setAnimation", lightsConfig, Daemon })
+
+  if (err) {
+    HomeState.lights.state.updated = false
+    return res.status(500).send({ success: false, errorMessage: message, lights: HomeState.lights })
+  }
+
+  const { lightsActive, animationActive } = lights;
+
+  HomeState.lights.state.updated = true
+  HomeState.lights.state.lights_active = lightsActive
+  HomeState.lights.state.animation_active = animationActive
+  return res.status(200).send({ success: true, lights: HomeState.lights })
 
 })
 

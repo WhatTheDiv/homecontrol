@@ -151,7 +151,7 @@ try:
             print(f'* exception: {e}', flush=True)
             return f"{count}:success-false"
         
-        # [ ] Get Lights StyleNames
+        # [x] Get Lights StyleNames
         elif command == 'l' and action == 'x': #                        Get Lights StyleNames          ***** 
           try:
             with SMBus(1) as bus:
@@ -201,7 +201,37 @@ try:
         
         # [ ] Set animation
         elif command == 'l' and action[:input.find('-')] == 'a': #     Set Animation             *****            #--------- 
-          return f"{count}:l-{0}/a-{1}"
+          try:
+            with SMBus(1) as bus:
+              animationIdIndex = input.find("-") + 1
+              animationId = input[animationIdIndex:animationIdIndex + 1]
+              animationCommand = "animStop" if animationId < 0 else f"animStart#{animationId}"
+              
+              t = bytes(animationCommand, "utf-8")
+
+              bus.write_i2c_block_data(lights_slave, 0, t)
+              time.sleep(.1)
+              block = bus.read_i2c_block_data(lights_slave, 0, 15)
+
+
+              string = ''.join(chr(x) for x in block)
+
+              if(string.find("fail") >= 0):
+                return f"{count}:success-false"
+              
+              elif(string.find("success") >= 0):
+                indLightsActice = string.find('/')+2
+                indAnimation = string.find('/', indLightsActice)+2
+                lightsActive = string[indLightsActice:indLightsActice+1]
+                animationId_ = string[indAnimation: indAnimation+1] 
+                return f"{count}:l-{lightsActive}/a-{animationId_}"
+              else:
+                return f"{count}:success-false"
+
+          except Exception as e:
+
+            print(f'* exception: {e}', flush=True)
+            return f"{count}:success-false"
         
         # [x] Toggle Lights
         elif command == 'l' and action[:input.find('-')] == 'l': #     Toggle Lights             *****            #--------- 
@@ -232,7 +262,9 @@ try:
               else:
                 return f"{count}:success-false"
 
-          except:
+          except Exception as e:
+
+            print(f'* exception: {e}', flush=True)
             return f"{count}:success-false"
         
         # [ ] Set Color

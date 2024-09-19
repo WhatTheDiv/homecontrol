@@ -73,7 +73,7 @@ class DaemonClass {
       this.process = process
       this.active = true
 
-      const { err, message, lights } = await this.sendCommand({ name: "lights_Styles", Daemon: this, checkTimeout_seconds: 3 })
+      const { err, message, lights } = await this.sendCommand({ name: "lights_Styles", Daemon: this })
 
       if (err)
         throw new Error(message)
@@ -225,9 +225,8 @@ class DaemonClass {
           obj.cmd = 'x'
           break;
         case 'lights_SetAnimation':
-          if (lightsConfig.animationId === undefined) throw new Error(`Sending incomplete command, animationID: (${lightsConfig.animationId})`)
           obj.name = 'l'
-          obj.cmd = 'a-' + lightsConfig.animationId
+          obj.cmd = 'a-' + lightsConfig.animationId === undefined ? "" : lightsConfig.animationId
           break;
         case 'lights_Toggle':
           obj.name = 'l'
@@ -361,8 +360,8 @@ class DaemonClass {
       case 'lights_Toggle': {
         const [l, a] = sections
 
-        r.lights.active = Number(l.slice(l.indexOf('-') + 1)) === 0 ? false : true
-        r.lights.animation = a.slice(a.indexOf('-') + 1)
+        r.lights.lightsActive = Number(l.slice(l.indexOf('-') + 1)) === 0 ? false : true
+        r.lights.animationActive = a.slice(a.indexOf('-') + 1) === 0 ? false : true
         break;
       }
       case 'lights_SetColor': {

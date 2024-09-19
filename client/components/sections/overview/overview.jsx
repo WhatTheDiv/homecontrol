@@ -27,7 +27,7 @@ import { useSelector, useDispatch } from "react-redux";
 import LoadingIcon from "../../misc/loadingIcon";
 import RequestTv from "../../../js/serverRequests/request_tv";
 import RequestAudio from "../../../js/serverRequests/request_audio";
-import RequestLights from "../../../js/serverRequests/request_lights.js";
+import RequestLights, { requestLights_animation } from "../../../js/serverRequests/request_lights.js";
 import RequestServer from "../../../js/serverRequests/request_initial";
 import { setTvState } from "../../../js/store/tv_slice";
 import {
@@ -1131,6 +1131,16 @@ const tv_pressButton = async (button, { dispatch, AnimatedFlash }) => {
   return;
 };
 
+const toggleLightsLoading = (newState, setter) => {
+  if (newState) {
+    AnimatedFade_lights.value = 0;
+    setter(true);
+  } else {
+    AnimatedFade_lights.value = 1;
+    setter(false);
+  }
+};
+
 const lights_toggleState = async (
   action,
   currState,
@@ -1138,15 +1148,6 @@ const lights_toggleState = async (
   AnimatedFade_lights,
   setLoading_toggleLights
 ) => {
-  const toggleLightsLoading = (newState, setter) => {
-    if (newState) {
-      AnimatedFade_lights.value = 0;
-      setter(true);
-    } else {
-      AnimatedFade_lights.value = 1;
-      setter(false);
-    }
-  };
 
   toggleLightsLoading(true, setLoading_toggleLights);
 
@@ -1165,6 +1166,32 @@ const lights_toggleState = async (
   } else {
     toggleLightsLoading(false, setLoading_toggleLights);
   }
+};
+
+const lights_setAnimation = async ({
+  newState,
+  animName,
+  dispatch,
+  AnimatedFade_lights,
+  setLoading_toggleLights,
+}) => {
+  toggleLightsLoading(true, setLoading_toggleLights);
+
+  const { success, errorMessage, lights } = await requestLights_animation({ animationNewState: newState, animationName: animName })
+  
+  toggleLightsLoading(false, setLoading_toggleLights);
+
+  if (!success) {
+    return alert(`Failed to set animation: ${errorMessage}`);
+  } else {
+    const { animation_active, lights_active, animation, updated }
+    dispatch(lights_setInitial({
+      animation_active, updated, animation, lightsOn: lights_active
+    }) )
+  }
+
+
+
 };
 
 const audio_toggleZone = async ({

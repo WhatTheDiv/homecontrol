@@ -36,7 +36,7 @@ server -> python
 - lights
 
 
-    Get Styles *****
+    Get Styles ***** DONE
           (Message) ------------------------- {count}:l/  x
           (Response - Success) --------------               {count}:  "a:{ animStyle [, animStyle] }/s: { stateStyle [, stateStyle] }"
           (Response - Fail) -----------------                             {count}:success-false
@@ -148,12 +148,12 @@ server -> python
 
     Start animation ******
           (Message) ------------------------- "animStart#{ animation id }"
-          (Response - Success) --------------               "success"
+          (Response - Success) --------------               "success/l{ active? }/a{ animationId }"
           (Response - Fail) -----------------                             "fail-{reason}"
 
     Stop Animation ******
           (Message) ------------------------- "animStop"
-          (Response - Success) --------------               "success"
+          (Response - Success) --------------               "success/l{ active? }/a{ animationId }"
           (Response - Fail) -----------------                             "fail-{reason}"
 
 

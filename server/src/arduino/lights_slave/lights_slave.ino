@@ -119,13 +119,21 @@ void build_response() {
       sprintf(res, "fail-badAnimId[%c]\0", a);
     }
     else {
-      sprintf(res, "success\0");
       lights.setAnimation(animId);
+
+      bool areLightsOn = lights.areLightsOn();
+      bool isAnimationActive = lights.isAnimationActive();
+
+      sprintf(res, "success/l%d/a%d\0", areLightsOn, isAnimationActive);
     }
   }
   else if (strstr(req, "animStop")) {
-    sprintf(res, "success\0");
     lights.stopAnimation();
+
+    bool areLightsOn = lights.areLightsOn();
+    bool isAnimationActive = lights.isAnimationActive();
+
+    sprintf(res, "success/l%d/a%d\0", areLightsOn, isAnimationActive);
   }
   else if (strstr(req, "getStyles")) {
     char t = *((strchr(req, '/') + 1));

@@ -105,3 +105,44 @@ export default async function request_lights({ action, newState, animationName, 
     }
   })
 }
+
+export async function requestLights_animation({ animationNewState, animationName }) {
+  const status = { success: false, errorMessage: "", lights: {} }
+  try {
+    const body = {
+      animationNewState, animationName
+    }
+
+    const url = `${process.env.EXPO_PUBLIC_SERVER_URL}/lights_animation`
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    }
+    const response = await fetch(url, options)
+
+    if (response.status === 404)
+      throw new Error(`Could not find server`)
+
+    const { lights, success, errorMessage } = await response.json();
+
+    if (response.status !== 200)
+      throw new Error(`Response from server: ${errorMessage}`)
+
+
+    status.lights = lights
+    status.success = true
+
+  } catch (e) {
+    status.success = false
+    status.errorMessage = e.message
+
+  } finally {
+    return status
+  }
+
+
+
+}
