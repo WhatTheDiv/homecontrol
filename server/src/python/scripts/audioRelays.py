@@ -166,7 +166,7 @@ try:
                 if(x != 255):
                   blockTrimmed.append(x)
 
-              print(f'{block2}', flush=True)
+              print(f'{block}', flush=True)
               animationStyles = ''.join(chr(x) for x in block)
 
               t2 = bytes("getStyles/s", "utf-8")
