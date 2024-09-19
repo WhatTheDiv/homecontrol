@@ -451,7 +451,7 @@ app.post('/lights_animation', async (req, res) => {
   }
   const { animationNewState, animationName } = req.body
   const lightsConfig = {
-    animationId: !animationNewState ? -1 : getAnimationId(animationName)
+    animationId: !animationNewState ? -1 : getAnimationFromId(animationName)
   }
   const { err, message, lights } = await Daemon.sendCommand({ name: "lights_setAnimation", lightsConfig, Daemon })
 
