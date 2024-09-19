@@ -360,6 +360,8 @@ class DaemonClass {
       case 'lights_Toggle': {
         const [l, a] = sections
 
+        console.log(sections)
+
         r.lights.lightsActive = Number(l.slice(l.indexOf('-') + 1)) === 0 ? false : true
         r.lights.animationActive = a.slice(a.indexOf('-') + 1) === 0 ? false : true
         break;
