@@ -198,7 +198,7 @@ class DaemonClass {
       // -------------------- Initialize variable object
       obj.count = Daemon.count
 
-      console.log('test: ', 'a-' + !lightsConfig.animationId ? "" : lightsConfig.animationId)
+      console.log('test: ', 'a-' + !lightsConfig.animationId ? "N" : lightsConfig.animationId)
       // -------------------- Configure variable object
       switch (name) {
         case 'audio_State':
