@@ -365,6 +365,8 @@ class DaemonClass {
 
         r.lights.lightsActive = Number(l.slice(l.indexOf('-') + 1)) === 0 ? false : true
         r.lights.animationActive = a.slice(a.indexOf('-') + 1) === 0 ? false : true
+
+        console.log('lights: ', r.lights)
         break;
       }
       case 'lights_SetColor': {
