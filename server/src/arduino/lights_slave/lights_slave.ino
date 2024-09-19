@@ -156,6 +156,7 @@ void build_response() {
         strcat(res, lights.changeStateStyles[k]);
       }
     }
+    res[strlen(res)] = '\0';
 
 
     // success/a:spot,walk/s:instant,fade,slide

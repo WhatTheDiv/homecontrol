@@ -163,7 +163,7 @@ try:
 
               animationStyles = ''.join(chr(x) for x in block)
 
-              t2 = bytes("getStyles/a", "utf-8")
+              t2 = bytes("getStyles/s", "utf-8")
 
               bus.write_i2c_block_data(lights_slave, 0, t2)
               time.sleep(.1)
