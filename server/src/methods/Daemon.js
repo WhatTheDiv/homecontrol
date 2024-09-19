@@ -73,7 +73,7 @@ class DaemonClass {
       this.process = process
       this.active = true
 
-      const { err, message, lights } = await this.sendCommand({ name: "lights_Styles", Daemon: this })
+      const { err, message, lights } = await this.sendCommand({ name: "lights_Styles", Daemon: this, checkTimeout_seconds: 3 })
 
       if (err)
         throw new Error(message)
