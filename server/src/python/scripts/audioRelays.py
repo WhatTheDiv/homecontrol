@@ -166,7 +166,6 @@ try:
                 if(x != 255):
                   blockTrimmed.append(x)
 
-              print(f'{blockTrimmed}', flush=True)
               animationStyles = ''.join(chr(x) for x in blockTrimmed)
 
               t2 = bytes("getStyles/s", "utf-8")
@@ -174,8 +173,13 @@ try:
               bus.write_i2c_block_data(lights_slave, 0, t2)
               time.sleep(.1)
               block2 = bus.read_i2c_block_data(lights_slave, 0, 32)
+              blockTrimmed2 = []
 
-              changeStateStyles = ''.join(chr(x) for x in block2)
+              for x in block2:
+                if(x != 255):
+                  blockTrimmed2.append(x)
+
+              changeStateStyles = ''.join(chr(x) for x in blockTrimmed2)
 
               
 
