@@ -142,7 +142,7 @@ void build_response() {
 
     strcat(res, "/s:");
 
-
+    // success/a:spot,walk/s:instant,fade,slide
 
     for (int k = 0; k < sizeof(lights.changeStateStyles) / lights.charInNames; k++) {
       if (strlen(lights.changeStateStyles[k]) < 1)
@@ -153,10 +153,12 @@ void build_response() {
 
       strcat(res, lights.changeStateStyles[k]);
     }
-
     res[strlen(res)] = '\0';
 
-    Serial.print("res: ");
+    Serial.print("length: ");
+    Serial.print(strlen(res));
+
+    Serial.print("- res: ");
     Serial.println(res);
   }
   else

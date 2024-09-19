@@ -159,7 +159,7 @@ try:
 
               bus.write_i2c_block_data(lights_slave, 0, t)
               time.sleep(1.5)
-              block = bus.read_i2c_block_data(lights_slave, 0, 30)
+              block = bus.read_i2c_block_data(lights_slave, 0, 50)
 
               string = ''.join(chr(x) for x in block)
               
