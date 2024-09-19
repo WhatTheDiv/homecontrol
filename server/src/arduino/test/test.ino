@@ -13,16 +13,31 @@ void setup() {
 
 void loop() {
 
-  char arr[10][10] = { "spot", "walkk" };
-  String response;
-  char st[] = "something";
+  char response[30];
 
-  response.concat(st + arr[0]);
+  char* res = response;
+
+  char a = 'a';
+  char b[] = "else";
+  int n = 15;
+
+  sprintf(res, "1:%c2:%s3:%d", a, b, n);
 
 
 
-  Serial.print("ex: ");
-  Serial.println(response);
+  Serial.print("res: [");
+  Serial.print(res);
+  Serial.println("]");
+
+  for (int i = 0; i < strlen(res) + 1; i++) {
+    Serial.println(i);
+    if (res[i] == '\0') {
+      Serial.print("Null terminator on char ");
+      Serial.println(i);
+    }
+  }
+
+  //1:something2:else3:15
 
 
 

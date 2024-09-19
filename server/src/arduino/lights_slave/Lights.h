@@ -334,60 +334,6 @@ struct Lights {
     }
   }
 
-  void runEffect(uint32_t doNothingDelay = 1000) {
-    interrupt = 0;
-    bool startAnim = newState_animation == 1 && animationActive == 1;
-    bool stopAnim = newState_animation == 1 && animationActive == 0;
-    bool turnLightsOn = newState_lightsOn == 1 && lightsOn == 1;
-    bool turnLightsOff = newState_lightsOn == 1 && lightsOn == 0;
-    bool noChange = newState_lightsOn == 0 && newState_animation == 0;
-
-    newState_animation = 0;
-    newState_lightsOn = 0;
-
-
-    if (noChange) {
-      delay(doNothingDelay);
-    }
-    else if (startAnim) {
-      // run animation
-      if (strstr(animationStyles[selected_animation], "spot")) {
-        animate_spot(1, 10, 20);
-      }
-      else if (strstr(animationStyles[selected_animation], "walk")) {
-        animate_walk(15, 4, 20, colorOrange, colorDimWhite);
-      }
-    }
-    else if (stopAnim) {
-      setStrip_off();
-    }
-    else if (turnLightsOn) {
-      // turn lights on
-      if (strstr(changeStateStyles[selected_changeStateStyle_on], "instant")) {
-        setStrip_on();
-      }
-      else if (strstr(changeStateStyles[selected_changeStateStyle_on], "fade")) {
-        animate_fadeOn(5);
-      }
-      else if (strstr(changeStateStyles[selected_changeStateStyle_on], "slide")) {
-        animate_slideOn(10, 7);
-      }
-    }
-    else if (turnLightsOff) {
-      // turn lights off
-      if (strstr(changeStateStyles[selected_changeStateStyle_off], "instant")) {
-        setStrip_off();
-      }
-      else if (strstr(changeStateStyles[selected_changeStateStyle_off], "fade")) {
-        animate_fadeOff(5);
-      }
-      else if (strstr(changeStateStyles[selected_changeStateStyle_off], "slide")) {
-        // animate_slideOff(10, 7);
-      }
-    }
-    else {
-    }
-  }
   void turnLightsOn() {
     interrupt = 1;
 
@@ -427,6 +373,60 @@ struct Lights {
     animationActive = 0;
 
     newState_animation = 1;
+  }
+
+  void runEffect() {
+    interrupt = 0;
+    bool startAnim = newState_animation == 1 && animationActive == 1;
+    bool stopAnim = newState_animation == 1 && animationActive == 0;
+    bool turnLightsOn = newState_lightsOn == 1 && lightsOn == 1;
+    bool turnLightsOff = newState_lightsOn == 1 && lightsOn == 0;
+    bool noChange = newState_lightsOn == 0 && newState_animation == 0;
+
+    newState_animation = 0;
+    newState_lightsOn = 0;
+
+
+    if (noChange)
+      return;
+
+    else if (startAnim) {
+      // run animation
+      if (strstr(animationStyles[selected_animation], "spot")) {
+        animate_spot(1, 10, 20);
+      }
+      else if (strstr(animationStyles[selected_animation], "walk")) {
+        animate_walk(15, 4, 20, colorOrange, colorDimWhite);
+      }
+    }
+    else if (stopAnim) {
+      setStrip_off();
+    }
+    else if (turnLightsOn) {
+      // turn lights on
+      if (strstr(changeStateStyles[selected_changeStateStyle_on], "instant")) {
+        setStrip_on();
+      }
+      else if (strstr(changeStateStyles[selected_changeStateStyle_on], "fade")) {
+        animate_fadeOn(5);
+      }
+      else if (strstr(changeStateStyles[selected_changeStateStyle_on], "slide")) {
+        animate_slideOn(10, 7);
+      }
+    }
+    else if (turnLightsOff) {
+      // turn lights off
+      if (strstr(changeStateStyles[selected_changeStateStyle_off], "instant")) {
+        setStrip_off();
+      }
+      else if (strstr(changeStateStyles[selected_changeStateStyle_off], "fade")) {
+        animate_fadeOff(5);
+      }
+      else if (strstr(changeStateStyles[selected_changeStateStyle_off], "slide")) {
+        // animate_slideOff(10, 7);
+      }
+    }
+
   }
 
   bool areLightsOn() {
