@@ -360,7 +360,7 @@ class DaemonClass {
       case 'lights_SetAnimation':
       case 'lights_Toggle': {
         const [l, a] = sections
-
+        console.log('checkpoint')
 
 
         r.lights.lightsActive = Number(l.slice(l.indexOf('-') + 1)) === 0 ? false : true
