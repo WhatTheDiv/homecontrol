@@ -160,6 +160,11 @@ try:
               bus.write_i2c_block_data(lights_slave, 0, t)
               time.sleep(.1)
               block = bus.read_i2c_block_data(lights_slave, 0, 32)
+              blockTrimmed
+
+              for x in block:
+                if(x != 255):
+                  blockTrimmed.append(chr(x))
 
               animationStyles = ''.join(chr(x) for x in block)
 
