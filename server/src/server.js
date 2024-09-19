@@ -24,6 +24,10 @@ const HomeState = {
       animation: 'walk',
       updated: false,
     },
+    styles: {
+      animationStyles: [],
+      changeStateStyles: [],
+    },
     color_active: false,
     white_active: false,
     red: 236,
@@ -46,12 +50,6 @@ const HomeState = {
       'walk', 'spot'
     ],
     Zones: { all: 0, livingRoom: 1, kitchen: 2, bedroom: 3 },
-  },
-  newLightsStructure: {
-    animationStyles: [],
-    changeStateStyles: [],
-    animationActive: false,
-    lightsOn: false
   },
   temp: {
     indoor_temp: 0,
@@ -543,7 +541,7 @@ app.listen(port, async () => {
 
   const { fail, lights } = Daemon.init.bind(Daemon)()
   if (!fail)
-    HomeState.newLightsStructure = { ...HomeState.newLightsStructure, ...lights }
+    HomeState.lights.styles = { ...HomeState.lights.styles, ...lights }
   IrManager.activate.bind(IrManager)(avData)
   AudioManager.activate.bind(AudioManager)(avData)
   VideoControlManager.activate.bind(VideoControlManager)(avData)
