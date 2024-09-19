@@ -198,7 +198,7 @@ class DaemonClass {
       // -------------------- Initialize variable object
       obj.count = Daemon.count
 
-      console.log('test: ', lightsConfig.animationId === undefined ? "" : lightsConfig.animationId)
+      console.log('test: ', lightsConfig.animationId === undefined ? "nothing" : lightsConfig.animationId)
 
       // -------------------- Configure variable object
       switch (name) {
