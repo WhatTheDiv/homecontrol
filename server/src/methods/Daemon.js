@@ -350,7 +350,7 @@ class DaemonClass {
       case 'lights_Styles': {
         const [a, s] = sections
         const animationStyles = (a.split(":"))[1].split(',')
-        const changeStateStyles = (a.split(":"))[1].split(',')
+        const changeStateStyles = (s.split(":"))[1].split(',')
 
         r.lights.animationStyles = [...animationStyles]
         r.lights.changeStateStyles = [...changeStateStyles]
