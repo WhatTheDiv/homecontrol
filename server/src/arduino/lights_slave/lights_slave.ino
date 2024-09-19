@@ -113,27 +113,25 @@ void build_response() {
   }
   else if (strstr(req, "animStart")) {
     char a = *((strchr(req, '#') + 1));
+    bool goodParams = 0;
 
     if (a == 'x') {
+      goodParams = 1;
       lights.setAnimation();
-
-      bool areLightsOn = lights.areLightsOn();
-      bool isAnimationActive = lights.isAnimationActive();
-
-      sprintf(res, "success/l%d/a%d\0", areLightsOn, isAnimationActive);
-
     }
     else if (int(a) - 48 >= 0 && int(a) - 48 <= 9) {
+      goodParams = 1;
       lights.setAnimation(int(a) - 48);
-
-      bool areLightsOn = lights.areLightsOn();
-      bool isAnimationActive = lights.isAnimationActive();
-
-      sprintf(res, "success/l%d/a%d\0", areLightsOn, isAnimationActive);
-
     }
     else {
       sprintf(res, "fail-badAnimId[%c]\0", a);
+    }
+
+    if (goodParams) {
+      bool areLightsOn = lights.areLightsOn();
+      bool isAnimationActive = lights.isAnimationActive();
+
+      sprintf(res, "success/l%d/a%d\0", areLightsOn, isAnimationActive);
     }
 
   }

@@ -204,8 +204,9 @@ try:
           try:
             with SMBus(1) as bus:
               animationIdIndex = input.find("-") + 1
-              animationId = input[animationIdIndex:]
+              animationId = input[animationIdIndex:animationIdIndex+1]
               animationCommand = "animStop" if animationId == 'v'  else f"animStart#{animationId}"
+              print(f'animationCommand: {animationCommand}',flush=True)
               
               t = bytes(animationCommand, "utf-8")
 
