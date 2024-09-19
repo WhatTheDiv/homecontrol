@@ -142,14 +142,13 @@ void build_response() {
 
     strcat(res, "/s:");
 
-    Serial.print("sizeof changeStateStyles: ");
-    Serial.println(sizeof(lights.changeStateStyles));
+
 
     for (int k = 0; k < sizeof(lights.changeStateStyles) / lights.charInNames; k++) {
       if (strlen(lights.changeStateStyles[k]) < 1)
         break;
 
-      if (k != 0 && strlen(lights.changeStateStyles[k + 1]) > 1)
+      if (k != 0)
         strcat(res, ",");
 
       strcat(res, lights.changeStateStyles[k]);

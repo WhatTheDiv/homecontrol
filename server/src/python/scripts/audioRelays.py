@@ -171,6 +171,7 @@ try:
                 trimmedString = string[string.find("success") + 8:]
                 return f"{count}:{trimmedString}"
               else:
+                print(f'* string: {string}', flush=True)
                 return f"{count}:success-false"
 
           except Exception as e:
