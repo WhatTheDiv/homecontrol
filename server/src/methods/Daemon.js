@@ -79,9 +79,11 @@ class DaemonClass {
         throw new Error(message)
 
       console.log(lights)
+      return lights
 
     } catch (e) {
       this.onDaemonError.bind(this)(e, controller, 'InitErr');
+      return { fail: true }
     }
   }
 
@@ -347,8 +349,8 @@ class DaemonClass {
       }
       case 'lights_Styles': {
         const [a, s] = sections
-        const animationStyles = a.split(',')
-        const changeStateStyles = s.split(',')
+        const animationStyles = (a.split(":"))[1].split(',')
+        const changeStateStyles = (a.split(":"))[1].split(',')
 
         r.lights.animationStyles = [...animationStyles]
         r.lights.changeStateStyles = [...changeStateStyles]
