@@ -154,6 +154,8 @@ void build_response() {
       strcat(res, lights.changeStateStyles[k]);
     }
 
+    res[strlen(res)] = '\0';
+
     Serial.print("res: ");
     Serial.println(res);
   }

@@ -158,7 +158,7 @@ try:
               t = bytes("getStyles", "utf-8")
 
               bus.write_i2c_block_data(lights_slave, 0, t)
-              time.sleep(.3)
+              time.sleep(.5)
               block = bus.read_i2c_block_data(lights_slave, 0, 30)
 
               string = ''.join(chr(x) for x in block)
