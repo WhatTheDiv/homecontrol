@@ -160,7 +160,7 @@ try:
               bus.write_i2c_block_data(lights_slave, 0, t)
               time.sleep(.1)
               block = bus.read_i2c_block_data(lights_slave, 0, 32)
-              blockTrimmed
+              blockTrimmed = []
 
               for x in block:
                 if(x != 255):
