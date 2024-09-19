@@ -225,6 +225,7 @@ const getServerState = async ({ timeout = 7000 }) => {
     return {
       lights: {
         lightsOn: lights.state?.lights_active,
+        animation_active: lights.state?.animation_active,
         animation: lights.state?.animation,
         updated: lights.state.updated,
         rgbColor: { r: lights.red, g: lights.green, b: lights.blue },

@@ -1177,6 +1177,11 @@ const lights_setAnimation = async ({
 }) => {
   toggleLightsLoading(true, setLoading_toggleLights, AnimatedFade_lights);
 
+  console.log("setting animation: ", {
+    animationNewState: newState,
+    animationName: animName,
+  });
+
   const { success, errorMessage, lights } = await requestLights_animation({
     animationNewState: newState,
     animationName: animName,
@@ -1187,7 +1192,9 @@ const lights_setAnimation = async ({
   if (!success) {
     return alert(`Failed to set animation: ${errorMessage}`);
   } else {
-    const { animation_active, lights_active, animation, updated } = lights;
+    console.log("returned: ", lights);
+    const { animation_active, lights_active, animation, updated } =
+      lights.state;
     console.log("dispatching ... ", {
       animation_active,
       updated,

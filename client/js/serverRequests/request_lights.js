@@ -127,6 +127,7 @@ export async function requestLights_animation({ animationNewState, animationName
       throw new Error(`Could not find server`)
 
     const { lights, success, errorMessage } = await response.json();
+    console.log(lights, success)
 
     if (response.status !== 200)
       throw new Error(`Response from server: ${errorMessage}`)
