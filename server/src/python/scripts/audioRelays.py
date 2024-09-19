@@ -159,7 +159,7 @@ try:
 
               bus.write_i2c_block_data(lights_slave, 0, t)
               time.sleep(.1)
-              block = bus.read_i2c_block_data(lights_slave, 0, 50)
+              block = bus.read_i2c_block_data(lights_slave, 0, 34)
 
               animationStyles = ''.join(chr(x) for x in block)
 
@@ -167,7 +167,7 @@ try:
 
               bus.write_i2c_block_data(lights_slave, 0, t2)
               time.sleep(.1)
-              block2 = bus.read_i2c_block_data(lights_slave, 0, 50)
+              block2 = bus.read_i2c_block_data(lights_slave, 0, 34)
 
               changeStateStyles = ''.join(chr(x) for x in block2)
               
