@@ -62,7 +62,7 @@ export default async function request_lights({ action, newState, animationName, 
       if (response.status !== 200) throw Error(`Server responded with (${response.status}) '${data.message}'`, 'request_lights.js')
 
 
-      console.log(action, ' response', response.status, ' - ', data.message)
+      console.log('data: ', data)
 
 
       switch (action) {

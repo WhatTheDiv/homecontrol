@@ -385,12 +385,11 @@ app.post('/toggleLightsActive', async (req, res) => {
   if (err) {
     HomeState.lights.state.updated = false
   } else {
-    HomeState.lights.state.updated = true
-    HomeState.lights.state.lights_active = lights.active
+    const { lightsActive, animationActive } = lights;
 
-    const a = HomeState.lights.Animations
-    HomeState.lights.state.animation = (Object.keys(a)).find(animName => a[animName] === lights.animation) || 'walk'
-    HomeState.lights.state.animation_active = HomeState.lights.ActiveAnimations.indexOf(HomeState.lights.state.animation) >= 0 ? true : false
+    HomeState.lights.state.updated = true
+    HomeState.lights.state.lights_active = lightsActive
+    HomeState.lights.state.animation_active = animationActive
   }
 
   res.status(200).send({ success: !err, state: HomeState.lights.state })
