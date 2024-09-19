@@ -541,7 +541,9 @@ app.listen(port, async () => {
       }
     })
 
-  Daemon.init.bind(Daemon)()
+  const { fail, lights } = Daemon.init.bind(Daemon)()
+  if (!fail)
+    HomeState.newLightsStructure = { ...HomeState.newLightsStructure, ...lights }
   IrManager.activate.bind(IrManager)(avData)
   AudioManager.activate.bind(AudioManager)(avData)
   VideoControlManager.activate.bind(VideoControlManager)(avData)
