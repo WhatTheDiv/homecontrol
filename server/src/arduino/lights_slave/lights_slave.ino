@@ -136,6 +136,7 @@ void build_response() {
 
   }
   else if (strstr(req, "animStop")) {
+    // Serial.println("Checkpoint animstop");
     lights.stopAnimation();
     bool areLightsOn = lights.areLightsOn();
     bool isAnimationActive = lights.isAnimationActive();

@@ -211,7 +211,7 @@ try:
               t = bytes(animationCommand, "utf-8")
 
               bus.write_i2c_block_data(lights_slave, 0, t)
-              time.sleep(.1)
+              time.sleep(.3)
               block = bus.read_i2c_block_data(lights_slave, 0, 15)
 
 
