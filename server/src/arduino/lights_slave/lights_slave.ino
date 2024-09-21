@@ -90,6 +90,8 @@ void build_response() {
   Serial.print("-- Inc from master [");
   Serial.print(req);
   Serial.println("]");
+  // Serial.println("Checkpoint1");
+
 
   if (strstr(req, "state")) {
     bool areLightsOn = lights.areLightsOn();
@@ -137,6 +139,7 @@ void build_response() {
   }
   else if (strstr(req, "animStop")) {
     // Serial.println("Checkpoint animstop");
+
     lights.stopAnimation();
     bool areLightsOn = lights.areLightsOn();
     bool isAnimationActive = lights.isAnimationActive();

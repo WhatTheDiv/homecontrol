@@ -368,6 +368,8 @@ struct Lights {
       turnLightsOff();
   }
   void stopAnimation() {
+    // Serial.println("Checkpoint animstop");
+
     interrupt = 1;
 
     animationActive = 0;
