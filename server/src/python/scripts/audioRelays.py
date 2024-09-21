@@ -246,8 +246,6 @@ try:
               time.sleep(.1)
               block = bus.read_i2c_block_data(lights_slave, 0, 20)
 
-              print(f'* action: {st}', flush=True)
-
               string = ''.join(chr(x) for x in block)
 
               if(string.find("fail") >= 0):
