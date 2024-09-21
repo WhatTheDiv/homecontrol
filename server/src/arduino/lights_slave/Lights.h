@@ -12,6 +12,9 @@ struct Lights {
   bool lightsOn{ 0 };
   bool animationActive{ 0 };
   bool interrupt{ 0 };
+  int pause{ 0 };
+  int animationStep{ 0 };
+  long pos;
   bool newState_lightsOn{ 0 };
   bool newState_animation{ 0 };
   uint16_t brightness{ 255 };
@@ -66,21 +69,19 @@ struct Lights {
   void animate_fadeOn(uint32_t del) {
 
     for (float i = .01; i < 1; i = i + .01) {
+      if (shouldInterrupt())
+        break;
       uint16_t fractionalBrightness = uint16_t(i * brightness);
       uint32_t fadedColor = strip.Color(0, 0, 0, fractionalBrightness);
       setStrip_color(fadedColor, del);
     }
-
-    delay(100);
-
   }
   void animate_fadeOff(uint32_t del) {
     uint16_t startingBrightness = brightness;
 
     for (float i = 1; i > 0; i = i - .01) {
-      // if(i > .50 && i != .8 && i != .9 && i != .7 && i != .6){
-      //   continue;
-      // }
+      if (shouldInterrupt())
+        break;
 
       uint32_t fadedColor = strip.Color(0, 0, 0, uint16_t(i * startingBrightness));
       setStrip_color(fadedColor);
@@ -91,7 +92,6 @@ struct Lights {
     }
 
     setStrip_off();
-    delay(100);
   }
   void animate_slideOn(uint32_t del, uint32_t num_in_set) {
     uint32_t full = strip.Color(0, 0, 0, brightness);
@@ -163,7 +163,8 @@ struct Lights {
 
   }
   void animate_spot(uint32_t del, uint8_t halfSpotSize, uint8_t ramp_steps) {
-    setStrip_off();
+    if (continueUnlessPaused(1))
+      setStrip_off();
 
     uint8_t col_r = 255;
     uint8_t col_g = 40;
@@ -210,15 +211,19 @@ struct Lights {
       ramp_step_w = 1;
     }
 
-    while (!interrupt) {
-      long pos = random(min, max);
+    while (!shouldInterrupt()) {
+      if (continueUnlessPaused())
+        pos = random(min, max);
 
       //                                  ramp up
 
       // - at center spot, loop through ramp color up
       for (uint8_t step = 1; step <= ramp_steps; step++) {
-        if (interrupt)
+        if (!continueUnlessPaused())
+          continue;
+        if (shouldInterrupt())
           break;
+
 
         strip.setPixelColor(pos, strip.Color(ramp_step_r * step, ramp_step_g * step, ramp_step_b * step, ramp_step_w * step));
         strip.show();
@@ -227,11 +232,15 @@ struct Lights {
 
       // - loop through spot radius
       for (uint8_t spot_position = 1; spot_position <= halfSpotSize; spot_position++) {
-        if (interrupt)
+        if (!continueUnlessPaused())
+          continue;
+        if (shouldInterrupt())
           break;
 
         for (uint8_t step = 1; step <= ramp_steps; step++) {
-          if (interrupt)
+          if (!continueUnlessPaused())
+            continue;
+          if (shouldInterrupt())
             break;
 
           strip.setPixelColor(pos + spot_position, strip.Color(ramp_step_r * step, ramp_step_g * step, ramp_step_b * step, ramp_step_w * step));
@@ -248,11 +257,15 @@ struct Lights {
       // - loop through spot radius
       for (short int spot_position = halfSpotSize; spot_position > 0; spot_position--) {
         // - at each spot ring, loop through ramp color up
-        if (interrupt)
+        if (!continueUnlessPaused())
+          continue;
+        if (shouldInterrupt())
           break;
 
         for (short int step = ramp_steps; step >= 0; step--) {
-          if (interrupt)
+          if (!continueUnlessPaused())
+            continue;
+          if (shouldInterrupt())
             break;
 
           strip.setPixelColor(pos + spot_position, strip.Color(ramp_step_r * step, ramp_step_g * step, ramp_step_b * step, ramp_step_w * step));
@@ -264,7 +277,9 @@ struct Lights {
 
       // - at center spot, loop through ramp color down
       for (short int step = ramp_steps; step >= 0; step--) {
-        if (interrupt)
+        if (!continueUnlessPaused())
+          continue;
+        if (shouldInterrupt())
           break;
 
         strip.setPixelColor(pos, strip.Color(ramp_step_r * step, ramp_step_g * step, ramp_step_b * step, ramp_step_w * step));
@@ -273,66 +288,57 @@ struct Lights {
       }
     }
   }
-  void animate_walk(uint8_t size, uint8_t edge_Remain, uint16_t del, uint32_t c_primary, uint32_t c_secondary) {
-    setStrip_color(c_secondary);
-
-    for (int i = 0; i < edge_Remain; i++) {
-      if (interrupt)
-        break;
-      setPixel_color(i, c_primary);
-      delay(del);
-    }
-
-    while (animationActive) {
-      // Walk up
-
-      for (int i = edge_Remain; i < size; i++) {
-        if (interrupt)
-          break;
-        setPixel_color(i, c_primary);
-        delay(del);
-      }
-
-      for (int i = size; i < LED_COUNT; i++) {
-        if (interrupt)
-          break;
-        setPixel_color(i - size, c_secondary);
-        setPixel_color(i, c_primary);
-        delay(del);
-      }
-
-      for (int i = size; i > edge_Remain; i--) {
-        if (interrupt)
-          break;
-        setPixel_color(LED_COUNT - i, c_secondary);
-        delay(del);
-      }
-
-      // // Walk down
-      for (int i = LED_COUNT - edge_Remain; i >= LED_COUNT - size; i--) {
-        if (interrupt)
-          break;
-        setPixel_color(i, c_primary);
-        delay(del);
-      }
-
-      for (int i = LED_COUNT - size; i >= 0; i--) {
-        if (interrupt)
-          break;
-        setPixel_color(i, c_primary);
-        setPixel_color(i + size, c_secondary);
-        delay(del);
-      }
-
-      for (int i = size; i > edge_Remain; i--) {
-        if (interrupt)
-          break;
-        setPixel_color(i, c_secondary);
-        delay(del);
-      }
-
-    }
-  }
+  // void animate_walk(uint8_t size, uint8_t edge_Remain, uint16_t del, uint32_t c_primary, uint32_t c_secondary) {
+  //   setStrip_color(c_secondary);
+  //   for (int i = 0; i < edge_Remain; i++) {
+  //     if (interrupt)
+  //       break;
+  //     setPixel_color(i, c_primary);
+  //     delay(del);
+  //   }
+  //   while (animationActive) {
+  //     // Walk up
+  //     for (int i = edge_Remain; i < size; i++) {
+  //       if (interrupt)
+  //         break;
+  //       setPixel_color(i, c_primary);
+  //       delay(del);
+  //     }
+  //     for (int i = size; i < LED_COUNT; i++) {
+  //       if (interrupt)
+  //         break;
+  //       setPixel_color(i - size, c_secondary);
+  //       setPixel_color(i, c_primary);
+  //       delay(del);
+  //     }
+  //     for (int i = size; i > edge_Remain; i--) {
+  //       if (interrupt)
+  //         break;
+  //       setPixel_color(LED_COUNT - i, c_secondary);
+  //       delay(del);
+  //     }
+  //     // // Walk down
+  //     for (int i = LED_COUNT - edge_Remain; i >= LED_COUNT - size; i--) {
+  //       if (interrupt)
+  //         break;
+  //       setPixel_color(i, c_primary);
+  //       delay(del);
+  //     }
+  //     for (int i = LED_COUNT - size; i >= 0; i--) {
+  //       if (interrupt)
+  //         break;
+  //       setPixel_color(i, c_primary);
+  //       setPixel_color(i + size, c_secondary);
+  //       delay(del);
+  //     }
+  //     for (int i = size; i > edge_Remain; i--) {
+  //       if (interrupt)
+  //         break;
+  //       setPixel_color(i, c_secondary);
+  //       delay(del);
+  //     }
+  //   }
+  // }
 
   void turnLightsOn() {
     interrupt = 1;
@@ -345,10 +351,14 @@ struct Lights {
   void turnLightsOff() {
     interrupt = 1;
 
+    if (animationActive)
+      newState_animation = 1;
+
     lightsOn = 0;
     animationActive = 0;
 
     newState_lightsOn = 1;
+
   }
   void setAnimation(int8_t sel = -1) {
     interrupt = 1;
@@ -368,22 +378,97 @@ struct Lights {
       turnLightsOff();
   }
   void stopAnimation() {
-    // Serial.println("Checkpoint animstop");
+    Serial.println("Checkpoint animstop");
 
     interrupt = 1;
 
     animationActive = 0;
+    lightsOn = 1;
 
     newState_animation = 1;
+    newState_lightsOn = 1;
+
+    clearPause();
+  }
+
+  bool shouldInterrupt() {
+    // Serial.print(F("Should interrupt: "));
+    // Serial.println(interrupt);
+
+    return interrupt;
+  }
+  bool continueUnlessPaused(bool beginning = 0) {
+    bool cont = true;
+
+    if (interrupt) {
+      if (pause == 0) {
+        // set resume point if interrupted
+        pause = animationStep;
+        Serial.print(F("Pause point set: "));
+        Serial.println(pause);
+      }
+
+    }
+    else {
+      // if pause is set and step not reached
+      if (pause > 0 && pause < animationStep) {
+        cont = false;
+      }
+      // if pause is set and step reached
+      else if (pause > 0 && pause >= animationStep) {
+        pause = 0;
+      }
+
+      // reset animationStep
+      if (beginning) {
+        animationStep = 0;
+        Serial.print(F("Beginning"));
+
+      }
+      // increment animationStep
+      else
+        animationStep++;
+    }
+
+    return cont;
+  }
+  void clearPause() {
+    pause = 0;
+    animationStep = 0;
   }
 
   void runEffect() {
     interrupt = 0;
-    bool startAnim = newState_animation == 1 && animationActive == 1;
-    bool stopAnim = newState_animation == 1 && animationActive == 0;
-    bool turnLightsOn = newState_lightsOn == 1 && lightsOn == 1;
-    bool turnLightsOff = newState_lightsOn == 1 && lightsOn == 0;
-    bool noChange = newState_lightsOn == 0 && newState_animation == 0;
+
+    // turn off lights
+    //[x]      - lights on , turn off (fade)                 ( newState_animation = 0, newState_lightsOn = 1, lightsOn = 0, animationActive = 0 )
+    //[x]      - animation on, turn off (instant)            ( newState_animation = 1, newState_lightsOn = 1, lightsOn = 0, animationActive = 0 )
+
+    // turn on lights
+    //[x]      - lights off, turn on (fade)                  ( newState_animation = 0, newState_lightsOn = 1, lightsOn = 1, animationActive = 0 )
+    //[x]      - animation active, turn on lights (fade)     ( newState_animation = 1, newState_lightsOn = 1, lightsOn = 1, animationActive = 0 )?
+    //[x]      - lights on, turn on animation                ( newState_animation = 1, newState_lightsOn = 0, lightsOn = 1, animationActive = 1 )
+
+    bool startAnim = newState_animation == 1 && newState_lightsOn == 0 && lightsOn == 1 && animationActive == 1;
+    bool turnLightsOff_instant = newState_animation == 1 && newState_lightsOn == 1 && lightsOn == 0 && animationActive == 0;
+    bool turnLightsOn = newState_animation == 0 && newState_lightsOn == 1 && lightsOn == 1 && animationActive == 0;
+    bool stopAnim_lightsOn = newState_animation == 1 && newState_lightsOn == 1 && lightsOn == 1 && animationActive == 0;
+    bool turnLightsOff = newState_animation == 0 && newState_lightsOn == 1 && lightsOn == 0 && animationActive == 0;
+    bool noChange = newState_animation == 0 && newState_lightsOn == 0;
+
+
+
+
+
+
+    // bool startAnim = newState_animation == 1 && animationActive == 1;
+    // bool stopAnim_lightsOn = newState_animation == 1 && newState_lightsOn == 1 && animationActive == 0 && lightsOn == 1;
+    // bool stopAnim_lightsOff = newState_animation == 1 && newState_lightsOn == 0 && animationActive == 0;
+    // bool turnLightsOff_instant = newState_animation == 1 && newState_lightsOn == 1 && animationActive == 0 && lightsOn == 0;
+
+    // bool turnLightsOff = newState_lightsOn == 1 && newState_animation == 1 && lightsOn == 0;
+    // bool turnLightsOn = newState_lightsOn == 1 && newState_animation == 0 && lightsOn == 1;
+    // bool noChange = newState_lightsOn == 0 && newState_animation == 0;
 
     newState_animation = 0;
     newState_lightsOn = 0;
@@ -392,19 +477,22 @@ struct Lights {
     if (noChange)
       return;
 
-    else if (startAnim) {
+    Serial.println(F("CPCP"));
+    // Serial.println("New effect ----------- ");
+
+    if (startAnim) {
       // run animation
       if (strstr(animationStyles[selected_animation], "spot")) {
         animate_spot(1, 10, 20);
       }
       else if (strstr(animationStyles[selected_animation], "walk")) {
-        animate_walk(15, 4, 20, colorOrange, colorDimWhite);
+        // animate_walk(15, 4, 20, colorOrange, colorDimWhite);
       }
     }
-    else if (stopAnim) {
+    else if (turnLightsOff_instant) {
       setStrip_off();
     }
-    else if (turnLightsOn) {
+    else if (turnLightsOn || stopAnim_lightsOn) {
       // turn lights on
       if (strstr(changeStateStyles[selected_changeStateStyle_on], "instant")) {
         setStrip_on();
@@ -428,6 +516,46 @@ struct Lights {
         // animate_slideOff(10, 7);
       }
     }
+
+    // if (startAnim) {
+    //   // run animation
+    //   if (strstr(animationStyles[selected_animation], "spot")) {
+    //     animate_spot(1, 10, 20);
+    //   }
+    //   else if (strstr(animationStyles[selected_animation], "walk")) {
+    //     // animate_walk(15, 4, 20, colorOrange, colorDimWhite);
+    //   }
+    // }
+    // else if (stopAnim_lightsOff) {
+    //   setStrip_off();
+    // }
+    // else if (turnLightsOn || stopAnim_lightsOn) {
+    //   // turn lights on
+    //   if (strstr(changeStateStyles[selected_changeStateStyle_on], "instant")) {
+    //     setStrip_on();
+    //   }
+    //   else if (strstr(changeStateStyles[selected_changeStateStyle_on], "fade")) {
+    //     animate_fadeOn(5);
+    //   }
+    //   else if (strstr(changeStateStyles[selected_changeStateStyle_on], "slide")) {
+    //     animate_slideOn(10, 7);
+    //   }
+    // }
+    // else if (turnLightsOff) {
+    //   // turn lights off
+    //   if (strstr(changeStateStyles[selected_changeStateStyle_off], "instant")) {
+    //     setStrip_off();
+    //   }
+    //   else if (strstr(changeStateStyles[selected_changeStateStyle_off], "fade")) {
+    //     animate_fadeOff(5);
+    //   }
+    //   else if (strstr(changeStateStyles[selected_changeStateStyle_off], "slide")) {
+    //     // animate_slideOff(10, 7);
+    //   }
+    // }
+    // else if (turnLightsOff_instant) {
+    //   setStrip_off();
+    // }
 
   }
 

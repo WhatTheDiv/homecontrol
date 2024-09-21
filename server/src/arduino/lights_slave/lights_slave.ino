@@ -49,7 +49,7 @@ void loop() {
 }
 
 void wire_receiveMessage(int howMany) {
-  char* str = request;
+  char* req = request;
   unsigned int i = 0;
 
   if (howMany <= 1) {
@@ -60,24 +60,29 @@ void wire_receiveMessage(int howMany) {
   }
 
   while (Wire.available()) {
-    str[i] = Wire.read();
-    if (str[i] != '\0')
+    req[i] = Wire.read();
+    if (req[i] != '\0')
       i++;
   }
 
-  str[i] = '\0';
+  req[i] = '\0';
   newMessage = 1;
+  lights.interrupt = 1;
+
+  // Serial.print(F("-- Inc from master ["));
+  Serial.println(req);
+  // Serial.println(F("]"));
 }
 
 void wire_response() {
   response[strlen(response)] = '\0';
   Wire.write(response);
 
-  Serial.println("");
-  Serial.print("------ Response to master [");
+  Serial.print(F("\n------ Response to master ["));
   Serial.print(response);
-  Serial.print("]");
-  Serial.println("\n\n");
+  Serial.print(F("]\n\n"));
+
+  sprintf(response, "");
 }
 
 void build_response() {
@@ -86,21 +91,18 @@ void build_response() {
   char* res = response;
 
   newMessage = 0;
-  Serial.println("");
-  Serial.print("-- Inc from master [");
-  Serial.print(req);
-  Serial.println("]");
-  // Serial.println("Checkpoint1");
 
 
-  if (strstr(req, "state")) {
+
+
+  if (strstr(request, "state")) {
     bool areLightsOn = lights.areLightsOn();
     bool isAnimationActive = lights.isAnimationActive();
 
-    sprintf(res, "success/l%d/a%d\0", areLightsOn, isAnimationActive);
+    sprintf(res, "success/l%d/a%d", areLightsOn, isAnimationActive);
   }
-  else if (strstr(req, "lightsToggle")) {
-    char a = *((strchr(req, '/') + 1));
+  else if (strstr(request, "lightsToggle")) {
+    char a = *((strchr(request, '/') + 1));
     bool isAnimationActive = lights.isAnimationActive();
     bool newState;
 
@@ -111,10 +113,10 @@ void build_response() {
 
     lights.toggleLights(newState);
 
-    sprintf(res, "success/l%d/a%d\0", newState, isAnimationActive);
+    sprintf(res, "success/l%d/a%d", newState, isAnimationActive);
   }
-  else if (strstr(req, "animStart")) {
-    char a = *((strchr(req, '#') + 1));
+  else if (strstr(request, "animStart")) {
+    char a = *((strchr(request, '#') + 1));
     bool goodParams = 0;
 
     if (a == 'x') {
@@ -126,28 +128,28 @@ void build_response() {
       lights.setAnimation(int(a) - 48);
     }
     else {
-      sprintf(res, "fail-badAnimId[%c]\0", a);
+      sprintf(res, "fail-badAnimId[%c]", a);
     }
 
     if (goodParams) {
       bool areLightsOn = lights.areLightsOn();
       bool isAnimationActive = lights.isAnimationActive();
 
-      sprintf(res, "success/l%d/a%d\0", areLightsOn, isAnimationActive);
+      sprintf(res, "2success/l%d/a%d", areLightsOn, isAnimationActive);
     }
 
   }
-  else if (strstr(req, "animStop")) {
-    // Serial.println("Checkpoint animstop");
+  else if (strstr(request, "animStop")) {
+    Serial.println(F("Checkpoint animstop"));
 
     lights.stopAnimation();
     bool areLightsOn = lights.areLightsOn();
     bool isAnimationActive = lights.isAnimationActive();
 
-    sprintf(res, "success/l%d/a%d\0", areLightsOn, isAnimationActive);
+    sprintf(res, "success/l%d/a%d", areLightsOn, isAnimationActive);
   }
-  else if (strstr(req, "getStyles")) {
-    char t = *((strchr(req, '/') + 1));
+  else if (strstr(request, "getStyles")) {
+    char t = *((strchr(request, '/') + 1));
     sprintf(res, "success/");
 
     if (t == 'a') {
@@ -175,13 +177,14 @@ void build_response() {
         strcat(res, lights.changeStateStyles[k]);
       }
     }
-    res[strlen(res)] = '\0';
 
 
     // success/a:spot,walk/s:instant,fade,slide
 
   }
   else
-    sprintf(res, "fail-OOB!\0");
+    sprintf(res, "fail-OOB!");
 
 }
+
+// animation on -> turn off lights => still fades off
