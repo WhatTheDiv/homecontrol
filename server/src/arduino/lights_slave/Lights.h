@@ -212,6 +212,7 @@ struct Lights {
     }
 
     while (!shouldInterrupt()) {
+      Serial.print(F("Start Spot: "));
       if (continueUnlessPaused())
         pos = random(min, max);
 
@@ -406,10 +407,23 @@ struct Lights {
         pause = animationStep;
         Serial.print(F("Pause point set: "));
         Serial.println(pause);
+
       }
 
     }
     else {
+      // reset animationStep
+      if (pause == 0) {
+        if (beginning) {
+          animationStep = 0;
+          Serial.print(F("Beginning\n"));
+
+        }
+        else
+          // increment animationStep
+          animationStep++;
+      }
+
       // if pause is set and step not reached
       if (pause > 0 && pause < animationStep) {
         cont = false;
@@ -417,21 +431,13 @@ struct Lights {
       // if pause is set and step reached
       else if (pause > 0 && pause >= animationStep) {
         Serial.print(F("Resuming: "));
-        Serial.println(pause);
+        Serial.print(pause);
+        Serial.print(F(" - Beg. "));
+        Serial.println(beginning);
         pause = 0;
       }
 
-      // reset animationStep
-      if (pause == 0) {
-        if (beginning) {
-          animationStep = 0;
-          Serial.print(F("Beginning"));
 
-        }
-        // increment animationStep
-        else
-          animationStep++;
-      }
     }
 
     return cont;
