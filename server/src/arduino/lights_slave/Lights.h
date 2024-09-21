@@ -416,18 +416,22 @@ struct Lights {
       }
       // if pause is set and step reached
       else if (pause > 0 && pause >= animationStep) {
+        Serial.print(F("Resuming: "));
+        Serial.println(pause);
         pause = 0;
       }
 
       // reset animationStep
-      if (beginning) {
-        animationStep = 0;
-        Serial.print(F("Beginning"));
+      if (pause == 0) {
+        if (beginning) {
+          animationStep = 0;
+          Serial.print(F("Beginning"));
 
+        }
+        // increment animationStep
+        else
+          animationStep++;
       }
-      // increment animationStep
-      else
-        animationStep++;
     }
 
     return cont;
@@ -438,37 +442,22 @@ struct Lights {
   }
 
   void runEffect() {
-    interrupt = 0;
-
     // turn off lights
     //[x]      - lights on , turn off (fade)                 ( newState_animation = 0, newState_lightsOn = 1, lightsOn = 0, animationActive = 0 )
     //[x]      - animation on, turn off (instant)            ( newState_animation = 1, newState_lightsOn = 1, lightsOn = 0, animationActive = 0 )
-
     // turn on lights
     //[x]      - lights off, turn on (fade)                  ( newState_animation = 0, newState_lightsOn = 1, lightsOn = 1, animationActive = 0 )
     //[x]      - animation active, turn on lights (fade)     ( newState_animation = 1, newState_lightsOn = 1, lightsOn = 1, animationActive = 0 )?
     //[x]      - lights on, turn on animation                ( newState_animation = 1, newState_lightsOn = 0, lightsOn = 1, animationActive = 1 )
 
-    bool startAnim = newState_animation == 1 && newState_lightsOn == 0 && lightsOn == 1 && animationActive == 1;
+    interrupt = 0;
+
+    bool startAnim = pause > 0 || (newState_animation == 1 && newState_lightsOn == 0 && lightsOn == 1 && animationActive == 1);
     bool turnLightsOff_instant = newState_animation == 1 && newState_lightsOn == 1 && lightsOn == 0 && animationActive == 0;
     bool turnLightsOn = newState_animation == 0 && newState_lightsOn == 1 && lightsOn == 1 && animationActive == 0;
     bool stopAnim_lightsOn = newState_animation == 1 && newState_lightsOn == 1 && lightsOn == 1 && animationActive == 0;
     bool turnLightsOff = newState_animation == 0 && newState_lightsOn == 1 && lightsOn == 0 && animationActive == 0;
-    bool noChange = newState_animation == 0 && newState_lightsOn == 0;
-
-
-
-
-
-
-    // bool startAnim = newState_animation == 1 && animationActive == 1;
-    // bool stopAnim_lightsOn = newState_animation == 1 && newState_lightsOn == 1 && animationActive == 0 && lightsOn == 1;
-    // bool stopAnim_lightsOff = newState_animation == 1 && newState_lightsOn == 0 && animationActive == 0;
-    // bool turnLightsOff_instant = newState_animation == 1 && newState_lightsOn == 1 && animationActive == 0 && lightsOn == 0;
-
-    // bool turnLightsOff = newState_lightsOn == 1 && newState_animation == 1 && lightsOn == 0;
-    // bool turnLightsOn = newState_lightsOn == 1 && newState_animation == 0 && lightsOn == 1;
-    // bool noChange = newState_lightsOn == 0 && newState_animation == 0;
+    bool noChange = newState_animation == 0 && newState_lightsOn == 0 && pause == 0;
 
     newState_animation = 0;
     newState_lightsOn = 0;
@@ -477,8 +466,8 @@ struct Lights {
     if (noChange)
       return;
 
-    Serial.println(F("CPCP"));
-    // Serial.println("New effect ----------- ");
+
+    Serial.println(F("New effect ----------- "));
 
     if (startAnim) {
       // run animation
@@ -516,46 +505,6 @@ struct Lights {
         // animate_slideOff(10, 7);
       }
     }
-
-    // if (startAnim) {
-    //   // run animation
-    //   if (strstr(animationStyles[selected_animation], "spot")) {
-    //     animate_spot(1, 10, 20);
-    //   }
-    //   else if (strstr(animationStyles[selected_animation], "walk")) {
-    //     // animate_walk(15, 4, 20, colorOrange, colorDimWhite);
-    //   }
-    // }
-    // else if (stopAnim_lightsOff) {
-    //   setStrip_off();
-    // }
-    // else if (turnLightsOn || stopAnim_lightsOn) {
-    //   // turn lights on
-    //   if (strstr(changeStateStyles[selected_changeStateStyle_on], "instant")) {
-    //     setStrip_on();
-    //   }
-    //   else if (strstr(changeStateStyles[selected_changeStateStyle_on], "fade")) {
-    //     animate_fadeOn(5);
-    //   }
-    //   else if (strstr(changeStateStyles[selected_changeStateStyle_on], "slide")) {
-    //     animate_slideOn(10, 7);
-    //   }
-    // }
-    // else if (turnLightsOff) {
-    //   // turn lights off
-    //   if (strstr(changeStateStyles[selected_changeStateStyle_off], "instant")) {
-    //     setStrip_off();
-    //   }
-    //   else if (strstr(changeStateStyles[selected_changeStateStyle_off], "fade")) {
-    //     animate_fadeOff(5);
-    //   }
-    //   else if (strstr(changeStateStyles[selected_changeStateStyle_off], "slide")) {
-    //     // animate_slideOff(10, 7);
-    //   }
-    // }
-    // else if (turnLightsOff_instant) {
-    //   setStrip_off();
-    // }
 
   }
 
